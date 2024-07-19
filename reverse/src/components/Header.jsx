@@ -83,13 +83,18 @@ const Header = () => {
             </a>
           </li>
           <li>
-            <a href="/search" className={location.pathname.startsWith('/search') ? "active" : ""}>
-              <img alt="search icon" src="/search_icon.png" />찾기
+            <a href="/consulting" className={location.pathname.startsWith('/consulting') ? "active" : ""}>
+              상담
             </a>
           </li>
           <li>
-            <a href="/posting" className={path === "/posting" ? "active" : ""}>
-              포스팅
+            <a href="/record" className={path === "/record" ? "active" : ""}>
+              기록
+            </a>
+          </li>
+          <li>
+            <a href="/community" className={path === "/community" ? "active" : ""}>
+              커뮤니티
             </a>
           </li>
           <li>
