@@ -12,26 +12,26 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 75rem;
   margin: auto;
-  margin-top: 40px;
+  margin-top: 2.5rem;
 `;
 
 const SubContainer = styled.div`
   display: flex;
-  gap: 60px;
+  gap: 3.75rem;
 `;
 
 const Content = styled.div`
   flex: 2;
-  padding: 20px;
+  padding: 0 0 0 1.25rem;
   display: flex;
   flex-direction: column;
 `;
 
 const PostContainer = styled.div`
   flex: 1;
-  padding: 20px;
+  padding: 0 0 0 1.25rem;
 `;
 
 const Form = styled.form`
@@ -40,25 +40,25 @@ const Form = styled.form`
 `;
 
 const Label = styled.label`
-  margin-bottom: 5px;
+  margin-bottom: 0.3125rem;
   font-weight: bold;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  margin-bottom: 20px;
+  padding: 0.625rem;
+  margin-bottom: 1.25rem;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
 `;
 
 const QuillWrapper = styled.div`
   .ql-editor {
-    min-height: 300px;
+    min-height: 18.75rem;
   }
 `;
 
 const FileInput = styled.input`
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -67,13 +67,13 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
+  padding: 0.625rem 1.25rem;
   background-color: #ccc;
   color: #000;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: 0.625rem;
 
   &:hover {
     background-color: #bbb;
@@ -103,9 +103,9 @@ const DialogOverlay = styled.div`
 
 const Dialog = styled.div`
   background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  border-radius: 0.3125rem;
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
 `;
 
 const DialogTitle = styled.h2`
@@ -115,7 +115,7 @@ const DialogTitle = styled.h2`
 const DialogButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 1.25rem; // 20px to rem
 `;
 
 const DialogButton = styled(Button)`
@@ -146,7 +146,7 @@ const formats = [
 ];
 
 const Record = () => {
-  const [Public, setPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(true);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
@@ -169,7 +169,7 @@ const Record = () => {
       const formData = new FormData();
       formData.append('post_title', title);
       formData.append('content', content);
-      formData.append('public', Public);
+      formData.append('public', isPublic);
 
       if (file) {
         formData.append('file', file);
@@ -225,10 +225,10 @@ const Record = () => {
                 <ButtonContainer>
                   <ToggleButton
                     type="button"
-                    active={Public}
-                    onClick={() => setPublic(!Public)}
+                    active={isPublic}
+                    onClick={() => setIsPublic(!isPublic)}
                   >
-                    {Public ? '공개' : '비공개'}
+                    {isPublic ? '공개' : '비공개'}
                   </ToggleButton>
                   <Button type="submit">등록</Button>
                 </ButtonContainer>
