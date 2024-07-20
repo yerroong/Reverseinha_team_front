@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
-import Consulting from './pages/Consulting';
-import Record from './pages/Record';
+import Consulting from './pages/Consulting/Consulting';
+import Record from './pages/Record/Record';
 import Community from './pages/Community';
 import Mypage from './pages/Mypage';
 
