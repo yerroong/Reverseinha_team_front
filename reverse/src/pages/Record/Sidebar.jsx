@@ -4,7 +4,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 const SidebarContainer = styled.div`
-  width: 18.75rem; // 300px to rem
+  width: 18.75rem;
   display: flex;
   flex-direction: column;
   padding-top: 1.5rem;
@@ -77,7 +77,7 @@ const GoalInput = styled.input`
 `;
 
 const Checkbox = styled.input.attrs({ type: 'checkbox' })`
-  margin-right: 0.625rem; // 10px to rem
+  margin-right: 0.625rem;
   accent-color: #007BFF;
 `;
 
@@ -86,17 +86,17 @@ const DeleteButton = styled.button`
   border: none;
   color: red;
   cursor: pointer;
-  font-size: 1rem; // 16px to rem
-  margin-left: 0.625rem; // 10px to rem
+  font-size: 1rem;
+  margin-left: 0.625rem;
 `;
 
 const GoalButton = styled.button`
-  margin-top: 0.625rem; // 10px to rem
-  padding: 0.3125rem 0.625rem; // 5px 10px to rem
+  margin-top: 0.625rem;
+  padding: 0.3125rem 0.625rem;
   background-color: #007BFF;
   color: #fff;
   border: none;
-  border-radius: 0.3125rem; // 5px to rem
+  border-radius: 0.3125rem;
   cursor: pointer;
 
   &:hover {
