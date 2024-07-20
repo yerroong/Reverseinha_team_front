@@ -7,12 +7,14 @@ import Modal from 'react-modal';
 const ConsultingContainer = styled.div`
   display: flex;
   background-color: #FFF;
-  padding: 2rem;
+  padding-right: 10rem;
+  padding-left: 10rem;
+  padding-top: 2rem;
 `;
 
 const ResultSide = styled.div`
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const ResultHeader = styled.h2`
