@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
+import Sidebar from './Sidebar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
