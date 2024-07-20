@@ -181,7 +181,7 @@ const consultingData = [
     imgSrc: '/consul1.png',
     title: '사회적고립기구',
     type: '지원센터',
-    description: '#고독사예방 #사회적고립예방 #서울 사회적고립가구와 고독사 예방, 지원을 위해 전국 최초로 서울시가 설치한 전문기관',
+    description: '#고독사예방 #사회적고립예방 #서울 사회적고립가구와 고독사 문제를 해결하기 위한 다양한 프로그램과 지원을 제공',
     prices: {
       message: '무료',
       call: '무료',
@@ -219,6 +219,7 @@ const Consulting = () => {
   const [filters, setFilters] = useState({
     free: false,
     premium: false,
+    searchTerm: '',
   });
 
   const openModal = () => {
@@ -234,15 +235,11 @@ const Consulting = () => {
   };
 
   const filteredData = consultingData.filter((consultant) => {
-    if (filters.free && filters.premium) {
-      return true;
-    } else if (filters.free) {
-      return consultant.prices.message === '무료';
-    } else if (filters.premium) {
-      return consultant.prices.message !== '무료';
-    } else {
-      return true;
-    }
+    const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
+    const matchesPremium = filters.premium ? consultant.prices.message !== '무료' : true;
+    const matchesSearchTerm = consultant.title.includes(filters.searchTerm) || consultant.description.includes(filters.searchTerm);
+    
+    return matchesFree && matchesPremium && matchesSearchTerm;
   });
 
   return (

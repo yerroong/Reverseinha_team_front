@@ -74,12 +74,13 @@ const SearchSide = ({ onFilterChange }) => {
   const [filters, setFilters] = useState({
     free: false,
     premium: false,
+    searchTerm: '',
   });
 
-  const handleFilterChange = (filterType) => {
+  const handleFilterChange = (filterType, value) => {
     const newFilters = {
       ...filters,
-      [filterType]: !filters[filterType],
+      [filterType]: value,
     };
     setFilters(newFilters);
     onFilterChange(newFilters);
@@ -90,7 +91,12 @@ const SearchSide = ({ onFilterChange }) => {
       <SearchSideContainer>
         <SearchBox>
           <SearchIcon />
-          <SearchInput type="text" placeholder="상담사/멘토링 검색" />
+          <SearchInput
+            type="text"
+            placeholder="상담사/멘토링 검색"
+            value={filters.searchTerm}
+            onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+          />
         </SearchBox>
         <FilterSection>
           <FilterTitle>찾는 유형</FilterTitle>
@@ -118,7 +124,7 @@ const SearchSide = ({ onFilterChange }) => {
             <FilterCheckbox
               type="checkbox"
               checked={filters.free}
-              onChange={() => handleFilterChange('free')}
+              onChange={() => handleFilterChange('free', !filters.free)}
             />
             무료
           </FilterLabel>
@@ -126,7 +132,7 @@ const SearchSide = ({ onFilterChange }) => {
             <FilterCheckbox
               type="checkbox"
               checked={filters.premium}
-              onChange={() => handleFilterChange('premium')}
+              onChange={() => handleFilterChange('premium', !filters.premium)}
             />
             프리미엄
           </FilterLabel>
