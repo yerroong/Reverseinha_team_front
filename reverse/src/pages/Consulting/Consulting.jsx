@@ -1,3 +1,4 @@
+//유형검색은 안됨 아직
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
@@ -193,7 +194,7 @@ const consultingData = [
     imgSrc: '/consul2.png',
     title: '김영미',
     type: '상담사',
-    description: '#상담분야 #심리상담 #서울 상담심리사로서 다년간의 상담 경험을 바탕으로 청소년 상담을 진행',
+    description: '#쳥년상담 #취업상담 #자립상담 #비대면 사회에 나가기 막막하신 분들 상담을 진행합니다. 평일 12~18시 상담 대기중',
     prices: {
       message: '30,000원',
       call: '30,000원',
@@ -205,7 +206,7 @@ const consultingData = [
     imgSrc: '/consul3.png',
     title: '김옥자',
     type: '상담사',
-    description: '#상담분야 #가족상담 #서울 가족상담사로서 가족 간의 갈등 해결 및 소통을 돕는 상담을 진행',
+    description: '#외로움 #고독 #정신상담 #심리상담 #비대면 인하대 정신센터 근무중입니다. 휴일제외 12~18시 상담 대기중',
     prices: {
       message: '30,000원',
       call: '30,000원',
