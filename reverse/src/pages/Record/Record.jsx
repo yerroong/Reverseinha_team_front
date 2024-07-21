@@ -53,8 +53,9 @@ const Input = styled.input`
 
 const QuillWrapper = styled.div`
   .ql-editor {
-    min-height: 18.75rem;
+    min-height: 36rem;
   }
+  margin-bottom: 0.25rem;
 `;
 
 const FileInput = styled.input`
@@ -64,6 +65,7 @@ const FileInput = styled.input`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 1.25rem;
 `;
 
 const Button = styled.button`
@@ -80,12 +82,12 @@ const Button = styled.button`
   }
 `;
 
-const ToggleButton = styled(Button)`
-  background-color: ${({ active }) => (active ? '#007BFF' : '#ccc')};
+const SubmitButton = styled(Button)`
+  background-color: #007BFF;
   color: #fff;
 
   &:hover {
-    background-color: ${({ active }) => (active ? '#0056b3' : '#bbb')};
+    background-color: #0056b3;
   }
 `;
 
@@ -115,7 +117,7 @@ const DialogTitle = styled.h2`
 const DialogButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.25rem; // 20px to rem
+  margin-top: 1.25rem;
 `;
 
 const DialogButton = styled(Button)`
@@ -146,7 +148,6 @@ const formats = [
 ];
 
 const Record = () => {
-  const [isPublic, setIsPublic] = useState(true);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
@@ -169,7 +170,6 @@ const Record = () => {
       const formData = new FormData();
       formData.append('post_title', title);
       formData.append('content', content);
-      formData.append('public', isPublic);
 
       if (file) {
         formData.append('file', file);
@@ -192,6 +192,12 @@ const Record = () => {
 
   const handleDialogCancel = () => {
     setIsDialogVisible(false);
+  };
+
+  const handleReset = () => {
+    setTitle('');
+    setContent('');
+    setFile(null);
   };
 
   return (
@@ -223,14 +229,8 @@ const Record = () => {
                 </QuillWrapper>
                 <FileInput type="file" onChange={handleFileChange} />
                 <ButtonContainer>
-                  <ToggleButton
-                    type="button"
-                    active={isPublic}
-                    onClick={() => setIsPublic(!isPublic)}
-                  >
-                    {isPublic ? '공개' : '비공개'}
-                  </ToggleButton>
-                  <Button type="submit">등록</Button>
+                  <Button type="button" onClick={handleReset}>취소</Button>
+                  <SubmitButton type="submit">등록</SubmitButton>
                 </ButtonContainer>
               </Form>
             </PostContainer>
