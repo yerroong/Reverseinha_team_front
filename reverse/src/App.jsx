@@ -6,6 +6,8 @@ import Consulting from './pages/Consulting/Consulting';
 import Record from './pages/Record/Record';
 import Community from './pages/Community';
 import Mypage from './pages/Mypage';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
           <Route path="/record" element={<Record />} />
           <Route path="/community" element={<Community />} />
           <Route path="/mypage" element={<Mypage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </main>
     </Router>
