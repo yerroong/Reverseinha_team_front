@@ -52,7 +52,7 @@ const Qstyle = styled.div`
 const Submit = styled.button`
   padding: 15px 30px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #004EE5;
   color: white;
   border: none;
   border-radius: 5px;
