@@ -1,7 +1,7 @@
 //홈 하단 페이지 컴포넌트//
 import React from 'react';
 import styled from 'styled-components';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   text-align: center;
