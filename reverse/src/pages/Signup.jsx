@@ -1,8 +1,8 @@
-//다음 단계로 넘어가기 구현 아직 안 함
-import React from 'react';
+import React, { useState }  from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
-const SignupContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,17 +43,88 @@ const Button = styled.button`
   }
 `;
 
+//에러메세지 출력
+const Error = styled.div`
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+`;
+
 const Signup = () => {
+  const navigate = useNavigate();
+  const [formValues, setFormValues] = useState({
+    username: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState({
+    emptyFields: false,
+    passwordMismatch: false,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { username, password, confirmPassword } = formValues;
+
+    if (!username || !password || !confirmPassword) {
+      setErrors({ ...errors, emptyFields: true });
+      return;
+    } else {
+      setErrors({ ...errors, emptyFields: false });
+    }
+
+    if (password !== confirmPassword) {
+      setErrors({ ...errors, passwordMismatch: true });
+      return;
+    } else {
+      setErrors({ ...errors, passwordMismatch: false });
+    } 
+
+    navigate('/signtest');
+  };
+
   return (
-    <SignupContainer>
+    <Container>
       <Title>회원가입</Title>
-      <Form>
-        <InputField type="text" placeholder="아이디 입력" />
-        <InputField type="password" placeholder="비밀번호 입력" />
-        <InputField type="password" placeholder="비밀번호 재입력" />
-        <Button type="submit">다음 단계로 넘어가기</Button> 
+      <Form onSubmit={handleSubmit}>
+        {errors.emptyFields && (
+          <Error>모두 입력해주세요</Error>
+        )}
+        <InputField
+          type="text"
+          name="username"
+          placeholder="아이디 입력"
+          value={formValues.username}
+          onChange={handleChange}
+        />
+        <InputField
+          type="password"
+          name="password"
+          placeholder="비밀번호 입력"
+          value={formValues.password}
+          onChange={handleChange}
+        />
+        <InputField
+          type="password"
+          name="confirmPassword"
+          placeholder="비밀번호 재입력"
+          value={formValues.confirmPassword}
+          onChange={handleChange}
+        />
+        {errors.passwordMismatch && (
+          <Error>비밀번호가 다릅니다</Error>
+        )}
+        <Button type="submit">다음 단계로 넘어가기</Button>
       </Form>
-    </SignupContainer>
+    </Container>
   );
 };
 
