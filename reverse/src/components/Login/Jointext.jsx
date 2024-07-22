@@ -8,13 +8,13 @@ const TextWrapper = styled.div`
 `;
 
 const Link = styled.a`
-  color: #007bff;
+  color: #004EE5;
   cursor: pointer;
   text-decoration: none;
 `;
 
 const JoinText = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleJoinClick = () => {
     navigate('/signup');
   };

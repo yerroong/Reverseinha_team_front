@@ -32,7 +32,7 @@ const InputField = styled.input`
 const Button = styled.button`
   padding: 10px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #004EE5;
   color: white;
   border: none;
   border-radius: 4px;
