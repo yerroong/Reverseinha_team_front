@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const InputWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 300px;
@@ -16,12 +16,22 @@ const Input = styled.input`
   border-radius: 5px;
 `;
 
-const LoginInput = () => {
+const LoginInput = ({ id, password, onIdChange, onPasswordChange }) => {
   return (
-    <InputWrapper>
-      <Input type="text" placeholder="아이디를 입력하세요" />
-      <Input type="password" placeholder="비밀번호를 입력하세요" />
-    </InputWrapper>
+    <Wrapper>
+      <Input
+        type="text"
+        placeholder="아이디 입력"
+        value={id}
+        onChange={(e) => onIdChange(e.target.value)}
+      />
+      <Input
+        type="password"
+        placeholder="비밀번호 입력"
+        value={password}
+        onChange={(e) => onPasswordChange(e.target.value)}
+      />
+    </Wrapper>
   );
 };
 
