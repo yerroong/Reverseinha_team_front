@@ -1,14 +1,15 @@
+//유형검색은 안됨 아직
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
 import Modal from 'react-modal';
-import axios from 'axios'; // axios 추가
 
 const ConsultingContainer = styled.div`
   display: flex;
-  font-weight: 700;
-    font-size: 2rem;
-  margin-bottom: 2rem;
+  background-color: #FFF;
+  padding-right: 10rem;
+  padding-left: 10rem;
+  padding-top: 2rem;
 `;
 
 const ResultSide = styled.div`
@@ -170,12 +171,6 @@ const WarningText = styled.p`
   font-family: inherit;
 `;
 
-const ErrorText = styled.p`
-  color: red;
-  font-size: 0.8rem;
-  font-family: inherit;
-`;
-
 const Separator = styled.div`
   border-bottom: 1px solid #567191;
   width: 90%;
@@ -229,11 +224,9 @@ const Consulting = () => {
     premium: false,
     searchTerm: '',
   });
-  const [error, setError] = useState(''); // 오류 메시지 상태 추가
 
   const openModal = () => {
     setModalIsOpen(true);
-    setError(''); // 모달 열 때 오류 메시지 초기화
   };
 
   const closeModal = () => {
@@ -242,25 +235,6 @@ const Consulting = () => {
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-  };
-
-  const handleSubmit = async () => {
-    const data = {
-      name: document.getElementById('name').value,
-      age: document.getElementById('age').value,
-      phone: document.getElementById('phone').value,
-      availableTime: document.getElementById('availableTime').value,
-      reason: document.getElementById('reason').value,
-    };
-
-    try {
-      await axios.post('/api/submit', data); // 백엔드 엔드포인트로 데이터 전송
-      alert('신청이 완료되었습니다.');
-      closeModal();
-    } catch (error) {
-      console.error('신청 중 오류 발생:', error);
-      setError('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
   };
 
   const filteredData = consultingData.filter((consultant) => {
@@ -335,12 +309,11 @@ const Consulting = () => {
         <h2>신청</h2>
         <Separator />
         <ModalForm>
-          <Input id="name" type="text" placeholder="이름" />
-          <Input id="age" type="text" placeholder="나이" />
-          <Input id="phone" type="text" placeholder="전화번호" />
-          <Input id="availableTime" type="text" placeholder="가능한 시간대" />
-          <TextArea id="reason" placeholder="신청 사유" />
-          {error && <ErrorText>{error}</ErrorText>} {/* 오류 메시지 표시 */}
+          <Input type="text" placeholder="이름" />
+          <Input type="text" placeholder="나이" />
+          <Input type="text" placeholder="전화번호" />
+          <Input type="text" placeholder="가능한 시간대" />
+          <TextArea placeholder="신청 사유" />
           <WarningText>
             신청된 정보는 상담사에게 전달됩니다. 상담 시간 및 신청 조율은 개인 문자 확인바랍니다.
             <br />
@@ -348,7 +321,7 @@ const Consulting = () => {
           </WarningText>
           <div>
             <Button onClick={closeModal}>취소</Button>
-            <Button onClick={handleSubmit}>신청</Button> {/* 신청 버튼 클릭 핸들러 추가 */}
+            <Button>신청</Button>
           </div>
         </ModalForm>
       </Modal>
