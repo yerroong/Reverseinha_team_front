@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { BsGoogle } from "react-icons/bs";
-import { SiNaver } from "react-icons/si";
-import { SiKakaotalk } from "react-icons/si";
+import google from "../../img/googlelogo.png";
+import naver from "../../img/naverlogo.png";
+import kakao from "../../img/kakaologo.png";
 
 
 const SocialWrapper = styled.div`
@@ -22,9 +22,9 @@ const IconButton = styled.button`
 const LoginSocial = () => {
   return (
     <SocialWrapper>
-      <IconButton><BsGoogle /></IconButton>
-      <IconButton><SiNaver /></IconButton>
-      <IconButton><SiKakaotalk /></IconButton>
+      <IconButton><img src = {google}/></IconButton>
+      <IconButton><img src = {naver}/></IconButton>
+      <IconButton><img src = {kakao}/></IconButton>
     </SocialWrapper>
   );
 };
