@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useLocation, Link } from "react-router-dom";
 import '../style.css';
+import './Fonts.css';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -24,6 +25,8 @@ const Logo = styled.div`
 `;
 
 const Navigation = styled.nav`
+  font-family: 'Dohyeon';
+  font-weight: 400;
   ul {
     display: flex;
     list-style: none;
