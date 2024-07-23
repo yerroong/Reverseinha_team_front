@@ -246,6 +246,11 @@ const Mypage = () => {
     }
   };
 
+  // 추가된 함수: 재검사 버튼 클릭시 호출되는 함수
+  const handleRetest = () => {
+    navigate('/signtest');
+  };
+
   return (
     <Container>
       <Profile />
@@ -255,7 +260,7 @@ const Mypage = () => {
             <InfoTitle>나의 고립점수는?</InfoTitle>
             <Line src="/line.png" />
             <InfoScoreColored score={score}>{score}점</InfoScoreColored>
-            <ProfileLogoutButton>재검사</ProfileLogoutButton>
+            <ProfileLogoutButton onClick={handleRetest}>재검사</ProfileLogoutButton>
           </InfoBox>
           <InfoBox width="22.563rem" center>
             <LineContainer>
@@ -319,9 +324,6 @@ const Mypage = () => {
 };
 
 export default Mypage;
-
-
-
 
 
 
