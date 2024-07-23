@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {useNavigate } from 'react-router-dom';
+import "./Fonts.css";
 
 const Container = styled.div`
   text-align: center;
@@ -12,6 +13,8 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 2rem;
+  font-family: 'OpenSans';
+  font-weight: 700;
 `;
 
 const Descrip = styled.p`

@@ -4,6 +4,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Link } from 'react-router-dom';
 import CommunitySearch from './CommunitySearch';
+import "../../components/Fonts.css";
 
 // Mock 데이터 설정을 컴포넌트 외부에서 
 const mock = new MockAdapter(axios, { delayResponse: 200 });
