@@ -21,8 +21,8 @@ const App = () => {
           <Route path="/consulting" element={<Consulting />} />
           <Route path="/record" element={<Record />} />
           <Route path="/community" element={<Community />} />
-          <Route path="/communitywrite" element={<Communitywrite />} />
-          <Route path="/Communityread/:id" element={<Communityread />} />
+          <Route path="/community/write" element={<Communitywrite />} />
+          <Route path="/Community/read/:id" element={<Communityread />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
