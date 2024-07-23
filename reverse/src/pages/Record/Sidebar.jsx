@@ -133,7 +133,7 @@ const CustomPlanHeader = styled.h3`
 `;
 
 const CustomPlanDescription = styled.p`
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: #888888;
   text-align: center;
   margin-bottom: 0.625rem;
