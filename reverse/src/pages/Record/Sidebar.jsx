@@ -4,11 +4,17 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 const SidebarContainer = styled.div`
-  width: 18.75rem;
+  width: 100%;
+  max-width: 18.75rem;
+  height: 60rem;
   display: flex;
   flex-direction: column;
   padding-top: 1.5rem;
   align-items: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
 `;
 
 const StyledCalendar = styled(Calendar)`
@@ -25,19 +31,21 @@ const StyledCalendar = styled(Calendar)`
   .react-calendar__tile--active {
     background-color: #ff7070 !important;
   }
+  .react-calendar__tile--some-completion {
+    background-color: #BBDEFB !important;
+  }
+  .react-calendar__tile--half-completion {
+    background-color: #8c95f7 !important;
+  }
   .react-calendar__tile--full-completion {
     background-color: #007BFF !important;
     color: white !important;
-  }
-  .react-calendar__tile--partial-completion {
-    background-color: #BBDEFB !important;
-    color: black !important;
   }
 `;
 
 const GoalContainer = styled.div`
   margin-top: 1.25rem;
-  width: 90%;
+  width: 100%;
   padding: 1.25rem;
   border-radius: 0.625rem;
   box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
@@ -45,6 +53,7 @@ const GoalContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 `;
 
 const GoalHeader = styled.h3`
@@ -104,13 +113,60 @@ const GoalButton = styled.button`
   }
 `;
 
+const CustomPlanContainer = styled.div`
+  margin-top: 1.25rem;
+  width: 100%;
+  padding: 1.25rem;
+  border-radius: 0.625rem;
+  box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+`;
+
+const CustomPlanHeader = styled.h3`
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  text-align: center;
+`;
+
+const CustomPlanDescription = styled.p`
+  font-size: 0.6rem;
+  color: #888888;
+  text-align: center;
+  margin-bottom: 0.625rem;
+`;
+
+const CustomPlanList = styled.ul`
+  width: 100%;
+  padding-left: 1rem;
+`;
+
+const CustomPlanItem = styled.li`
+  margin-bottom: 0.625rem;
+`;
+
 const Sidebar = () => {
   const [date, setDate] = useState(new Date());
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState('');
+  const [severity, setSeverity] = useState('심함');
+  const [customPlans, setCustomPlans] = useState([]);
+  const [selectedDateGoals, setSelectedDateGoals] = useState([]);
+  const [selectedDateDiary, setSelectedDateDiary] = useState('');
+  const [defaultGoalDone, setDefaultGoalDone] = useState(false);
+
+  useEffect(() => {
+    setCustomPlans(generateCustomPlans());
+  }, [severity]);
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
+    const dayGoals = goals.filter((goal) => goal.date === selectedDate.toDateString());
+    setSelectedDateGoals(dayGoals);
+    setSelectedDateDiary(''); // Mock diary entry for the selected date (replace with actual data retrieval logic)
   };
 
   const handleGoalChange = (id) => {
@@ -118,6 +174,10 @@ const Sidebar = () => {
       goal.id === id ? { ...goal, done: !goal.done } : goal
     );
     setGoals(updatedGoals);
+  };
+
+  const handleDefaultGoalChange = () => {
+    setDefaultGoalDone(!defaultGoalDone);
   };
 
   const handleNewGoalChange = (event) => {
@@ -130,7 +190,7 @@ const Sidebar = () => {
         id: goals.length + 1,
         text: newGoal,
         done: false,
-        date: new Date().toDateString(), // 목표를 추가한 날짜를 오늘 날짜로 저장
+        date: new Date().toDateString(),
       };
       setGoals([...goals, newGoalObj]);
       setNewGoal('');
@@ -145,14 +205,65 @@ const Sidebar = () => {
   const getTileClass = ({ date: tileDate, view }) => {
     if (view === 'month') {
       const dayGoals = goals.filter((goal) => goal.date === tileDate.toDateString());
-      const goalCompletion = dayGoals.filter((goal) => goal.done).length / dayGoals.length;
+      const isToday = tileDate.toDateString() === new Date().toDateString();
+      const totalGoals = dayGoals.length + (isToday ? 1 : 0); // Include default goal only for today
+      const completedGoals = dayGoals.filter((goal) => goal.done).length + (isToday && defaultGoalDone ? 1 : 0);
+      const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
       if (goalCompletion === 1) {
         return 'react-calendar__tile--full-completion';
+      } else if (goalCompletion >= 0.5) {
+        return 'react-calendar__tile--half-completion';
       } else if (goalCompletion > 0) {
-        return 'react-calendar__tile--partial-completion';
+        return 'react-calendar__tile--some-completion';
       }
     }
     return '';
+  };
+
+  const severePlans = [
+    '오전에 기상하기',
+    '하루 세끼 다 챙겨먹기',
+    '직접 점심 차려먹기',
+    '밥 먹고 바로 눕지 않기',
+    '방청소하기',
+    '명상하기',
+    '오늘의 칭찬할 점 쓰기',
+    '밝은노래듣기',
+    '스트레칭하기',
+    '씻기',
+    '열두시 전에 잠들기',
+    '집밖에 나가기',
+    '버킷리스트 쓰기',
+    '상담받기',
+  ];
+
+  const moderatePlans = [
+    '가족과 친구와 소통하기',
+    '자기개발 하기',
+    '하루 세끼 다 챙겨먹기',
+    '직접 점심 차려먹기',
+    '방청소하기',
+    '조깅하기',
+    '명상하기',
+    '오늘의 칭찬할 점 쓰기',
+    '열두시 전에 잠들기',
+    '사람 만나기',
+    '45분 이상 일주일 3회 이상 꾸준한 유산소운동',
+    '1만보 이상 걷기',
+  ];
+
+  const generateCustomPlans = () => {
+    let plans = [];
+    if (severity === '심함') {
+      plans = severePlans
+        .filter((plan) => plan !== '상담받기')
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 4);
+      plans.unshift('상담받기');
+    } else if (severity === '보통') {
+      plans = moderatePlans.sort(() => 0.5 - Math.random()).slice(0, 5);
+    }
+    return plans;
   };
 
   return (
@@ -166,6 +277,13 @@ const Sidebar = () => {
       <GoalContainer>
         <GoalHeader>오늘의 목표</GoalHeader>
         <GoalList>
+          <GoalItem>
+            <Checkbox
+              checked={defaultGoalDone}
+              onChange={handleDefaultGoalChange}
+            />
+            <GoalText>일기 작성</GoalText>
+          </GoalItem>
           {goals.filter((goal) => goal.date === new Date().toDateString()).map((goal) => (
             <GoalItem key={goal.id}>
               <Checkbox
@@ -187,6 +305,42 @@ const Sidebar = () => {
           <GoalButton onClick={handleAddGoal}>추가</GoalButton>
         </GoalItem>
       </GoalContainer>
+      {selectedDateGoals.length > 0 && (
+        <GoalContainer>
+          <GoalHeader>{`${date.toDateString()} 목표`}</GoalHeader>
+          <GoalList>
+            <GoalItem>
+              <Checkbox
+                checked={defaultGoalDone}
+                onChange={handleDefaultGoalChange}
+              />
+              <GoalText>일기 작성</GoalText>
+            </GoalItem>
+            {selectedDateGoals.map((goal) => (
+              <GoalItem key={goal.id}>
+                <Checkbox
+                  checked={goal.done}
+                  onChange={() => handleGoalChange(goal.id)}
+                />
+                <GoalText>{goal.text}</GoalText>
+              </GoalItem>
+            ))}
+          </GoalList>
+          <GoalHeader>일기</GoalHeader>
+          <GoalText>{selectedDateDiary || '작성된 일기가 없습니다.'}</GoalText>
+        </GoalContainer>
+      )}
+      <CustomPlanContainer>
+        <CustomPlanHeader>맞춤 계획 추천</CustomPlanHeader>
+        <CustomPlanDescription>
+          사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을 제공합니다. 마이페이지에서 재검사가 가능합니다
+        </CustomPlanDescription>
+        <CustomPlanList>
+          {customPlans.map((plan, index) => (
+            <CustomPlanItem key={index}>{plan}</CustomPlanItem>
+          ))}
+        </CustomPlanList>
+      </CustomPlanContainer>
     </SidebarContainer>
   );
 };

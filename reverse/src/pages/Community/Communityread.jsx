@@ -348,7 +348,7 @@ export default Communityread;
 
 
 
-// CommunityProfile에 있는 수정 삭제버튼을 누르면 이곳에 있는 내용이 수정될 수 있도록 하기
+// CommunityProfile에 있는 수정 삭제버튼을 누르면 이곳에 있는 내용이 수정될 수 있도록 하
 //나중에 백엔드랑 연결하면 글 주인인 경우에만 수정삭제가 가능하도록 수정하기
 //Communityread랑 Communitywrite로 넘어오는 경우에도 header에 커뮤니티 글자 진하게 유지되도록
-//왜안돼??
+//왜안돼?

@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { Link } from 'react-router-dom';
 import CommunitySearch from './CommunitySearch';
 
-// Mock 데이터 설정을 컴포넌트 외부에서 한 번
+// Mock 데이터 설정을 컴포넌트 외부에서 
 const mock = new MockAdapter(axios, { delayResponse: 200 });
 const testData = [
   { id: 1, title: '첫 번째 글', nickname: '사용자1', likes: 10, content: '첫 번째 글의 내용입니다.' },

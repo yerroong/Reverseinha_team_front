@@ -12,6 +12,8 @@ const SearchSideContainer = styled.div`
   background-color: #F4F4F4;
   padding: 1rem;
   margin-right: 2rem;
+  border-radius: 0.1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const SearchBox = styled.div`
@@ -21,6 +23,8 @@ const SearchBox = styled.div`
   align-items: center;
   margin-bottom: 1rem;
   border: 1px solid #C6C6C6;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 `;
 
 const SearchIcon = styled.div`
@@ -38,6 +42,7 @@ const SearchInput = styled.input`
   padding: 0.5rem;
   border: none;
   outline: none;
+  border-radius: 0.2rem;
 `;
 
 const FilterSection = styled.div`
@@ -45,6 +50,8 @@ const FilterSection = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #C6C6C6;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const FilterTitle = styled.h4`
