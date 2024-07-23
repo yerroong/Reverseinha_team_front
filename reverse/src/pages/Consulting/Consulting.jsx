@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
 import Modal from 'react-modal';
+import '../../components/Fonts.css';
 
 const ConsultingContainer = styled.div`
   display: flex;
