@@ -32,7 +32,7 @@ const Score = styled.div`
   color: ${props => {
     if (props.score >= 70) return 'red';
     if (props.score >= 40) return 'orange';
-    if (props.score <= 0) return 'green';
+    if (props.score <= 30) return 'green';
     return 'black';
   }};
 `;
@@ -43,7 +43,7 @@ const Message = styled.p`
   color: ${props => {
     if (props.score >= 70) return 'red';
     if (props.score >= 40) return 'orange';
-    if (props.score <= 0) return 'green';
+    if (props.score <= 30) return 'green';
     return 'black';
   }};
 `;
