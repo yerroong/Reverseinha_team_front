@@ -1,10 +1,12 @@
 import React from 'react';
+import Homebanner from '../components/Homebanner';
+import Homemain from '../components/Homemain';
 
 const Home = () => {
   return (
     <div>
-      <h2>홈 페이지</h2>
-      {/* 페이지 내용 */}
+      <Homebanner />
+      <Homemain />
     </div>
   );
 };
