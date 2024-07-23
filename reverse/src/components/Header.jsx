@@ -25,7 +25,7 @@ const Logo = styled.div`
 `;
 
 const Navigation = styled.nav`
-  font-family: 'Dohyeon';
+  font-family: 'Notosans';
   font-weight: 400;
   ul {
     display: flex;
@@ -38,7 +38,7 @@ const Navigation = styled.nav`
     width: 100px;
     text-align: center;
     border-right: 1px solid var(--preset--color--contrast);
-    font-size: 16px;
+    font-size: 14px;
 
     &:last-child {
       border-right: unset;
@@ -71,7 +71,6 @@ const Navigation = styled.nav`
 const Header = () => {
   const location = useLocation();
   const path = location.pathname;
-
   return (
     <HeaderContainer className={path || "main"}>
       <Logo>
@@ -82,29 +81,29 @@ const Header = () => {
       <Navigation>
         <ul>
           <li>
-            <Link to="/" className={path === "/" ? "active" : ""}>
+            <a href="/" className={path === "/" ? "active" : ""}>
               홈
-            </Link>
+            </a>
           </li>
           <li>
-            <Link to="/consulting" className={path.startsWith("/consulting") ? "active" : ""}>
+            <a href="/consulting" className={location.pathname.startsWith('/consulting') ? "active" : ""}>
               상담
-            </Link>
+            </a>
           </li>
           <li>
-            <Link to="/record" className={path === "/record" ? "active" : ""}>
+            <a href="/record" className={path === "/record" ? "active" : ""}>
               기록
-            </Link>
+            </a>
           </li>
           <li>
-            <Link to="/community" className={path.startsWith("/community") ? "active" : ""}>
+            <a href="/community" className={path === "/community" ? "active" : ""}>
               커뮤니티
-            </Link>
+            </a>
           </li>
           <li>
-            <Link to="/mypage" className={path === "/mypage" ? "active" : ""}>
+            <a href="/mypage" className={path === "/mypage" ? "active" : ""}>
               마이페이지
-            </Link>
+            </a>
           </li>
         </ul>
       </Navigation>
