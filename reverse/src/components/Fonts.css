@@ -1,4 +1,4 @@
-/*@font-face {
+@font-face {
   font-family: 'OpenSans';
   src: url('../fonts/OpenSans-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -25,6 +25,18 @@
 @font-face {
   font-family: 'Roboto';
   src: url('../fonts/Roboto-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('../fonts/Pretendard-Regular.woff') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Dohyeon';
+  src: url('../fonts/DoHyeon-Regular.ttf') format('truetype');
   font-weight: 500;
 }
 
