@@ -36,8 +36,7 @@ const Search = styled.input`
 `;
 
 const SearchIcon = styled.img`
-  width: 2.063rem;
-  height: 1.188rem;
+  width: 2rem;
   margin-top: 0.3rem;
   position: absolute;
   right: 0.5rem;
