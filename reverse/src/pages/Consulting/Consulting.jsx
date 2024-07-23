@@ -168,7 +168,7 @@ const Button = styled.button`
 
 const WarningText = styled.p`
   color: #888888;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-family: inherit;
 `;
 
