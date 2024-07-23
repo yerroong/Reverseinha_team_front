@@ -28,6 +28,12 @@
   font-weight: 500;
 }
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('../fonts/Pretendard-Regular.woff') format('truetype');
+  font-weight: 500;
+}
+
 body {
   font-family: 'OpenSans';
 }
