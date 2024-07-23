@@ -208,7 +208,7 @@ const Record = () => {
           <Sidebar />
           <Content>
             <PostContainer>
-              <h2>글쓰기</h2>
+              <h2>일기 쓰기</h2>
               <Form onSubmit={handleSubmit}>
                 <Label htmlFor="title">제목을 입력해 주세요.</Label>
                 <Input
