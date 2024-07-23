@@ -77,6 +77,7 @@ export default class Homebanner extends Component {
                         font-size: 2.5rem;
                         font-style: bold;
                         font-family: inherit;
+                        font-weight: 500;
                     }
 
                     .overlay-text2 {
