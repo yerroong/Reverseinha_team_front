@@ -29,16 +29,10 @@
 }
 
 @font-face {
-  font-family: 'Dohyeon';
-  src: url('../fonts/DoHyeon-Regular.ttf') format('truetype');
-  font-weight: 500;
-}
-
-@font-face {
   font-family: 'Notosans';
   src: url('../fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
   font-weight: 500;
 }
 body {
-  font-family: 'OpenSans';
+  font-family: 'Pretendard';
 }

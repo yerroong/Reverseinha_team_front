@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {useNavigate } from 'react-router-dom';
-import "./Fonts.css";
+import '../components/Fonts.css';
 
 const Container = styled.div`
   text-align: center;
@@ -13,7 +13,6 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 2rem;
-  font-family: 'OpenSans';
   font-weight: 700;
 `;
 
@@ -21,6 +20,7 @@ const Descrip = styled.p`
   font-size: 1.2rem;
   margin-bottom: 2rem;
   line-height: 1.5;
+  font-weight: 500;
 `;
 
 const StartButton = styled.button`
@@ -33,6 +33,7 @@ const StartButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s;
   margin-bottom: 16rem;
+  font-weight: 500;
 
   &:hover {
     background-color: #0056b3;
