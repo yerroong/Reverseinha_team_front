@@ -10,6 +10,7 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  font-weight: 500;
 `;
 
 const LoginButton = () => {
