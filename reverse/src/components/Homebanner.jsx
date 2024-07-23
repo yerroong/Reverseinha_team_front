@@ -90,6 +90,7 @@ export default class Homebanner extends Component {
                         font-size: 1.5rem;
                         font-style: bold;
                         font-family: inherit;
+                        font-weight: 400;
                     }
                     .line {
                         position: absolute;
@@ -190,8 +191,8 @@ export default class Homebanner extends Component {
                     </div>
                     <div>
                         <img src={homeImg2} alt="homeImg2" />
-                        <div className="overlay-text">하루 10분 명상하기</div>
-                        <div className="overlay-text2">명상을 통한 새로운 시작을 함께해요</div>
+                        <div className="overlay-text">하루 한 번 일기쓰기</div>
+                        <div className="overlay-text2">매일을 기록하고 목표를 달성해보세요</div>
                         <div className="line"></div>
                         <div className="scroll-indicator">
                             <span></span>
