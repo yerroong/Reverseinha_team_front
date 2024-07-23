@@ -38,7 +38,7 @@ const Navigation = styled.nav`
     width: 100px;
     text-align: center;
     border-right: 1px solid var(--preset--color--contrast);
-    font-size: 14px;
+    font-size: 16px;
 
     &:last-child {
       border-right: unset;
@@ -71,6 +71,7 @@ const Navigation = styled.nav`
 const Header = () => {
   const location = useLocation();
   const path = location.pathname;
+
   return (
     <HeaderContainer className={path || "main"}>
       <Logo>
@@ -81,29 +82,29 @@ const Header = () => {
       <Navigation>
         <ul>
           <li>
-            <a href="/" className={path === "/" ? "active" : ""}>
+            <Link to="/" className={path === "/" ? "active" : ""}>
               홈
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/consulting" className={location.pathname.startsWith('/consulting') ? "active" : ""}>
+            <Link to="/consulting" className={path.startsWith("/consulting") ? "active" : ""}>
               상담
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/record" className={path === "/record" ? "active" : ""}>
+            <Link to="/record" className={path === "/record" ? "active" : ""}>
               기록
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/community" className={path === "/community" ? "active" : ""}>
+            <Link to="/community" className={path.startsWith("/community") ? "active" : ""}>
               커뮤니티
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/mypage" className={path === "/mypage" ? "active" : ""}>
+            <Link to="/mypage" className={path === "/mypage" ? "active" : ""}>
               마이페이지
-            </a>
+            </Link>
           </li>
         </ul>
       </Navigation>
