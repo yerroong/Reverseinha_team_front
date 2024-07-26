@@ -20,6 +20,11 @@ function NextArrow(props) {
 }
 
 export default class Homebanner extends Component {
+
+    handleImageClick = (url) => {
+        window.location.href = url;
+    };
+
     render() {
         const settings = {
             dots: true,
@@ -43,11 +48,17 @@ export default class Homebanner extends Component {
                         position: relative;
                     }
 
-                    .slick-slide img {
-                        object-fit: cover;
-                        width: 100vw; 
+                    .image-container {
+                        width: 100vw;
                         height: 46rem;
+                    }
+
+                    .image-container img {
+                        object-fit: cover;
+                        width: 100%;
+                        height: 100%;
                         filter: brightness(50%);
+                        cursor: pointer; 
                     }
 
                     .slick-dots {
@@ -179,7 +190,7 @@ export default class Homebanner extends Component {
                     
                 `}</style>
                 <Slider {...settings}>
-                    <div>
+                    <div className="image-container" onClick={() => this.handleImageClick('/consulting')}>
                         <img src={homeImg1} alt="homeImg1" />
                         <div className="overlay-text">전문가와 상담</div>
                         <div className="overlay-text2">해당 서비스는 프리미엄 서비스입니다</div>
@@ -189,7 +200,7 @@ export default class Homebanner extends Component {
                             scroll
                         </div>
                     </div>
-                    <div>
+                    <div className="image-container" onClick={() => this.handleImageClick('/record')}>
                         <img src={homeImg2} alt="homeImg2" />
                         <div className="overlay-text">하루 한 번 일기쓰기</div>
                         <div className="overlay-text2">매일을 기록하고 목표를 달성해보세요</div>
@@ -199,7 +210,7 @@ export default class Homebanner extends Component {
                             scroll
                         </div>
                     </div>
-                    <div>
+                    <div className="image-container" onClick={() => this.handleImageClick('/community')}>
                         <img src={homeImg3} alt="homeImg3" />
                         <div className="overlay-text">자립지원 프로그램</div>
                         <div className="overlay-text2">성공적인 자립을 준비해보세요</div>
