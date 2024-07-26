@@ -22,7 +22,7 @@ const Descrip = styled.p`
 `;
 
 const Qlist = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid #dadada;
   border-radius: 10px;
   background-color: #f4f4f4;
   padding: 20px;
