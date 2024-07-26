@@ -11,6 +11,8 @@ import Mypage from './pages/Mypage/Mypage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Signtest from './pages/Selftest/Signtest';
+import Retest from './pages/Extratest/Retest';
+
 const App = () => {
   return (
     <Router>
@@ -27,6 +29,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signtest" element={<Signtest />} />
+          <Route path="/retest" element={<Retest />} />
         </Routes>
       </main>
     </Router>

@@ -80,7 +80,7 @@ const ResultModal = ({ score }) => {
     `;
     const navigate = useNavigate();
     const handletextclick = () => {
-        navigate('/'); //수정필요
+        navigate('/retest'); 
     };
 
 
