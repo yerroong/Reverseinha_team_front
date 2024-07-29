@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://withinha.kro.kr/',
+    baseURL: 'http://withinha.kro.kr',
 });
 
 axiosInstance.interceptors.request.use(

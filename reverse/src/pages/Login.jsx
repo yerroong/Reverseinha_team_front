@@ -34,14 +34,14 @@ const Login = () => {
         }
 
         try {
-            const response = await axiosInstance.post('with/login/', {
-                id: id, // Ensure that 'username' is the correct field name
+            const response = await axiosInstance.post('/with/login/', {
+                id: id,
                 password: password,
             });
             const { access_token } = response.data;
-            localStorage.setItem('accessToken', access_token); // Corrected key name to 'accessToken'
+            localStorage.setItem('accessToken', access_token);
             setError('');
-            window.location.href = '/'; // Redirect to home page after successful login
+            window.location.href = '/';
         } catch (error) {
             if (error.response) {
                 setError(error.response.data.error || '로그인에 실패했습니다. 다시 시도해주세요.');
