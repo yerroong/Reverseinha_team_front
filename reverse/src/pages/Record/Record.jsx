@@ -175,13 +175,14 @@ const Record = () => {
         formData.append('file', file);
       }
 
-      const response = await fetch('백엔드 예시', {
+      const response = await fetch('/with/calendar/', {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
-        navigate('/Posting');
+        const { postId } = await response.json();
+        navigate(`/record/${postId}`);
       } else {
         console.error('포스트 등록 실패');
       }
