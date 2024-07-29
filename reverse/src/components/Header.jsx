@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useLocation, Link } from 'react-router-dom';
 import '../style.css';
@@ -71,7 +71,25 @@ const Navigation = styled.nav`
 const Header = () => {
   const location = useLocation();
   const path = location.pathname;
-  const token = localStorage.getItem('accessToken');
+  const [token, setToken] = useState(localStorage.getItem('access_token')); // 키 이름 통일
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem('access_token')); // 키 이름 통일
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    // 사용자가 로그인했는지 여부를 확인하는 추가 로직을 사용할 수 있습니다.
+    setToken(localStorage.getItem('access_token')); // 키 이름 통일
+  }, [path]);
 
   return (
     <HeaderContainer className={path || "main"}>

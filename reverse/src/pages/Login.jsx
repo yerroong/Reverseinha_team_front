@@ -1,4 +1,4 @@
-import React, { useState }  from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Jointext from '../components/Login/Jointext';
 import Loginbutton from '../components/Login/Loginbutton';
@@ -39,7 +39,7 @@ const Login = () => {
                 password: password,
             });
             const { access_token } = response.data;
-            localStorage.setItem('accessToken', access_token);
+            localStorage.setItem('access_token', access_token);
             setError('');
             window.location.href = '/';
         } catch (error) {
