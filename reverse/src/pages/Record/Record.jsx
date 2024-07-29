@@ -166,7 +166,7 @@ const Record = () => {
 
   const handleDialogConfirm = async () => {
     setIsDialogVisible(false);
-
+console.log(localStorage.getItem('access_token'));
     try {
       const formData = new FormData();
       formData.append('post_title', title);
@@ -176,7 +176,7 @@ const Record = () => {
         formData.append('file', file);
       }
 
-      const response = await axiosInstance.post('/with/calendar/', formData);
+      const response = await axiosInstance.post('/with/callendar/', formData);
 
       if (response.status === 200) {
         const { postId } = response.data;
