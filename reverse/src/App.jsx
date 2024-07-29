@@ -24,7 +24,7 @@ const App = () => {
           <Route path="/record" element={<Record />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/write" element={<Communitywrite />} />
-          <Route path="/Community/read/:id" element={<Communityread />} />
+          <Route path="/Community/:id" element={<Communityread />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

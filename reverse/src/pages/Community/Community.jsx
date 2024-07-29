@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../axiosInstance';
 import CommunitySearch from './CommunitySearch';
 import "../../components/Fonts.css";
-
-// Mock 데이터 설정을 컴포넌트 외부에서 
-const mock = new MockAdapter(axios, { delayResponse: 200 });
-const testData = [
-  { id: 1, title: '첫 번째 글', nickname: '사용자1', likes: 10, content: '첫 번째 글의 내용입니다.' },
-  { id: 2, title: '두 번째 글', nickname: '사용자2', likes: 5, content: '두 번째 글의 내용입니다.' },
-  { id: 3, title: '세 번째 글', nickname: '사용자3', likes: 20, content: '세 번째 글의 내용입니다.' },
-];
-
-mock.onGet('/api/posts').reply(200, testData);
 
 const Container = styled.div`
   height: 100%;
@@ -34,7 +23,6 @@ const CommunityContainer = styled.div`
 `;
 
 const SortContainer = styled.div`
- // border: 2px solid blue;
   height: 4rem;
   width: 100%;
   display: flex;
@@ -93,7 +81,6 @@ const DropdownItem = styled.div`
 `;
 
 const AllContentContainer = styled.div`
- // border: 2px solid blue;
   height: 25rem;
   width: 100%;
   display: flex;
@@ -101,7 +88,6 @@ const AllContentContainer = styled.div`
 `;
 
 const ContentContainer = styled(Link)`
- // border: 2px solid red;
   height: 3rem;
   width: 30rem;
   margin-left: 5rem;
@@ -122,7 +108,6 @@ const ContentIcon = styled.img`
 `;
 
 const ContentTitle = styled.div`
-  //border: 2px solid pink;
   height: 3rem;
   width: 20rem;
   max-width: 20rem;
@@ -132,13 +117,11 @@ const ContentTitle = styled.div`
 `;
 
 const ContentWriter = styled.div`
- // border: 2px solid skyblue;
   height: 3rem;
   width: 5rem;
   margin-left: 2rem;
   display: flex;
   font-size: 1rem;
-  display: flex;
   align-items: center;
 `;
 
@@ -150,9 +133,10 @@ const Community = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    axios
-      .get('/api/posts')
+    axiosInstance
+      .get('/with/community/all/')
       .then((response) => {
+        console.log('Fetched posts:', response.data); // 데이터 확인을 위한 로그 추가
         const sortedData = response.data.sort((a, b) => b.id - a.id); // 초기 데이터 최신순 정렬
         setPosts(sortedData);
         setFilteredPosts(sortedData); // 처음에는 필터링된 게시글이 전체 게시글로 설정
@@ -161,6 +145,7 @@ const Community = () => {
         console.error('Error fetching posts:', error);
       });
   }, []);
+  
 
   useEffect(() => {
     // 검색어에 따라 게시글 필터링
@@ -209,7 +194,7 @@ const Community = () => {
         </SortContainer>
         <AllContentContainer>
           {filteredPosts.map((post) => (
-            <ContentContainer key={post.id} to={`/Communityread/${post.id}`}>
+            <ContentContainer key={post.id} to={`/Community/${post.id}`}>
               <ContentIcon src="/community.png" />
               <ContentTitle>{post.title}</ContentTitle>
               <ContentWriter>{post.nickname}</ContentWriter>
@@ -222,6 +207,7 @@ const Community = () => {
 };
 
 export default Community;
+
 
 
 
