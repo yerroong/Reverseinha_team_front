@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import axiosInstance from '../axiosInstance';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -175,13 +176,10 @@ const Record = () => {
         formData.append('file', file);
       }
 
-      const response = await fetch('/with/calendar/', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await axiosInstance.post('/with/calendar/', formData);
 
-      if (response.ok) {
-        const { postId } = await response.json();
+      if (response.status === 200) {
+        const { postId } = response.data;
         navigate(`/record/${postId}`);
       } else {
         console.error('포스트 등록 실패');

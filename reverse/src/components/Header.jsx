@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import { useLocation, Link } from "react-router-dom";
+import React from 'react';
+import styled from 'styled-components';
+import { useLocation, Link } from 'react-router-dom';
 import '../style.css';
 import './Fonts.css';
 
@@ -71,6 +71,8 @@ const Navigation = styled.nav`
 const Header = () => {
   const location = useLocation();
   const path = location.pathname;
+  const token = localStorage.getItem('accessToken');
+
   return (
     <HeaderContainer className={path || "main"}>
       <Logo>
@@ -81,29 +83,29 @@ const Header = () => {
       <Navigation>
         <ul>
           <li>
-            <a href="/" className={path === "/" ? "active" : ""}>
+            <Link to="/" className={path === "/" ? "active" : ""}>
               홈
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/consulting" className={location.pathname.startsWith('/consulting') ? "active" : ""}>
+            <Link to="/consulting" className={location.pathname.startsWith('/consulting') ? "active" : ""}>
               상담
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/record" className={path === "/record" ? "active" : ""}>
+            <Link to="/record" className={path === "/record" ? "active" : ""}>
               기록
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/community" className={path === "/community" ? "active" : ""}>
+            <Link to="/community" className={path === "/community" ? "active" : ""}>
               커뮤니티
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/mypage" className={path === "/mypage" ? "active" : ""}>
-              마이페이지
-            </a>
+            <Link to={token ? "/mypage" : "/login"} className={path === "/mypage" || path === "/login" ? "active" : ""}>
+              {token ? "마이페이지" : "로그인"}
+            </Link>
           </li>
         </ul>
       </Navigation>
