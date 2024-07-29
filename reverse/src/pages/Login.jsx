@@ -43,11 +43,11 @@ const Login = () => {
             setError('');
             window.location.href = '/';
         } catch (error) {
-            if (error.response) {
-                setError(error.response.data.error || '로그인에 실패했습니다. 다시 시도해주세요.');
-            } else {
-                setError('로그인에 실패했습니다. 다시 시도해주세요.');
+            let errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.error || errorMessage;
             }
+            setError(errorMessage);
             console.error('Login error:', error.response || error);
         }
     };
