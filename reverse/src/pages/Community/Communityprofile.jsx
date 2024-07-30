@@ -1,6 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+  return new Intl.DateTimeFormat('ko-KR', options).format(date);
+};
+
 const HeadContainer = styled.div`
   border-bottom: 0.063rem solid #BBBBBB;
   width: 66rem;
@@ -12,14 +18,13 @@ const HeadContainer = styled.div`
 `;
 
 const ProfileContainer = styled.div`
- // border: 2px solid pink;
   height: 5rem;
   margin-top: 1rem;
   display: flex;
   align-items: center;
 `;
+
 const EditContainer = styled.div`
-//  border: 2px solid pink;
   width: 3.9rem;
   height: 5rem;
   margin-top: 1rem;
@@ -35,25 +40,29 @@ const ProfileImg = styled.img`
   width: 3rem;
   display: flex;
 `;
+
 const ProfileInfoContainer = styled.div`
- // border: 2px solid black;
-  width: 10rem;
+  margin-left: 1rem;
   display: flex;
   flex-direction: column;
 `;
+
 const ProfileTitle = styled.div`
- // border: 2px solid red;
-  display: flex;
-  flex-direction: column;
   font-size: 1.2rem;
 `;
+
 const ProfileInfo = styled.div`
- // border: 2px solid red;
- margin-top:0.25rem;
+  margin-top: 0.25rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   font-size: 0.7rem;
 `;
+
+const InfoName = styled.div`
+  margin-right: 2rem;
+`;
+
+const InfoDate = styled.div``;
 
 const Communityprofile = ({ post }) => {
   return (
@@ -63,8 +72,8 @@ const Communityprofile = ({ post }) => {
         <ProfileInfoContainer>
           <ProfileTitle>{post.title}</ProfileTitle>
           <ProfileInfo>
-            <div>{post.nickname}</div>
-            <div>{new Date().toLocaleDateString()}</div>
+            <InfoName>{post.author_name}</InfoName>
+            <InfoDate>{formatDate(post.created_at)}</InfoDate>
           </ProfileInfo>
         </ProfileInfoContainer>
       </ProfileContainer>

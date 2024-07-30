@@ -3,6 +3,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import axiosInstance from '../axiosInstance';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -100,7 +101,7 @@ const DialogTitle = styled.h2`
 const DialogButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.25rem; // 20px to rem
+  margin-top: 1.25rem;
 `;
 
 const DialogButton = styled(Button)`
@@ -158,12 +159,16 @@ const Communitywrite = () => {
         formData.append('file', file);
       }
 
-      const response = await fetch('백엔드 예시', {
-        method: 'POST',
-        body: formData,
+      const token = localStorage.getItem('access_token');
+      console.log('Access Token:', token);
+
+      const response = await axiosInstance.post('with/community/', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         navigate('/Posting');
       } else {
         console.error('포스트 등록 실패');
@@ -227,6 +232,7 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
+
 
 //제목 테두리삭제
 //등록완료시에 posting으로 이동하는게아니라 각각의 게시물 id어쩌구..
