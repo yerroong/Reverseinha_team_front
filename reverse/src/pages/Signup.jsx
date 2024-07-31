@@ -92,6 +92,7 @@ const Signup = () => {
   const [formValues, setFormValues] = useState({
     id: '',
     username: '',
+    nickname: '',
     email: '',
     birth_date: '',
     gender: '',
@@ -114,9 +115,9 @@ const Signup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const { id, username, email, birth_date, gender, phone_number, password, confirmPassword } = formValues;
+    const { id, username, nickname, email, birth_date, gender, phone_number, password, confirmPassword } = formValues;
 
-    if (!id || !username || !email || !birth_date || !gender || !phone_number || !password || !confirmPassword) {
+    if (!id || !username || !nickname || !email || !birth_date || !gender || !phone_number || !password || !confirmPassword) {
       setErrors({ ...errors, emptyFields: true });
       return;
     } else {
@@ -134,6 +135,7 @@ const Signup = () => {
       const response = await axiosInstance.post('/with/signup/', {
         id: id,
         username: username,
+        nickname: nickname,
         email: email,
         birth_date: birth_date,
         gender: gender,
@@ -191,6 +193,14 @@ const Signup = () => {
             name="username"
             placeholder="사용자 이름"
             value={formValues.username}
+            onChange={handleChange}
+          />
+          <Label>닉네임</Label>
+          <FullWidthInput
+            type="text"
+            name="nickname"
+            placeholder="닉네임"
+            value={formValues.nickname}
             onChange={handleChange}
           />
           <Label>이메일</Label>
