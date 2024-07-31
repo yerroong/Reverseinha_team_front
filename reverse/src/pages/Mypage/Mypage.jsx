@@ -29,8 +29,8 @@ const InfoContainerRow = styled.div`
 
 const InfoBox = styled.div`
   border: 0.063rem solid #BABABA;
-  width: ${({ width }) => width || '20.813rem'};
-  height: 21.563rem;
+  width: ${({ width }) => width || '20rem'};
+  height: 18.5rem;
   margin: 1.688rem;
   border-radius: 1.875rem;
   display: flex;
@@ -41,7 +41,7 @@ const InfoBox = styled.div`
 `;
 
 const InfoTitle = styled.div`
-  font-size: 1.875rem;
+  font-size: 1.7rem;
   margin-bottom:1rem;
 `;
 
@@ -62,15 +62,18 @@ const Line = styled.img`
 
 const InfoScoreColored = styled.div`
   font-size: 5.625rem;
+  font-weight: 500;
   color: ${({ score }) => {
     if (score <= 30) return 'green';
-    if (score <= 60) return 'orange';
-    return '#BE0000';
+    if (score >= 40) return 'orange';
+    if (score >= 70) return 'red';
+    return 'black';
   }};
 `;
 
 const InfoScore = styled.div`
   font-size: 5.625rem;
+  font-weight: 500;
   color: black;
 `;
 
@@ -88,7 +91,7 @@ const InfoList = styled.div`
 
 const ListContainer = styled.div`
   display: flex;
-  height: 16rem;
+  height: 14rem;
   width: 48.5rem;
   max-height: 16rem;
 `;
@@ -162,8 +165,11 @@ const Mypage = () => {
   useEffect(() => {
     const fetchScore = async () => {
       try {
-        const response = await axios.get('/api/score');
-        setScore(response.data.score);
+        const response = await axios.get('with/signup/survey/');
+        const answers = response.data.answers;
+        // true 1개 당 10점으로 환산
+        const calculatedScore = answers.filter(answer => answer).length * 10;
+        setScore(calculatedScore);
       } catch (error) {
         console.error('Error fetching score:', error);
       }
@@ -203,7 +209,7 @@ const Mypage = () => {
   }, []);
 
   useEffect(() => {
-    setScore(45);
+    setScore(0);
     setDiaryEntries([
       { date: '24.07.21', title: '첫 번째 일기' },
       { date: '24.07.22', title: '두 번째 일기' },
@@ -246,7 +252,7 @@ const Mypage = () => {
     }
   };
 
-  // 추가된 함수: 재검사 버튼 클릭시 호출되는 함수
+  // 재검사 버튼
   const handleRetest = () => {
     navigate('/signtest');
   };
@@ -256,13 +262,13 @@ const Mypage = () => {
       <Profile />
       <InfoContainer>
         <InfoContainerRow>
-          <InfoBox width="17.813rem" center>
+          <InfoBox width="17rem" center>
             <InfoTitle>나의 고립점수는?</InfoTitle>
             <Line src="/line.png" />
             <InfoScoreColored score={score}>{score}점</InfoScoreColored>
             <ProfileLogoutButton onClick={handleRetest}>재검사</ProfileLogoutButton>
           </InfoBox>
-          <InfoBox width="22.563rem" center>
+          <InfoBox width="20rem" center>
             <LineContainer>
               <InfoTitle>일기목록</InfoTitle>
               <Line src="/line.png" />
@@ -278,7 +284,7 @@ const Mypage = () => {
             </ScrollButtonContainer>
             <ProfileLogoutButton onClick={() => navigate('/record')}>더보기</ProfileLogoutButton>
           </InfoBox>
-          <InfoBox width="22.563rem" center>
+          <InfoBox width="20rem" center>
             <LineContainer>
               <InfoTitle>상담목록</InfoTitle>
               <Line src="/line.png" />
@@ -295,17 +301,17 @@ const Mypage = () => {
           </InfoBox>
         </InfoContainerRow>
         <InfoContainerRow>
-          <InfoBox width="17.813rem" center>
+          <InfoBox width="17rem" center>
             <InfoTitle>역대 목표 달성률</InfoTitle>
             <Line src="/line.png" />
             <InfoScore>70%</InfoScore>
           </InfoBox>
-          <InfoBox width="48.5rem" flexDirection="row" center={false}>
+          <InfoBox width="43.5rem" flexDirection="row" center={false}>
             <Margin>
               <ScrollButtonContainer>
                 <ScrollButton src="/uparrow.png" onClick={() => handleScroll(goalListRef, 'up')} />
                 <ListContainer>
-                  <InfoList height="14.5rem" maxHeight="14.5rem" isGoal={true} ref={goalListRef}>
+                  <InfoList height="13rem" maxHeight="13rem" isGoal={true} ref={goalListRef}>
                     {goals.map((goal, index) => (
                       <CheckContainer key={index}>
                         <Check /> {goal}
@@ -330,9 +336,3 @@ export default Mypage;
 //아이디 받아오기
 //로그아웃버튼 활성화
 //폰트
-//재검사버튼 활성화
-
-
-//나중에 가능하면 웹페이지 축소시에 요소들은 그대로있고 창만 쫄아들게하면좋을듯
-//네모들이 넘 큰거같앵;;
-//헤더 고정되면 좋을듯

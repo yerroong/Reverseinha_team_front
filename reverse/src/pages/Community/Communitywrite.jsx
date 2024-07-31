@@ -144,6 +144,13 @@ const Communitywrite = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // 필수 필드 검증
+    if (!title.trim() || !content.trim()) {
+      alert('제목과 내용을 모두 입력해 주세요.');
+      return;
+    }
+
     setIsDialogVisible(true);
   };
 
@@ -161,6 +168,7 @@ const Communitywrite = () => {
 
       const token = localStorage.getItem('access_token');
       console.log('Access Token:', token);
+      console.log('FormData:', Array.from(formData.entries())); // 디버깅용: 전송되는 FormData 확인
 
       const response = await axiosInstance.post('with/community/', formData, {
         headers: {
@@ -168,13 +176,15 @@ const Communitywrite = () => {
         },
       });
 
+      console.log('Response:', response);
+      
       if (response.status === 200) {
         navigate('/Posting');
       } else {
-        console.error('포스트 등록 실패');
+        console.error('포스트 등록 실패:', response.data);
       }
     } catch (error) {
-      console.error('포스트 등록 에러:', error);
+      console.error('포스트 등록 에러:', error.response ? error.response.data : error);
     }
   };
 
@@ -232,6 +242,7 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
+
 
 
 //제목 테두리삭제

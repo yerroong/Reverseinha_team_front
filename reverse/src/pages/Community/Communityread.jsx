@@ -195,7 +195,7 @@ const Communityread = () => {
       });
 
     axiosInstance
-      .get(`/with/community/${id}/comment/`)
+      .get(`/with/community/${id}/comments/all`)
       .then((response) => {
         setComments(response.data);
       })
@@ -220,9 +220,11 @@ const Communityread = () => {
   const handleCommentSubmit = (e) => {
     if (e.key === "Enter" && comment.trim()) {
       const newComment = {
-        content: comment,
+        content: comment.trim(),
+        post: id,  // 댓글이 작성될 게시물의 ID
+        author: id //아이디어떻게가져오는건데;;
       };
-
+  
       axiosInstance
         .post(`/with/community/${id}/comment/`, newComment)
         .then((response) => {
@@ -230,10 +232,13 @@ const Communityread = () => {
           setComment("");
         })
         .catch((error) => {
-          console.error('Error posting comment:', error);
+          console.error('Error posting comment:', error.response ? error.response.data : error.message);
         });
     }
   };
+  
+
+  
 
   const handleEditComment = (commentId) => {
     const newContent = prompt('수정할 내용을 입력하세요:');
