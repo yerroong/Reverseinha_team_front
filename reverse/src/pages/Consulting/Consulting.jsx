@@ -1,4 +1,3 @@
-//유형검색은 안됨 아직
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
@@ -161,9 +160,16 @@ const TextArea = styled.textarea`
 `;
 
 const Button = styled.button`
-  margin: 1rem 0.5rem 0 0.5rem;
-  padding: 0.5rem 1rem;
   cursor: pointer;
+  background-color: #007BFF;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  margin-top: 0.75rem;
+  border: 1px solid #B0B0B0;
+  border-radius: 12px;
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 const WarningText = styled.p`
@@ -220,6 +226,7 @@ const consultingData = [
 
 const Consulting = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [loginPromptIsOpen, setLoginPromptIsOpen] = useState(false);
   const [filters, setFilters] = useState({
     free: false,
     premium: false,
@@ -234,15 +241,28 @@ const Consulting = () => {
     setModalIsOpen(false);
   };
 
+  const handleLoginConfirm = () => {
+    setLoginPromptIsOpen(false);
+    window.location.href = '/login';
+  };
+
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
+  };
+
+  const handlePriceClick = () => {
+    if (!localStorage.getItem('access_token')) {
+      setLoginPromptIsOpen(true);
+    } else {
+      openModal();
+    }
   };
 
   const filteredData = consultingData.filter((consultant) => {
     const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
     const matchesPremium = filters.premium ? consultant.prices.message !== '무료' : true;
     const matchesSearchTerm = consultant.title.includes(filters.searchTerm) || consultant.description.includes(filters.searchTerm);
-    
+
     return matchesFree && matchesPremium && matchesSearchTerm;
   });
 
@@ -269,20 +289,20 @@ const Consulting = () => {
                 </ResultDetails>
               </ResultContent>
               <Prices>
-                <Price onClick={openModal}>
+                <Price onClick={handlePriceClick}>
                   <MessageIconWrapper>
                     <PriceIcon src="/message.png" />
                   </MessageIconWrapper>
                   <PriceText>{consultant.prices.message}</PriceText>
                 </Price>
-                <Price onClick={openModal}>
+                <Price onClick={handlePriceClick}>
                   <CallIconWrapper>
                     <PriceIcon src="/call.png" />
                   </CallIconWrapper>
                   <PriceText>{consultant.prices.call}</PriceText>
                 </Price>
                 {consultant.prices.site === '문의하기' ? (
-                  <Price onClick={openModal}>
+                  <Price onClick={handlePriceClick}>
                     <LocationIconWrapper>
                       <PriceIcon src="/location.png" />
                     </LocationIconWrapper>
@@ -325,6 +345,17 @@ const Consulting = () => {
             <Button>신청</Button>
           </div>
         </ModalForm>
+      </Modal>
+      <Modal
+        isOpen={loginPromptIsOpen}
+        onRequestClose={() => setLoginPromptIsOpen(false)}
+        style={customStyles}
+        contentLabel="Login Prompt"
+      >
+        <h2>로그인 필요</h2>
+        <Separator />
+        <p>서비스를 이용하시려면 로그인이 필요합니다.</p>
+        <Button onClick={handleLoginConfirm}>확인</Button>
       </Modal>
     </ConsultingContainer>
   );
