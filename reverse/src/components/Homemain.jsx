@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {useNavigate } from 'react-router-dom';
 import '../components/Fonts.css';
+import { useEffect, useState } from 'react';
 
 const Container = styled.div`
   text-align: center;
@@ -52,12 +53,28 @@ const Footer = styled.footer`
   }
 `;
 
-//바로 시작하기 버튼 클릭시 페이지 이동 
+//로그인 후 바로 시작하기 버튼 클릭 시 마이페이지로 이동
 const Homemain = () => {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+      const checkLoginStatus = () => {
+        const token = localStorage.getItem('access_token'); 
+        if (token) {
+          setIsLoggedIn(true);
+        }
+      };
+
+      checkLoginStatus();
+    }, []);
   
     const handleStartClick = () => {
-      navigate('/login'); //추후 수정 필요
+      if (isLoggedIn) {
+        navigate('/mypage');
+      } else {
+        navigate('/login');
+      }
     };
     
     return (
