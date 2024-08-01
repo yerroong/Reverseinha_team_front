@@ -95,7 +95,7 @@ const ResultModal = ({ score }) => {
           다른 테스트도 궁금하다면? <Link onClick={handletextclick}>다른 테스트 구경가기</Link>
 
         </Message>
-        <Linkbutton href="#">맞춤서비스 확인하기</Linkbutton>
+        <Linkbutton href="/record">일기 작성하러 가기</Linkbutton>
         <Footer>긴급전화: 사회적 고립가구 지원센터 전화번호(02-6353-0200)</Footer>
       </Modal>
     </Modalbackground>
