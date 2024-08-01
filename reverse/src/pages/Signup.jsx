@@ -14,12 +14,13 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 1.5rem;
   margin-bottom: 1.25rem;
+  margin-top: 5rem;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  width: 18.75rem; /* 300px */
+  width: 18.75rem; 
 `;
 
 const SelectField = styled.select`
@@ -132,7 +133,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axiosInstance.post('/with/signup/', {
+      const signUpResponse = await axiosInstance.post('/with/signup/', {
         id: id,
         username: username,
         nickname: nickname,
@@ -144,11 +145,24 @@ const Signup = () => {
         password_confirm: confirmPassword,
       });
 
-      if (response.status !== 201) {
+      if (signUpResponse.status !== 201) {
         throw new Error('Network response was not ok');
       }
 
-      navigate('/signtest');
+      const loginResponse = await axiosInstance.post('/with/login/', {
+        id: id,
+        password: password,
+      });
+
+      //자동 로그인
+      if (loginResponse.status === 200) {
+        const { access_token } = loginResponse.data;
+        localStorage.setItem('access_token', access_token);
+        navigate('/signtest');
+
+      } else {
+        throw new Error('Login response was not ok');
+      }
     } catch (error) {
       console.error('회원가입 요청에 문제가 발생했습니다:', error.response || error);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');
