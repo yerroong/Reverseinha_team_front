@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Question from './Question';
 import Resultmodal from './Resultmodal';
+import axiosInstance from '../axiosInstance';
+import { useEffect } from 'react';
+import {jwtDecode} from 'jwt-decode';
+
+//axios 연결 
 
 const Container = styled.div`
   padding: 20px;
@@ -84,20 +89,81 @@ const Signtest = () => {
     "만성관리 질병이 있는 경우 (암, 알콜중독, 빈혈, 폐렴, 당뇨, 신장질환)"
   ];
 
+  //전체 false로 초기화
   const [selectedCount, setSelectedCount] = useState(Array(questions.length).fill(false));
+
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
+  const [user, setUser] = useState('');
 
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          throw new Error('Token expired');
+        }
+        setUser(decodedToken.user_id);
+     } catch (error) {
+        console.error('Invalid token:', error);
+        alert('토큰이 유효하지 않습니다. 다시 로그인 해주세요.');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('user:', user);
+  }, [user]);
+
+  //변경값에 따라 True, False로 변경
   const handleCheckboxChange = (index) => {
     const newSelectedCount = [...selectedCount];
     newSelectedCount[index] = !newSelectedCount[index];
     setSelectedCount(newSelectedCount);
   };
 
-  const calculateScore = () => {
+  const calculateScore = async () => {
     const totalScore = selectedCount.filter(selected => selected).length * 10;
     setScore(totalScore);
     setShowResult(true);
+
+    //T/F 배열 surveyData로 변환
+    const answers = selectedCount.map(selected => selected);
+
+    const surveyData = {
+      user: user,
+      answer1: answers[0],
+      answer2: answers[1],
+      answer3: answers[2],
+      answer4: answers[3],
+      answer5: answers[4],
+      answer6: answers[5],
+      answer7: answers[6],
+      answer8: answers[7],
+      answer9: answers[8],
+      answer10: answers[9],
+      score: totalScore
+    };
+    //post data 확인
+    console.log('Survey Data:', surveyData);
+
+    //제출
+    try {
+      const response = await axiosInstance.post('/with/signup/survey/', surveyData);
+      console.log('API Response:', response);
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Survey submitted successfully:', response.data);
+    } catch (error) {
+      console.error('제출 실패:', error.response || error);
+      if (error.response && error.response.data) {
+        console.error('Error details:', error.response.data);
+      }
+      alert('설문 제출에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -112,7 +178,7 @@ const Signtest = () => {
         <Category>실패, 상실감 누적 (1)</Category>
         <Qstyle>
           <Question
-          question="최근 10년간 일과 관계(이별, 배신, 폭력, 실패, 노숙)에서 실직에 상실 경험 횟수는? (2회 이상 체크)"
+          question={questions[0]}
           index={0}
           onChange={handleCheckboxChange}
         />
@@ -122,21 +188,21 @@ const Signtest = () => {
         <Category>고립적 일상 (3)</Category>
         <Qstyle>
           <Question
-          question="지난 1주일 평균 하루 식사 횟수는? (1회 이하 체크)"
+          question={questions[1]}
           index={1}
           onChange={handleCheckboxChange}
         />
         </Qstyle>
         <Qstyle>
           <Question
-          question="지난 1주일 동안 외출 횟수는? (1회 이하 체크)"
+          question={questions[2]}
           index={2}
           onChange={handleCheckboxChange}
         />
         </Qstyle>
         <Qstyle>
           <Question
-          question="지난 1주일 동안 필름이 끊길 정도(Blackout)로 문제가 술 마신 횟수는? (1회 이상 체크)"
+          question={questions[3]}
           index={3}
           onChange={handleCheckboxChange}
         />
@@ -145,21 +211,21 @@ const Signtest = () => {
         <Category>사회적 일상 (3)</Category>
         <Qstyle>
           <Question
-          question="돈이 필요할 때 빌려 줄 사람이 몇 명 있는가? (없으면 체크)"
+          question={questions[4]}
           index={4}
           onChange={handleCheckboxChange}
         />
         </Qstyle>
         <Qstyle>
           <Question
-          question="몸이 아플 때 돌봐줄 사람이 몇 명 있는가? (없으면 체크)"
+          question={questions[5]}
           index={5}
           onChange={handleCheckboxChange}
         />
         </Qstyle>
         <Qstyle>
           <Question
-          question="마음이 울적할 때 대화 나눌 사람이 몇 명 있는가? (없으면 체크)"
+          question={questions[6]}
           index={6}
           onChange={handleCheckboxChange}
         />
@@ -168,7 +234,7 @@ const Signtest = () => {
         <Category>이동성 높은 생애 (1)</Category>
         <Qstyle>
           <Question
-          question="지난 10년간 이사 10회 이상 또는 거주지 미상인 경우 등 (해당되면 체크)"
+          question={questions[7]}
           index={7}
           onChange={handleCheckboxChange}
         />
@@ -177,14 +243,14 @@ const Signtest = () => {
         <Category>건강과 돌봄 (2)</Category>
         <Qstyle>
           <Question
-          question="이용하던 돌봄서비스와 치료 중단(퇴원) 또는 서비스 이용이 없는 경우 (해당되면 체크)"
+          question={questions[8]}
           index={8}
           onChange={handleCheckboxChange}
         />
         </Qstyle>
         <Qstyle>
           <Question
-          question="만성관리 질병이 있는 경우 (암, 알콜중독, 빈혈, 폐렴, 당뇨, 신장질환)"
+          question={questions[9]}
           index={9}
           onChange={handleCheckboxChange}
         />
