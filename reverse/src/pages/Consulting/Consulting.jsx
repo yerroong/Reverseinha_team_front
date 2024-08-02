@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
 import Modal from 'react-modal';
+import axiosInstance from '../axiosInstance';
 import '../../components/Fonts.css';
 
 const ConsultingContainer = styled.div`
@@ -232,6 +233,14 @@ const Consulting = () => {
     premium: false,
     searchTerm: '',
   });
+  const [form, setForm] = useState({
+    username: '',
+    age: '',
+    available_time: '',
+    reason: '',
+  });
+
+  const [successMessage, setSuccessMessage] = useState('');
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -239,6 +248,7 @@ const Consulting = () => {
 
   const closeModal = () => {
     setModalIsOpen(false);
+    setSuccessMessage('');
   };
 
   const handleLoginConfirm = () => {
@@ -255,6 +265,30 @@ const Consulting = () => {
       setLoginPromptIsOpen(true);
     } else {
       openModal();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axiosInstance.post('/with/consulting/', form);
+      console.log('Form submitted successfully:', response.data);
+      setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
+      setForm({
+        username: '',
+        age: '',
+        available_time: '',
+        reason: '',
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
     }
   };
 
@@ -278,84 +312,95 @@ const Consulting = () => {
               <ResultContent>
                 <ResultImage src={consultant.imgSrc} alt={consultant.title} />
                 <ResultDetails>
-                  <ResultTitle>
-                    {consultant.title} <Highlight>{consultant.type}</Highlight>
-                  </ResultTitle>
-                  <ResultDescription>
-                    {consultant.description.split(' ').slice(0, 3).join(' ')}
-                    <br />
-                    {consultant.description.split(' ').slice(3).join(' ')}
-                  </ResultDescription>
+                  <ResultTitle>{consultant.title}</ResultTitle>
+                  <Highlight>{consultant.type}</Highlight>
+                  <ResultDescription>{consultant.description}</ResultDescription>
                 </ResultDetails>
               </ResultContent>
               <Prices>
                 <Price onClick={handlePriceClick}>
                   <MessageIconWrapper>
-                    <PriceIcon src="/message.png" />
+                    <PriceIcon src="/message.png" alt="Message" />
                   </MessageIconWrapper>
-                  <PriceText>{consultant.prices.message}</PriceText>
+                  <PriceText>문자상담: {consultant.prices.message}</PriceText>
                 </Price>
                 <Price onClick={handlePriceClick}>
                   <CallIconWrapper>
-                    <PriceIcon src="/call.png" />
+                    <PriceIcon src="/call.png" alt="Call" />
                   </CallIconWrapper>
-                  <PriceText>{consultant.prices.call}</PriceText>
+                  <PriceText>전화상담: {consultant.prices.call}</PriceText>
                 </Price>
-                {consultant.prices.site === '문의하기' ? (
-                  <Price onClick={handlePriceClick}>
-                    <LocationIconWrapper>
-                      <PriceIcon src="/location.png" />
-                    </LocationIconWrapper>
-                    <PriceText>{consultant.prices.site}</PriceText>
-                  </Price>
-                ) : (
-                  <SitePrice>
-                    <LocationIconWrapper>
-                      <PriceIcon src="/location.png" />
-                    </LocationIconWrapper>
-                    <PriceText>{consultant.prices.site}</PriceText>
-                  </SitePrice>
-                )}
+                <Price onClick={handlePriceClick}>
+                  <LocationIconWrapper>
+                    <PriceIcon src="/location.png" alt="Location" />
+                  </LocationIconWrapper>
+                  <PriceText>현장상담: {consultant.prices.site}</PriceText>
+                </Price>
               </Prices>
             </ResultItem>
           ))}
         </Result>
       </ResultSide>
+
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
+        contentLabel="상담 신청"
+        ariaHideApp={false} // 이 부분을 추가합니다.
         style={customStyles}
-        contentLabel="Application Form"
       >
-        <h2>신청</h2>
-        <Separator />
         <ModalForm>
-          <Input type="text" placeholder="이름" />
-          <Input type="text" placeholder="나이" />
-          <Input type="text" placeholder="전화번호" />
-          <Input type="text" placeholder="가능한 시간대" />
-          <TextArea placeholder="신청 사유" />
+          <h2>상담 신청</h2>
+          <Input
+            type="text"
+            name="username"
+            placeholder="이름"
+            value={form.username}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="number"
+            name="age"
+            placeholder="나이"
+            value={form.age}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="datetime-local"
+            name="available_time"
+            placeholder="가능한 시간"
+            value={form.available_time}
+            onChange={handleInputChange}
+          />
+          <TextArea
+            name="reason"
+            placeholder="상담 이유"
+            value={form.reason}
+            onChange={handleInputChange}
+          />
           <WarningText>
-            신청된 정보는 상담사에게 전달됩니다. 상담 시간 및 신청 조율은 개인 문자 확인바랍니다.
-            <br />
-            상담 사유가 적절하다고 판단하지 않을시 신청이 취소될 수 있습니다.
+            무료/유료 서비스에 대한 상담 예약을 위해 위 정보를 정확히 기입해주세요.
           </WarningText>
-          <div>
-            <Button onClick={closeModal}>취소</Button>
-            <Button>신청</Button>
-          </div>
+          <Button onClick={handleSubmit}>신청</Button>
+          {successMessage && (
+            <>
+              <Separator />
+              <p>{successMessage}</p>
+            </>
+          )}
         </ModalForm>
       </Modal>
+
       <Modal
         isOpen={loginPromptIsOpen}
         onRequestClose={() => setLoginPromptIsOpen(false)}
+        contentLabel="로그인 필요"
+        ariaHideApp={false} // 이 부분을 추가합니다.
         style={customStyles}
-        contentLabel="Login Prompt"
       >
-        <h2>로그인 필요</h2>
-        <Separator />
-        <p>서비스를 이용하시려면 로그인이 필요합니다.</p>
-        <Button onClick={handleLoginConfirm}>확인</Button>
+        <h2>로그인이 필요합니다</h2>
+        <p>상담 신청을 위해 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?</p>
+        <Button onClick={handleLoginConfirm}>로그인 하러가기</Button>
       </Modal>
     </ConsultingContainer>
   );
