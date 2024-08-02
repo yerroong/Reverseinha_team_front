@@ -291,6 +291,7 @@ const Consulting = () => {
       console.error('Error submitting form:', error);
     }
   };
+  
 
   const filteredData = consultingData.filter((consultant) => {
     const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
