@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // useNavigate 가져오기
+import { useNavigate } from 'react-router-dom';
 import Profile from './Profile';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // axiosInstance 가져오기
 
 const Container = styled.div`
   width: 100%;
@@ -160,14 +160,13 @@ const Mypage = () => {
   const diaryListRef = useRef(null);
   const counselListRef = useRef(null);
   const goalListRef = useRef(null);
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchScore = async () => {
       try {
-        const response = await axios.get('with/signup/survey/');
+        const response = await axiosInstance.get('/with/signup/survey/');
         const answers = response.data.answers;
-        // true 1개 당 10점으로 환산
         const calculatedScore = answers.filter(answer => answer).length * 10;
         setScore(calculatedScore);
       } catch (error) {
@@ -177,7 +176,7 @@ const Mypage = () => {
 
     const fetchDiaryEntries = async () => {
       try {
-        const response = await axios.get('/api/diary');
+        const response = await axiosInstance.get('/api/diary');
         setDiaryEntries(response.data.entries);
       } catch (error) {
         console.error('Error fetching diary entries:', error);
@@ -186,60 +185,40 @@ const Mypage = () => {
 
     const fetchCounselEntries = async () => {
       try {
-        const response = await axios.get('/api/counsel');
+        const response = await axiosInstance.get('/api/counsel');
         setCounselEntries(response.data.entries);
       } catch (error) {
         console.error('Error fetching counsel entries:', error);
       }
     };
 
-    const fetchGoals = async () => {
+    const fetchGoalAndDiary = async (date) => {
       try {
-        const response = await axios.get('/api/goals');
-        setGoals(response.data.goals);
+        const response = await axiosInstance.get(`/with/callendar/goal_diary/?date=${date}`);
+        console.log('전체정보:',response.data);
+        console.log('목표:', response.data.goal.text);
+        console.log('일기:', response.data.diary_entry.title);
+        return {
+          goal: response.data.goal.text,
+          diaryEntry: response.data.diary_entry.title
+        };
       } catch (error) {
-        console.error('Error fetching goals:', error);
+        console.error('Error fetching goal and diary for date:', error);
+        return { goal: '', diaryEntry: '' };
       }
+    };
+    
+    const fetchGoalAndDiaryForToday = async () => {
+      const date = '2024-08-02'; // 사용할 날짜
+      const data = await fetchGoalAndDiary(date);
+      setGoals([data.goal]);
+      setDiaryEntries([data.diaryEntry]);
     };
 
     fetchScore();
     fetchDiaryEntries();
     fetchCounselEntries();
-    fetchGoals();
-  }, []);
-
-  useEffect(() => {
-    setScore(0);
-    setDiaryEntries([
-      { date: '24.07.21', title: '첫 번째 일기' },
-      { date: '24.07.22', title: '두 번째 일기' },
-      { date: '24.07.23', title: '세 번째 일기' },
-    ]);
-    setCounselEntries([
-      { date: '24.07.21', title: '첫 번째 상담' },
-      { date: '24.07.22', title: '두 번째 상담' },
-      { date: '24.07.23', title: '세 번째 상담' },
-      { date: '24.07.21', title: '첫 번째 상담' },
-      { date: '24.07.22', title: '두 번째 상담' },
-      { date: '24.07.23', title: '세 번째 상담' },
-      { date: '24.07.21', title: '첫 번째 상담' },
-      { date: '24.07.22', title: '두 번째 상담' },
-      { date: '24.07.23', title: '세 번째 상담' },
-    ]);
-    setGoals([
-      '아침 먹기',
-      '운동하기',
-      '독서하기',
-      '코딩하기',
-      '아침 먹기',
-      '운동하기',
-      '독서하기',
-      '코딩하기',
-      '아침 먹기',
-      '운동하기',
-      '독서하기',
-      '코딩하기'
-    ]);
+    fetchGoalAndDiaryForToday();
   }, []);
 
   const handleScroll = (ref, direction) => {
@@ -252,7 +231,6 @@ const Mypage = () => {
     }
   };
 
-  // 재검사 버튼
   const handleRetest = () => {
     navigate('/signtest');
   };
@@ -277,7 +255,7 @@ const Mypage = () => {
               <ScrollButton src="/uparrow.png" onClick={() => handleScroll(diaryListRef, 'up')} />
               <InfoList height="6.5rem" maxHeight="6.5rem" ref={diaryListRef} center>
                 {diaryEntries.map((entry, index) => (
-                  <CheckContainer key={index}>{entry.date} {entry.title}</CheckContainer>
+                  <CheckContainer key={index}>{entry}</CheckContainer>
                 ))}
               </InfoList>
               <ScrollButton src="/underarrow.png" onClick={() => handleScroll(diaryListRef, 'down')} />
@@ -330,6 +308,9 @@ const Mypage = () => {
 };
 
 export default Mypage;
+
+
+
 
 
 
