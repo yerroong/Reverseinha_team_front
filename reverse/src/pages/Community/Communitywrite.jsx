@@ -160,7 +160,10 @@ const Communitywrite = () => {
     try {
       const formData = new FormData();
       formData.append('title', title);
-      formData.append('content', content);
+
+      // HTML 태그 제거 후 content 추가
+      const plainContent = content.replace(/(<([^>]+)>)/gi, '');
+      formData.append('content', plainContent);
 
       if (file) {
         formData.append('file', file);
@@ -237,8 +240,3 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
-
-
-
-//제목 테두리삭제
-//등록완료시에 posting으로 이동하는게아니라 각각의 게시물 id어쩌구
