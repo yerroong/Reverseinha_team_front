@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import axiosInstance from '../axiosInstance';
 
 const formatDate = (isoString) => {
   const date = new Date(isoString);
@@ -65,12 +66,45 @@ const InfoName = styled.div`
 const InfoDate = styled.div``;
 
 const Communityprofile = ({ post }) => {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [title, setTitle] = useState(post.title);
+
+  const handleEditTitle = () => {
+    setIsEditingTitle(true);
+  };
+
+  const handleSaveTitle = () => {
+    const formData = new FormData();
+    formData.append('title', title);
+
+    axiosInstance
+      .put(`/with/community/${post.id}/update/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then((response) => {
+        setIsEditingTitle(false);
+      })
+      .catch((error) => {
+        console.error('Error updating title:', error);
+      });
+  };
+
   return (
     <HeadContainer>
       <ProfileContainer>
         <ProfileImg src='/profile.png' />
         <ProfileInfoContainer>
-          <ProfileTitle>{post.title}</ProfileTitle>
+          {isEditingTitle ? (
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          ) : (
+            <ProfileTitle>{post.title}</ProfileTitle>
+          )}
           <ProfileInfo>
             <InfoName>{post.author_name}</InfoName>
             <InfoDate>{formatDate(post.created_at)}</InfoDate>
@@ -78,7 +112,11 @@ const Communityprofile = ({ post }) => {
         </ProfileInfoContainer>
       </ProfileContainer>
       <EditContainer>
-        <div>수정</div>
+        {isEditingTitle ? (
+          <div onClick={handleSaveTitle}>저장</div>
+        ) : (
+          <div onClick={handleEditTitle}>수정</div>
+        )}
         <div>삭제</div>
       </EditContainer>
     </HeadContainer>
@@ -86,4 +124,6 @@ const Communityprofile = ({ post }) => {
 };
 
 export default Communityprofile;
+
+
 

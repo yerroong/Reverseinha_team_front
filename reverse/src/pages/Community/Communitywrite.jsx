@@ -159,22 +159,17 @@ const Communitywrite = () => {
 
     try {
       const formData = new FormData();
-      formData.append('post_title', title);
+      formData.append('title', title);
       formData.append('content', content);
 
       if (file) {
         formData.append('file', file);
       }
 
-      const token = localStorage.getItem('access_token');
-      console.log('Access Token:', token);
+      console.log('Access Token:', localStorage.getItem('access_token'));
       console.log('FormData:', Array.from(formData.entries())); // 디버깅용: 전송되는 FormData 확인
 
-      const response = await axiosInstance.post('with/community/', formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.post('with/community/', formData);
 
       console.log('Response:', response);
       
