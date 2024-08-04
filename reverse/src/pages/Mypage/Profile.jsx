@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../axiosInstance';
 
 const ProfileContainer2 = styled.div`
   border-bottom: 0.063rem solid #BBBBBB;
@@ -49,44 +50,26 @@ const ProfileLogout = styled.button`
   }
 `;
 
-// JWT 디코딩 함수
-const decodeToken = (token) => {
-  if (!token) return null;
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    const decoded = JSON.parse(jsonPayload);
-    console.log('Decoded token:', decoded); // 디코딩된 토큰을 로그로 출력
-    return decoded;
-  } catch (error) {
-    console.error('토큰을 디코딩하는 데 실패했습니다.', error);
-    return null;
-  }
-};
-
 const Profile = () => {
-  const [userId, setUserId] = useState('');
+  const [nickname, setNickname] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 로컬 스토리지에서 토큰을 가져와서 디코딩하여 사용자 ID를 추출
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      const decoded = decodeToken(token);
-      if (decoded && decoded.user_id) {
-        setUserId(decoded.user_id); // 올바른 필드명 사용
-      } else {
-        console.error('디코딩된 토큰에 사용자 ID가 없습니다.');
+    // API를 통해 사용자 닉네임 가져오기
+    const fetchNickname = async () => {
+      try {
+        const response = await axiosInstance.get('/with/user/nickname/');
+        if (response.data && response.data.nickname) {
+          setNickname(response.data.nickname);
+        } else {
+          console.error('닉네임을 불러오는 데 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('API 요청 중 오류가 발생했습니다.', error);
       }
-    } else {
-      console.error('로컬 스토리지에 토큰이 없습니다.');
-    }
+    };
+
+    fetchNickname();
   }, []);
 
   const handleLogout = () => {
@@ -98,7 +81,7 @@ const Profile = () => {
     <ProfileContainer2>
       <ProfileIcon src="/profile.png" />
       <ProfileTextContainer>
-        <ProfileId>{userId || '불러오는 중...'}</ProfileId>
+        <ProfileId>{nickname || '불러오는 중...'}</ProfileId>
         <ProfileLogout onClick={handleLogout}>로그아웃</ProfileLogout>
       </ProfileTextContainer>
     </ProfileContainer2>
