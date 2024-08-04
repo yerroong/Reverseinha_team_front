@@ -297,13 +297,8 @@ const Consulting = () => {
       console.error('Error submitting form:', error);
       setSuccessMessage('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-<<<<<<< HEAD
   }
 };
-=======
-  };
-  
->>>>>>> d7b341bf52c1498fbe04e740f7b6f197a0ec06e2
 
   const filteredData = consultingData.filter((consultant) => {
     const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
