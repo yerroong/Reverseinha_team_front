@@ -1,4 +1,3 @@
-// Consulting.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
@@ -303,18 +302,16 @@ const Consulting = () => {
       });
       // 요청 성공 시 모달 닫기
       closeModal();
-
     } catch (error) {
-      if (error.response) {
-        console.error('서버 응답 오류:', error.response.data);
-        setSuccessMessage('신청 중 오류가 발생했습니다: ' + error.response.data.message);
-      } else if (error.request) {
-        console.error('응답을 받지 못했습니다:', error.request);
-        setSuccessMessage('서버 응답이 없습니다. 다시 시도해주세요.');
+      if (error.response && error.response.status === 401) {
+        console.error('인증 오류: 로그인 후 다시 시도해주세요.');
+        setSuccessMessage('인증이 필요합니다. 로그인 후 다시 시도해주세요.');
       } else {
-        console.error('요청 설정 오류:', error.message);
-        setSuccessMessage('요청 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error('신청 중 오류가 발생했습니다:', error);
+        setSuccessMessage('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
       }
+    } finally {
+      // 로딩 상태 종료
     }
   };
 
@@ -387,7 +384,7 @@ const Consulting = () => {
             onChange={handleInputChange}
           />
           <Input
-            type="datetime-local"
+            type="datetime-local"  // 캘린더 선택 기능을 사용
             name="available_time"
             placeholder="가능한 시간"
             value={form.available_time}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Calendar from 'react-calendar';
-import axiosInstance from '../axiosInstance'; // axiosInstance의 경로를 적절히 수정하세요
+import axiosInstance from '../axiosInstance';
 import 'react-calendar/dist/Calendar.css';
 
 // 스타일 컴포넌트 정의
@@ -150,7 +150,7 @@ const CustomPlanItem = styled.li`
   margin-bottom: 0.625rem;
 `;
 
-const Sidebar = () => {
+const Sidebar = ({ onDateChange }) => {
   const [date, setDate] = useState(new Date());
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState('');
@@ -168,15 +168,24 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchGoalsAndDiary = async () => {
       try {
+        console.log(`Fetching goals and diary for date: ${date.toISOString().split('T')[0]}`);
         const response = await axiosInstance.get(`/with/calendar/goal_diary/?date=${date.toISOString().split('T')[0]}`);
-        const { goals, diary_entry } = response.data;
+        const { goals, diary_entries } = response.data;
 
         setSelectedDateGoals(goals.map(goal => ({
           ...goal,
           date: new Date(goal.day).toDateString(),
           done: goal.is_completed
         })));
-        setSelectedDateDiary(diary_entry ? diary_entry.content : '작성된 일기가 없습니다.');
+
+        if (diary_entries && diary_entries.length > 0) {
+          const diary = diary_entries[0];
+          setSelectedDateDiary(diary.content);
+        } else {
+          setSelectedDateDiary('');
+        }
+
+        console.log('Fetched data:', response.data);
       } catch (error) {
         console.error('데이터를 불러오는 데 실패했습니다:', error);
       }
@@ -188,6 +197,7 @@ const Sidebar = () => {
   // 날짜 변경 핸들러
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
+    if (onDateChange) onDateChange(selectedDate); // 전달받은 onDateChange 콜백 실행
   };
 
   // 목표 완료 상태 변경
