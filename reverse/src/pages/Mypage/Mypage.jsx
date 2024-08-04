@@ -224,7 +224,7 @@ const Mypage = () => {
   };
 
   const handleRetest = () => {
-    navigate('/signtest');
+    navigate('/retrytest'); 
   };
 
   return (
