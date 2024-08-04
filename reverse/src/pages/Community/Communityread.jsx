@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../axiosInstance';
-import Communityprofile from './Communityprofile';
+
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+  return new Intl.DateTimeFormat('ko-KR', options).format(date);
+};
 
 const Container = styled.div`
   height: 100%;
@@ -14,7 +19,6 @@ const Container = styled.div`
 `;
 
 const CommunityContainer = styled.div`
- // border: 0.125rem solid green;
   width: 68rem;
   height: 42rem;
   margin-top: 5rem;
@@ -32,7 +36,6 @@ const ContentContainer = styled.div`
 `;
 
 const Content = styled.div`
- // border: 0.125rem solid red;
   width: 60rem;
   height: 30rem;
   max-height: 30rem;
@@ -58,7 +61,6 @@ const Responsenum = styled.div`
 `;
 
 const CommentContainer = styled.div`
- // border: 0.125rem solid green;
   width: 68rem;
   height: 42rem;
   display: flex;
@@ -67,7 +69,6 @@ const CommentContainer = styled.div`
 `;
 
 const CommentHeader = styled.div`
- // border: 0.125rem solid green;
   width: 68rem;
   height: 4rem;
   display: flex;
@@ -100,7 +101,7 @@ const ContentButton = styled.div`
   background-color: #f3f3f3;
   padding: 0.5rem 1rem;
   border-radius: 1rem;
-  border:0.08rem solid black;
+  border: 0.08rem solid black;
 `;
 
 const scrollToTop = () => {
@@ -124,18 +125,15 @@ const Commentwrite = styled.input`
 `;
 
 const AllComment = styled.div`
-//  border: 0.125rem solid green;
   width: 60rem;
 `;
 
 const Comment = styled.div`
- // border: 0.125rem solid red;
   width: 60rem;
   margin-bottom: 1rem;
 `;
 
 const CommentProfileContainer = styled.div`
- // border: 0.125rem solid red;
   display: flex;
   align-items: center;
 `;
@@ -150,29 +148,81 @@ const Profilename = styled.div`
 `;
 
 const CommentContent = styled.div`
- // border: 0.125rem solid red;
   margin-left: 0.5rem;
 `;
 
 const CommentInfo = styled.div`
- // border: 0.125rem solid red;
   display: flex;
   justify-content: space-between;
   margin-left: 0.5rem;
 `;
 
-const CommentDate = styled.div`
-//  border: 0.125rem solid red;
-`;
+const CommentDate = styled.div``;
 
 const CommentEdit = styled.div`
- // border: 0.125rem solid red;
   width: 4.5rem;
   font-size: 0.8rem;
   color: gray;
   display: flex;
   justify-content: space-between;
 `;
+
+const HeadContainer = styled.div`
+  border-bottom: 0.063rem solid #BBBBBB;
+  width: 66rem;
+  height: 6.5rem;
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const ProfileContainer = styled.div`
+  height: 5rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+`;
+
+const EditContainer = styled.div`
+  width: 3.9rem;
+  height: 5rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #BBBBBB;
+  cursor: pointer;
+`;
+
+const ProfileImg = styled.img`
+  width: 3rem;
+  display: flex;
+`;
+
+const ProfileInfoContainer = styled.div`
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ProfileTitle = styled.div`
+  font-size: 1.2rem;
+`;
+
+const ProfileInfo = styled.div`
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: flex-start;
+  font-size: 0.7rem;
+`;
+
+const InfoName = styled.div`
+  margin-right: 2rem;
+`;
+
+const InfoDate = styled.div``;
 
 const Communityread = () => {
   const { id } = useParams();
@@ -182,6 +232,10 @@ const Communityread = () => {
   const [likesCount, setLikesCount] = useState(0);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [isEditingContent, setIsEditingContent] = useState(false);
+  const [content, setContent] = useState('');
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     axiosInstance
@@ -189,6 +243,9 @@ const Communityread = () => {
       .then((response) => {
         setPost(response.data);
         setLikesCount(response.data.total_likes);
+        setLiked(response.data.is_liked);
+        setContent(response.data.content);
+        setTitle(response.data.title);
       })
       .catch((error) => {
         console.error('Error fetching post:', error);
@@ -205,12 +262,15 @@ const Communityread = () => {
   }, [id]);
 
   const handleLikeToggle = () => {
-    if (liked) {
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setLikesCount((prev) => prev + 1);
-    }
-    setLiked(!liked);
+    axiosInstance
+      .post(`/with/community/${id}/toggle_like/`)
+      .then((response) => {
+        setLiked(response.data.message === "Liked.");
+        setLikesCount(response.data.total_likes);
+      })
+      .catch((error) => {
+        console.error('Error toggling like:', error);
+      });
   };
 
   const handleCommentChange = (e) => {
@@ -221,10 +281,10 @@ const Communityread = () => {
     if (e.key === "Enter" && comment.trim()) {
       const newComment = {
         content: comment.trim(),
-        post: id,  // 댓글이 작성될 게시물의 ID
-        author: id //아이디어떻게가져오는건데;;
+        post: id,
+        author: id // 이 부분은 실제로 어떻게 작동하는지 확인 필요
       };
-  
+
       axiosInstance
         .post(`/with/community/${id}/comment/`, newComment)
         .then((response) => {
@@ -236,9 +296,6 @@ const Communityread = () => {
         });
     }
   };
-  
-
-  
 
   const handleEditComment = (commentId) => {
     const newContent = prompt('수정할 내용을 입력하세요:');
@@ -259,18 +316,60 @@ const Communityread = () => {
   };
 
   const handleDeleteComment = (commentId) => {
+    if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+      axiosInstance
+        .delete(`/with/community/${id}/comments/${commentId}/delete/`)
+        .then(() => {
+          setComments(comments.filter((comment) => comment.id !== commentId));
+        })
+        .catch((error) => {
+          console.error('Error deleting comment:', error);
+        });
+    }
+  };
+
+  const handleEditContent = () => {
+    setIsEditingContent(true);
+  };
+
+  const handleSaveContent = () => {
+    const formData = new FormData();
+    formData.append('content', content);
+
     axiosInstance
-      .delete(`/with/community/${id}/comments/${commentId}/delete/`)
+      .put(`/with/community/${id}/update/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       .then((response) => {
-        setComments(comments.filter((comment) => comment.id !== commentId));
+        setIsEditingContent(false);
       })
       .catch((error) => {
-        console.error('Error deleting comment:', error);
+        console.error('Error updating content:', error);
       });
   };
 
-  const handleBackClick = () => {
-    navigate(-1);
+  const handleEditTitle = () => {
+    setIsEditingPost(true);
+  };
+
+  const handleSaveTitle = () => {
+    const formData = new FormData();
+    formData.append('title', title);
+
+    axiosInstance
+      .put(`/with/community/${id}/update/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then((response) => {
+        setIsEditingPost(false);
+      })
+      .catch((error) => {
+        console.error('Error updating title:', error);
+      });
   };
 
   if (!post) {
@@ -280,30 +379,70 @@ const Communityread = () => {
   return (
     <Container>
       <CommunityContainer>
-        <Communityprofile post={post} />
+        <HeadContainer>
+          <ProfileContainer>
+            <ProfileImg src='/profile.png' />
+            <ProfileInfoContainer>
+              {isEditingPost ? (
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onBlur={handleSaveTitle}
+                />
+              ) : (
+                <ProfileTitle>{title}</ProfileTitle>
+              )}
+              <ProfileInfo>
+                <InfoName>{post.author_name}</InfoName>
+                <InfoDate>{formatDate(post.created_at)}</InfoDate>
+              </ProfileInfo>
+            </ProfileInfoContainer>
+          </ProfileContainer>
+          <EditContainer>
+            {isEditingPost ? (
+              <div onClick={handleSaveTitle}>저장</div>
+            ) : (
+              <div onClick={handleEditTitle}>수정</div>
+            )}
+            <div>삭제</div>
+          </EditContainer>
+        </HeadContainer>
         <ContentContainer>
-          <Content>{post.content}</Content>
+          <Content>
+            {isEditingPost ? (
+              <>
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </>
+            ) : (
+              <>
+                <p>{content}</p>
+              </>
+            )}
+          </Content>
         </ContentContainer>
         <ResponseContainer>
           <ResponseIcon
-            src={liked ? '/like.png' : '/like-empty.png'}
+            src={liked ? '/liked-icon.png' : '/like-icon.png'}
             onClick={handleLikeToggle}
           />
           <Responsenum>{likesCount}</Responsenum>
-          <ResponseIcon src='/comment.png' />
-          <Responsenum>{comments.length}</Responsenum>
         </ResponseContainer>
       </CommunityContainer>
       <CommentContainer>
         <CommentHeader>
-          <Back src='/back.png' onClick={handleBackClick} />
+          <Back src='/back-icon.png' onClick={() => navigate(-1)} />
           <CommentTitleContainer>
-            <CommentTitle color="black">댓글</CommentTitle>
-            <CommentTitle color="blue">{comments.length}개</CommentTitle>
+            <CommentTitle color='#6691FF'>댓글</CommentTitle>
+            <CommentTitle>{comments.length}</CommentTitle>
           </CommentTitleContainer>
         </CommentHeader>
         <Commentwrite
-          placeholder="내용을 입력해 주세요."
+          type='text'
+          placeholder='댓글을 작성하세요.'
           value={comment}
           onChange={handleCommentChange}
           onKeyPress={handleCommentSubmit}

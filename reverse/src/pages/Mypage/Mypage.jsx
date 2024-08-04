@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Profile from './Profile';
-import axiosInstance from '../axiosInstance'; // axiosInstance 가져오기
+import axiosInstance from '../axiosInstance';
 
 const Container = styled.div`
   width: 100%;
@@ -42,7 +42,7 @@ const InfoBox = styled.div`
 
 const InfoTitle = styled.div`
   font-size: 1.7rem;
-  margin-bottom:1rem;
+  margin-bottom: 1rem;
 `;
 
 const LineContainer = styled.div`
@@ -79,7 +79,7 @@ const InfoScore = styled.div`
 
 const InfoList = styled.div`
   padding-bottom: 1rem;
-  display:flex;
+  display: flex;
   flex-direction: column;
   align-items: ${({ center }) => (center ? 'center' : 'flex-start')};
   width: ${({ isGoal }) => (isGoal ? '40rem' : '22.563rem')};
@@ -121,7 +121,7 @@ const ScrollButton = styled.img`
 `;
 
 const ScrollButtonContainer = styled.div`
-  width:48.5rem;
+  width: 48.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -157,68 +157,60 @@ const Mypage = () => {
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [counselEntries, setCounselEntries] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [goalAchievementRate, setGoalAchievementRate] = useState(0);
+
   const diaryListRef = useRef(null);
   const counselListRef = useRef(null);
   const goalListRef = useRef(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  const fetchDiaryEntry = (date) => {
+    return axiosInstance.get(`/with/calendar/goal_diary/?date=${date}`)
+      .then(response => response.data.diary_entry.title)
+      .catch(error => {
+        console.error('Error fetching diary entry for date:', error);
+        return '';
+      });
+  };
+
+  const fetchDiaryEntriesForLastWeek = () => {
+    const today = new Date();
+    const promises = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const formattedDate = date.toISOString().split('T')[0];
+      promises.push(fetchDiaryEntry(formattedDate));
+    }
+    Promise.all(promises)
+      .then(results => setDiaryEntries(results))
+      .catch(error => console.error('Error fetching diary entries for last week:', error));
+  };
 
   useEffect(() => {
-    const fetchScore = async () => {
-      try {
-        const response = await axiosInstance.get('/with/signup/survey/');
-        const answers = response.data.answers;
-        const calculatedScore = answers.filter(answer => answer).length * 10;
-        setScore(calculatedScore);
-      } catch (error) {
-        console.error('Error fetching score:', error);
-      }
-    };
+    axiosInstance
+      .get('/with/mypage/')
+      .then(response => {
+        const data = response.data;
+        setScore(data.score || 0);
+        setDiaryEntries(data.diary_entries || []);
+        setCounselEntries(data.counseling_requests || []);
+        setGoals(data.goals || []);
+        setGoalAchievementRate(Math.floor(data.goal_achievement_rate || 0));
+      })
+      .catch(error => console.error('Error fetching mypage data:', error));
 
-    const fetchDiaryEntries = async () => {
-      try {
-        const response = await axiosInstance.get('/api/diary');
-        setDiaryEntries(response.data.entries);
-      } catch (error) {
-        console.error('Error fetching diary entries:', error);
-      }
-    };
+    fetchDiaryEntriesForLastWeek();
+  }, []);
 
-    const fetchCounselEntries = async () => {
-      try {
-        const response = await axiosInstance.get('/api/counsel');
-        setCounselEntries(response.data.entries);
-      } catch (error) {
-        console.error('Error fetching counsel entries:', error);
-      }
-    };
-
-    const fetchGoalAndDiary = async (date) => {
-      try {
-        const response = await axiosInstance.get(`/with/callendar/goal_diary/?date=${date}`);
-        console.log('전체정보:',response.data);
-        console.log('목표:', response.data.goal.text);
-        console.log('일기:', response.data.diary_entry.title);
-        return {
-          goal: response.data.goal.text,
-          diaryEntry: response.data.diary_entry.title
-        };
-      } catch (error) {
-        console.error('Error fetching goal and diary for date:', error);
-        return { goal: '', diaryEntry: '' };
-      }
-    };
-    
-    const fetchGoalAndDiaryForToday = async () => {
-      const date = '2024-08-02'; // 사용할 날짜
-      const data = await fetchGoalAndDiary(date);
-      setGoals([data.goal]);
-      setDiaryEntries([data.diaryEntry]);
-    };
-
-    fetchScore();
-    fetchDiaryEntries();
-    fetchCounselEntries();
-    fetchGoalAndDiaryForToday();
+  useEffect(() => {
+    axiosInstance
+      .get('/with/signup/survey/')
+      .then(response => {
+        const data = response.data;
+        setScore(prevScore => data.score || prevScore); // 기존 score 값을 유지하면서 업데이트
+      })
+      .catch(error => console.error('Error fetching survey data:', error));
   }, []);
 
   const handleScroll = (ref, direction) => {
@@ -271,7 +263,7 @@ const Mypage = () => {
               <ScrollButton src="/uparrow.png" onClick={() => handleScroll(counselListRef, 'up')} />
               <InfoList height="6.5rem" maxHeight="6.5rem" ref={counselListRef} center>
                 {counselEntries.map((entry, index) => (
-                  <CheckContainer key={index}>{entry.date} {entry.title}</CheckContainer>
+                  <CheckContainer key={index}>{entry.available_time}</CheckContainer>
                 ))}
               </InfoList>
               <ScrollButton src="/underarrow.png" onClick={() => handleScroll(counselListRef, 'down')} />
@@ -282,7 +274,7 @@ const Mypage = () => {
           <InfoBox width="17rem" center>
             <InfoTitle>역대 목표 달성률</InfoTitle>
             <Line src="/line.png" />
-            <InfoScore>70%</InfoScore>
+            <InfoScore>{goalAchievementRate}%</InfoScore>
           </InfoBox>
           <InfoBox width="43.5rem" flexDirection="row" center={false}>
             <Margin>
@@ -308,12 +300,3 @@ const Mypage = () => {
 };
 
 export default Mypage;
-
-
-
-
-
-
-//아이디 받아오기
-//로그아웃버튼 활성화
-//폰트
