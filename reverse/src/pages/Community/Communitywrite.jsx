@@ -241,4 +241,4 @@ export default Communitywrite;
 
 
 //제목 테두리삭제
-//등록완료시에 posting으로 이동하는게아니라 각각의 게시물 id어쩌구..
+//등록완료시에 posting으로 이동하는게아니라 각각의 게시물 id어쩌구
