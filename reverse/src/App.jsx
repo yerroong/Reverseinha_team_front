@@ -11,9 +11,8 @@ import Mypage from './pages/Mypage/Mypage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Signtest from './pages/Selftest/Signtest';
-import Retest from './pages/Extratest/Retest';
-//import Retrytest from './pages/Selftest/Retrytest';
-//<Route path="/retrytest" element={<Retrytest />} />
+//import Retest from './pages/Extratest/Retest';
+//<Route path="/retest" element={<Retest />} />
 
 const App = () => {
   return (
