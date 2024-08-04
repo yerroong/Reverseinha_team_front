@@ -238,6 +238,7 @@ const Consulting = () => {
     age: '',
     available_time: '',
     reason: '',
+    phone_number: '', // Add this line
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -277,20 +278,27 @@ const Consulting = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      const response = await axiosInstance.post('/with/consulting/', form);
-      console.log('Form submitted successfully:', response.data);
-      setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
-      setForm({
-        username: '',
-        age: '',
-        available_time: '',
-        reason: '',
-      });
-    } catch (error) {
+  try {
+    const response = await axiosInstance.post('/with/consulting/', form);
+    console.log('Form submitted successfully:', response.data);
+    setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
+    setForm({
+      username: '',
+      age: '',
+      available_time: '',
+      reason: '',
+      phone_number: '', // Reset phone number field
+    });
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.error('인증 오류: 로그인 후 다시 시도해주세요.');
+      setSuccessMessage('인증이 필요합니다. 로그인 후 다시 시도해주세요.');
+    } else {
       console.error('Error submitting form:', error);
+      setSuccessMessage('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-  };
+  }
+};
 
   const filteredData = consultingData.filter((consultant) => {
     const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
@@ -363,6 +371,13 @@ const Consulting = () => {
             name="age"
             placeholder="나이"
             value={form.age}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="tel"
+            name="phone_number"
+            placeholder="전화번호"
+            value={form.phone_number}
             onChange={handleInputChange}
           />
           <Input
