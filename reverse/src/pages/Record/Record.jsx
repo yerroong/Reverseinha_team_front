@@ -92,11 +92,11 @@ const SubmitButton = styled(Button)`
 `;
 
 const EditButton = styled(Button)`
-  background-color: #ffa500; // 오렌지색 for Edit
+  background-color: ${({ isEditing }) => (isEditing ? "#28a745" : "#007bff")}; // 초록색 for Complete, 파란색 for Edit
   margin-left: 0.5rem;
 
   &:hover {
-    background-color: #cc8400;
+    background-color: ${({ isEditing }) => (isEditing ? "#218838" : "#0056b3")}; // 초록색 Hover for Complete, 파란색 Hover for Edit
   }
 `;
 
@@ -377,6 +377,7 @@ const Record = () => {
                 {diaryExists && (
                   <div>
                     <EditButton
+                      isEditing={isEditing}
                       onClick={isEditing ? handleEditConfirm : handleEdit}
                     >
                       {isEditing ? "완료" : "수정"}
@@ -460,7 +461,7 @@ const Record = () => {
           onRequestClose={() => setLoginPromptIsOpen(false)}
           style={customStyles}
           contentLabel="Login Prompt"
-          ariaHideApp={false}
+          ariaHideApp={false}SS
         >
           <h2>로그인 필요</h2>
           <Separator />

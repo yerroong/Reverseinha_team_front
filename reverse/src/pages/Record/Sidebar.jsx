@@ -132,6 +132,19 @@ const CustomPlanHeader = styled.h3`
   font-weight: bold;
   margin-bottom: 0.2rem;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const RiskLabel = styled.span`
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+  color: ${({ severity }) => {
+    if (severity === '심함') return 'red';
+    if (severity === '보통') return 'orange';
+    return 'green';
+  }};
 `;
 
 const CustomPlanDescription = styled.p`
@@ -150,16 +163,50 @@ const CustomPlanItem = styled.li`
   margin-bottom: 0.625rem;
 `;
 
+const DiaryPrompt = styled.p`
+  color: #ff0000;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 1rem;
+`;
+
 const Sidebar = ({ onDateChange }) => {
   const [date, setDate] = useState(new Date());
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState('');
-  const [severity, setSeverity] = useState('심함');
+  const [severity, setSeverity] = useState('낮음'); // Default severity
   const [customPlans, setCustomPlans] = useState([]);
   const [selectedDateGoals, setSelectedDateGoals] = useState([]);
   const [selectedDateDiary, setSelectedDateDiary] = useState('');
-  const [defaultGoalDone, setDefaultGoalDone] = useState(false);
+  const [score, setScore] = useState(0); // User score
 
+  // Fetch user score from the API
+  useEffect(() => {
+    const fetchScore = async () => {
+      try {
+        const response = await axiosInstance.get('/with/mypage/');
+        const data = response.data;
+        setScore(data.survey_score || 0);
+      } catch (error) {
+        console.error('Failed to fetch user score:', error);
+      }
+    };
+
+    fetchScore();
+  }, []);
+
+  // Update severity based on score
+  useEffect(() => {
+    if (score >= 70) {
+      setSeverity('심함');
+    } else if (score >= 40) {
+      setSeverity('보통');
+    } else {
+      setSeverity('낮음');
+    }
+  }, [score]);
+
+  // Fetch and set custom plans based on severity
   useEffect(() => {
     setCustomPlans(generateCustomPlans());
   }, [severity]);
@@ -172,11 +219,21 @@ const Sidebar = ({ onDateChange }) => {
         const response = await axiosInstance.get(`/with/calendar/goal_diary/?date=${date.toISOString().split('T')[0]}`);
         const { goals, diary_entries } = response.data;
 
-        setSelectedDateGoals(goals.map(goal => ({
-          ...goal,
-          date: new Date(goal.day).toDateString(),
-          done: goal.is_completed
-        })));
+        console.log('Received goals:', goals);
+
+        // 서버에서 제대로 된 ID를 제공하지 않을 경우 처리
+        const goalsWithIds = goals.map((goal, index) => {
+          if (!goal.id) {
+            console.warn('수신된 목표 데이터에 ID가 없습니다:', goal);
+            return null; // ID가 없는 목표를 null로 반환하여 필터링
+          }
+          return {
+            ...goal,
+            done: goal.is_completed,
+          };
+        }).filter(goal => goal !== null); // ID가 있는 목표만 필터링
+
+        setSelectedDateGoals(goalsWithIds);
 
         if (diary_entries && diary_entries.length > 0) {
           const diary = diary_entries[0];
@@ -202,26 +259,27 @@ const Sidebar = ({ onDateChange }) => {
 
   // 목표 완료 상태 변경
   const handleGoalChange = async (id) => {
+    const goalToUpdate = selectedDateGoals.find(goal => goal.id === id);
+
+    // 임시 ID를 가진 목표는 서버에 업데이트하지 않음
+    if (!goalToUpdate || !goalToUpdate.id) {
+      console.warn('임시 ID가 할당된 목표는 업데이트할 수 없습니다.');
+      return;
+    }
+
+    // 업데이트된 상태로 로컬 목표를 설정
     const updatedGoals = selectedDateGoals.map((goal) =>
       goal.id === id ? { ...goal, done: !goal.done } : goal
     );
     setSelectedDateGoals(updatedGoals);
 
     try {
-      await axiosInstance.post(`/with/calendar/goal_diary/update/`, {
-        goal: {
-          id: id,
-          is_completed: !selectedDateGoals.find(goal => goal.id === id).done
-        }
+      await axiosInstance.patch(`/with/calendar/goal/${goalToUpdate.id}/completed/`, {
+        is_completed: !goalToUpdate.done
       });
     } catch (error) {
       console.error('목표 상태 업데이트에 실패했습니다:', error);
     }
-  };
-
-  // 기본 목표 완료 상태 변경
-  const handleDefaultGoalChange = () => {
-    setDefaultGoalDone(!defaultGoalDone);
   };
 
   // 새 목표 입력 핸들러
@@ -234,12 +292,13 @@ const Sidebar = ({ onDateChange }) => {
     if (newGoal.trim()) {
       const newGoalObj = {
         text: newGoal,
-        is_completed: false,
         day: date.toISOString().split('T')[0],
+        is_completed: false,
       };
 
       try {
-        const response = await axiosInstance.post('/with/calendar/goal_diary/create/', { goals: [newGoalObj] });
+        const response = await axiosInstance.post('/with/calendar/goal/create/', newGoalObj);
+        // Add new goal with the ID returned from the server
         setSelectedDateGoals([...selectedDateGoals, { ...newGoalObj, id: response.data.id }]);
         setNewGoal('');
       } catch (error) {
@@ -250,8 +309,16 @@ const Sidebar = ({ onDateChange }) => {
 
   // 목표 삭제
   const handleDeleteGoal = async (id) => {
+    const goalToDelete = selectedDateGoals.find(goal => goal.id === id);
+
+    // 임시 ID를 가진 목표는 삭제하지 않음
+    if (!goalToDelete || !goalToDelete.id) {
+      console.warn('임시 ID가 할당된 목표는 삭제할 수 없습니다.');
+      return;
+    }
+
     try {
-      await axiosInstance.delete(`/with/calendar/goal_diary/delete/${id}/`);
+      await axiosInstance.delete(`/with/calendar/goal/delete/${goalToDelete.id}/`);
       const updatedGoals = selectedDateGoals.filter((goal) => goal.id !== id);
       setSelectedDateGoals(updatedGoals);
     } catch (error) {
@@ -265,7 +332,7 @@ const Sidebar = ({ onDateChange }) => {
       const dayGoals = goals.filter((goal) => goal.date === tileDate.toDateString());
       const isToday = tileDate.toDateString() === new Date().toDateString();
       const totalGoals = dayGoals.length + (isToday ? 1 : 0); // 오늘 날짜에만 기본 목표 포함
-      const completedGoals = dayGoals.filter((goal) => goal.done).length + (isToday && defaultGoalDone ? 1 : 0);
+      const completedGoals = dayGoals.filter((goal) => goal.done).length;
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
       if (goalCompletion === 1) {
         return 'react-calendar__tile--full-completion';
@@ -293,9 +360,11 @@ const Sidebar = ({ onDateChange }) => {
     '집밖에 나가기',
     '버킷리스트 쓰기',
     '상담받기',
+    '나의 장점 생각하기',
   ];
 
   const moderatePlans = [
+    '긍정적인 사고하기',
     '가족과 친구와 소통하기',
     '자기개발 하기',
     '하루 세끼 다 챙겨먹기',
@@ -310,6 +379,13 @@ const Sidebar = ({ onDateChange }) => {
     '1만보 이상 걷기',
   ];
 
+  const lowPlans = [
+    '목표 세우기',
+    '취미생활하기',
+    '버킷리스트 만들기',
+    '아침 일찍 일어나기',
+  ];
+
   const generateCustomPlans = () => {
     let plans = [];
     if (severity === '심함') {
@@ -320,6 +396,8 @@ const Sidebar = ({ onDateChange }) => {
       plans.unshift('상담받기');
     } else if (severity === '보통') {
       plans = moderatePlans.sort(() => 0.5 - Math.random()).slice(0, 5);
+    } else if (severity === '낮음') {
+      plans = lowPlans;
     }
     return plans;
   };
@@ -358,34 +436,18 @@ const Sidebar = ({ onDateChange }) => {
           />
           <GoalButton onClick={handleAddGoal}>추가</GoalButton>
         </GoalItem>
+        {/* 일기 작성 안내 메시지 */}
+        {selectedDateDiary === '' && (
+          <DiaryPrompt>오늘의 일기를 작성하세요!</DiaryPrompt>
+        )}
       </GoalContainer>
-      {selectedDateGoals.length > 0 && (
-        <GoalContainer>
-          <GoalHeader>{`${date.toDateString()} 목표`}</GoalHeader>
-          <GoalList>
-            <GoalItem>
-              <Checkbox
-                checked={defaultGoalDone}
-                onChange={handleDefaultGoalChange}
-              />
-              <GoalText>일기 작성</GoalText>
-            </GoalItem>
-            {selectedDateGoals.map((goal) => (
-              <GoalItem key={goal.id}>
-                <Checkbox
-                  checked={goal.done}
-                  onChange={() => handleGoalChange(goal.id)}
-                />
-                <GoalText>{goal.text}</GoalText>
-              </GoalItem>
-            ))}
-          </GoalList>
-          <GoalHeader>일기</GoalHeader>
-          <GoalText>{selectedDateDiary || '작성된 일기가 없습니다.'}</GoalText>
-        </GoalContainer>
-      )}
       <CustomPlanContainer>
-        <CustomPlanHeader>맞춤 계획 추천</CustomPlanHeader>
+        <CustomPlanHeader>
+          맞춤 계획 추천
+          <RiskLabel severity={severity}>
+            - {severity === '심함' ? '고위험' : severity === '보통' ? '중위험' : '저위험'}
+          </RiskLabel>
+        </CustomPlanHeader>
         <CustomPlanDescription>
           사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을 제공합니다. 마이페이지에서 재검사가 가능합니다
         </CustomPlanDescription>
