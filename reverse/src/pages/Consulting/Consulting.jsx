@@ -1,3 +1,4 @@
+// Consulting.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchSide from './SearchSide';
@@ -5,12 +6,11 @@ import Modal from 'react-modal';
 import axiosInstance from '../axiosInstance';
 import '../../components/Fonts.css';
 
+// Styled components
 const ConsultingContainer = styled.div`
   display: flex;
-  background-color: #FFF;
-  padding-right: 10rem;
-  padding-left: 10rem;
-  padding-top: 2rem;
+  background-color: #fff;
+  padding: 2rem 10rem;
 `;
 
 const ResultSide = styled.div`
@@ -36,9 +36,9 @@ const ResultItem = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  background-color: #FFF;
+  background-color: #fff;
   margin-bottom: 1rem;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
 `;
 
 const ResultContent = styled.div`
@@ -62,11 +62,11 @@ const ResultTitle = styled.h3`
 `;
 
 const Highlight = styled.span`
-  color: #0062DC;
+  color: #0062dc;
 `;
 
 const ResultDescription = styled.p`
-  color: #7D7D7D;
+  color: #7d7d7d;
   margin: 0.5rem 0 0 0;
 `;
 
@@ -74,7 +74,7 @@ const Prices = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 1px solid #C6C6C6;
+  border-top: 1px solid #c6c6c6;
   padding-top: 1rem;
 `;
 
@@ -82,11 +82,6 @@ const Price = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-`;
-
-const SitePrice = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 const PriceIconWrapper = styled.div`
@@ -100,15 +95,15 @@ const PriceIconWrapper = styled.div`
 `;
 
 const MessageIconWrapper = styled(PriceIconWrapper)`
-  background-color: #C6D700;
+  background-color: #c6d700;
 `;
 
 const CallIconWrapper = styled(PriceIconWrapper)`
-  background-color: #00BD1E;
+  background-color: #00bd1e;
 `;
 
 const LocationIconWrapper = styled(PriceIconWrapper)`
-  background-color: #FFB800;
+  background-color: #ffb800;
 `;
 
 const PriceIcon = styled.img`
@@ -145,7 +140,7 @@ const Input = styled.input`
   margin: 0.5rem 0;
   padding: 0.5rem;
   width: 80%;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
   box-sizing: border-box;
   font-family: inherit;
 `;
@@ -155,18 +150,18 @@ const TextArea = styled.textarea`
   padding: 0.5rem;
   width: 80%;
   height: 100px;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
   box-sizing: border-box;
   font-family: inherit;
 `;
 
 const Button = styled.button`
   cursor: pointer;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   padding: 0.75rem 1.5rem;
   margin-top: 0.75rem;
-  border: 1px solid #B0B0B0;
+  border: 1px solid #b0b0b0;
   border-radius: 12px;
   &:hover {
     background-color: #0056b3;
@@ -186,13 +181,15 @@ const Separator = styled.div`
   align-self: center;
 `;
 
+// Sample data for consulting services
 const consultingData = [
   {
     id: 'supportCenter',
     imgSrc: '/consul1.png',
     title: '사회적고립기구',
     type: '지원센터',
-    description: '#고독사예방 #사회적고립예방 #서울 사회적고립가구와 고독사 문제를 해결하기 위한 다양한 프로그램과 지원을 제공',
+    description:
+      '#고독사예방 #사회적고립예방 #서울 사회적고립가구와 고독사 문제를 해결하기 위한 다양한 프로그램과 지원을 제공',
     prices: {
       message: '무료',
       call: '무료',
@@ -204,7 +201,8 @@ const consultingData = [
     imgSrc: '/consul2.png',
     title: '김영미',
     type: '상담사',
-    description: '#쳥년상담 #취업상담 #자립상담 #비대면 사회에 나가기 막막하신 분들 상담을 진행합니다. 평일 12~18시 상담 대기중',
+    description:
+      '#청년상담 #취업상담 #자립상담 #비대면 사회에 나가기 막막하신 분들 상담을 진행합니다. 평일 12~18시 상담 대기중',
     prices: {
       message: '30,000원',
       call: '30,000원',
@@ -216,7 +214,8 @@ const consultingData = [
     imgSrc: '/consul3.png',
     title: '김옥자',
     type: '상담사',
-    description: '#외로움 #고독 #정신상담 #심리상담 #비대면 인하대 정신센터 근무중입니다. 휴일제외 12~18시 상담 대기중',
+    description:
+      '#외로움 #고독 #정신상담 #심리상담 #비대면 인하대 정신센터 근무중입니다. 휴일제외 12~18시 상담 대기중',
     prices: {
       message: '30,000원',
       call: '30,000원',
@@ -234,11 +233,9 @@ const Consulting = () => {
     searchTerm: '',
   });
   const [form, setForm] = useState({
-    username: '',
-    age: '',
     available_time: '',
     reason: '',
-    phone_number: '', // Add this line
+    phone_number: '',
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -278,32 +275,55 @@ const Consulting = () => {
   };
 
   const handleSubmit = async () => {
-  try {
-    const response = await axiosInstance.post('/with/consulting/', form);
-    console.log('Form submitted successfully:', response.data);
-    setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
-    setForm({
-      username: '',
-      age: '',
-      available_time: '',
-      reason: '',
-      phone_number: '', // Reset phone number field
-    });
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      console.error('인증 오류: 로그인 후 다시 시도해주세요.');
-      setSuccessMessage('인증이 필요합니다. 로그인 후 다시 시도해주세요.');
-    } else {
-      console.error('Error submitting form:', error);
-      setSuccessMessage('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+    const { available_time, reason, phone_number } = form;
+
+    // 데이터 확인
+    console.log('데이터 전송 중:', { available_time, reason, phone_number });
+
+    // 필드 유효성 검사
+    if (!available_time || !reason || !phone_number) {
+      setSuccessMessage('모든 필드를 입력해주세요.');
+      return;
     }
-  }
-};
+
+    const dataToSend = { available_time, reason, phone_number };
+
+    try {
+      // 로딩 상태 시작
+      setSuccessMessage('신청을 처리 중입니다...');
+
+      const response = await axiosInstance.post('/with/consulting/', dataToSend);
+      console.log('Form submitted successfully:', response.data);
+
+      setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
+      setForm({
+        available_time: '',
+        reason: '',
+        phone_number: '',
+      });
+      // 요청 성공 시 모달 닫기
+      closeModal();
+
+    } catch (error) {
+      if (error.response) {
+        console.error('서버 응답 오류:', error.response.data);
+        setSuccessMessage('신청 중 오류가 발생했습니다: ' + error.response.data.message);
+      } else if (error.request) {
+        console.error('응답을 받지 못했습니다:', error.request);
+        setSuccessMessage('서버 응답이 없습니다. 다시 시도해주세요.');
+      } else {
+        console.error('요청 설정 오류:', error.message);
+        setSuccessMessage('요청 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    }
+  };
 
   const filteredData = consultingData.filter((consultant) => {
     const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
     const matchesPremium = filters.premium ? consultant.prices.message !== '무료' : true;
-    const matchesSearchTerm = consultant.title.includes(filters.searchTerm) || consultant.description.includes(filters.searchTerm);
+    const matchesSearchTerm =
+      consultant.title.includes(filters.searchTerm) ||
+      consultant.description.includes(filters.searchTerm);
 
     return matchesFree && matchesPremium && matchesSearchTerm;
   });
@@ -354,25 +374,11 @@ const Consulting = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="상담 신청"
-        ariaHideApp={false} // 이 부분을 추가합니다.
+        ariaHideApp={false}
         style={customStyles}
       >
         <ModalForm>
           <h2>상담 신청</h2>
-          <Input
-            type="text"
-            name="username"
-            placeholder="이름"
-            value={form.username}
-            onChange={handleInputChange}
-          />
-          <Input
-            type="number"
-            name="age"
-            placeholder="나이"
-            value={form.age}
-            onChange={handleInputChange}
-          />
           <Input
             type="tel"
             name="phone_number"
@@ -410,7 +416,7 @@ const Consulting = () => {
         isOpen={loginPromptIsOpen}
         onRequestClose={() => setLoginPromptIsOpen(false)}
         contentLabel="로그인 필요"
-        ariaHideApp={false} // 이 부분을 추가합니다.
+        ariaHideApp={false}
         style={customStyles}
       >
         <h2>로그인이 필요합니다</h2>
