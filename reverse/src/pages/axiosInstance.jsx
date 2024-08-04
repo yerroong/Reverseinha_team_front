@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Axios 인스턴스 생성
 const axiosInstance = axios.create({
   baseURL: 'http://withinha.kro.kr', // API의 기본 URL
   headers: {
@@ -23,3 +22,4 @@ axiosInstance.interceptors.request.use(
 );
 
 export default axiosInstance;
+

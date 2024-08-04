@@ -204,15 +204,24 @@ const Community = () => {
     setSortOrder(order);
     setIsDropdownOpen(false);
 
-    let sortedPosts = [...filteredPosts];
-    if (order === '최신순') {
-      sortedPosts.sort((a, b) => b.id - a.id);
-    } else if (order === '오래된순') {
-      sortedPosts.sort((a, b) => a.id - b.id);
-    } else if (order === '인기순') {
-      sortedPosts.sort((a, b) => b.likes - a.likes);
+    if (order === '인기순') {
+      axiosInstance
+        .get('/with/community/search/?sort=likes')
+        .then((response) => {
+          setFilteredPosts(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching sorted posts:', error);
+        });
+    } else {
+      let sortedPosts = [...posts];
+      if (order === '최신순') {
+        sortedPosts.sort((a, b) => b.id - a.id);
+      } else if (order === '오래된순') {
+        sortedPosts.sort((a, b) => a.id - b.id);
+      }
+      setFilteredPosts(sortedPosts);
     }
-    setFilteredPosts(sortedPosts);
   };
 
   const handleSearch = (term) => {

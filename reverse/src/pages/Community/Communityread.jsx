@@ -372,6 +372,19 @@ const Communityread = () => {
       });
   };
 
+  const handleDeletePost = () => {
+    if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+      axiosInstance
+        .delete(`/with/community/${id}/delete/`)
+        .then(() => {
+          navigate('/with/community');
+        })
+        .catch((error) => {
+          console.error('Error deleting post:', error);
+        });
+    }
+  };
+
   if (!post) {
     return <div>Loading...</div>;
   }
@@ -405,7 +418,7 @@ const Communityread = () => {
             ) : (
               <div onClick={handleEditTitle}>수정</div>
             )}
-            <div>삭제</div>
+            <div onClick={handleDeletePost}>삭제</div>
           </EditContainer>
         </HeadContainer>
         <ContentContainer>
@@ -426,7 +439,7 @@ const Communityread = () => {
         </ContentContainer>
         <ResponseContainer>
           <ResponseIcon
-            src={liked ? '/liked-icon.png' : '/like-icon.png'}
+            src={liked ? '/like.png' : '/like-empty.png'}
             onClick={handleLikeToggle}
           />
           <Responsenum>{likesCount}</Responsenum>
@@ -434,7 +447,7 @@ const Communityread = () => {
       </CommunityContainer>
       <CommentContainer>
         <CommentHeader>
-          <Back src='/back-icon.png' onClick={() => navigate(-1)} />
+          <Back src='/back.png' onClick={() => navigate(-1)} />
           <CommentTitleContainer>
             <CommentTitle color='#6691FF'>댓글</CommentTitle>
             <CommentTitle>{comments.length}</CommentTitle>
