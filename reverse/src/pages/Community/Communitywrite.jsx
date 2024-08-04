@@ -156,11 +156,15 @@ const Communitywrite = () => {
 
   const handleDialogConfirm = async () => {
     setIsDialogVisible(false);
+    navigate(-1); //시간나면 posting으로 이동하게
 
     try {
       const formData = new FormData();
       formData.append('title', title);
-      formData.append('content', content);
+
+      // HTML 태그 제거 후 content 추가
+      const plainContent = content.replace(/(<([^>]+)>)/gi, '');
+      formData.append('content', plainContent);
 
       if (file) {
         formData.append('file', file);
@@ -237,7 +241,6 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
-
 
 
 //제목 테두리삭제

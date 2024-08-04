@@ -39,6 +39,12 @@ const Content = styled.div`
   width: 60rem;
   height: 30rem;
   max-height: 30rem;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
 `;
 
 const ResponseContainer = styled.div`
@@ -224,6 +230,7 @@ const InfoName = styled.div`
 
 const InfoDate = styled.div``;
 
+// Communityread component
 const Communityread = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -424,16 +431,13 @@ const Communityread = () => {
         <ContentContainer>
           <Content>
             {isEditingPost ? (
-              <>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-              </>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                style={{ width: '100%', height: '80%', resize: 'none' }}
+              />
             ) : (
-              <>
-                <p>{content}</p>
-              </>
+              <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{content}</p>
             )}
           </Content>
         </ContentContainer>
@@ -485,11 +489,6 @@ const Communityread = () => {
 };
 
 export default Communityread;
-
-
-
-
-
 
 // CommunityProfile에 있는 수정 삭제버튼을 누르면 이곳에 있는 내용이 수정될 수 있도록 하
 //나중에 백엔드랑 연결하면 글 주인인 경우에만 수정삭제가 가능하도록 수정하기

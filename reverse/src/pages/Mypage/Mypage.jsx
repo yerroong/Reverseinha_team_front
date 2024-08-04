@@ -65,9 +65,8 @@ const InfoScoreColored = styled.div`
   font-weight: 500;
   color: ${({ score }) => {
     if (score <= 30) return 'green';
-    if (score >= 40) return 'orange';
-    if (score >= 70) return 'red';
-    return 'black';
+    if (score <= 70) return 'orange';
+    return 'red';
   }};
 `;
 
@@ -164,53 +163,26 @@ const Mypage = () => {
   const goalListRef = useRef(null);
   const navigate = useNavigate();
 
-  const fetchDiaryEntry = (date) => {
-    return axiosInstance.get(`/with/calendar/goal_diary/?date=${date}`)
-      .then(response => response.data.diary_entry.title)
-      .catch(error => {
-        console.error('Error fetching diary entry for date:', error);
-        return '';
-      });
-  };
-
-  const fetchDiaryEntriesForLastWeek = () => {
-    const today = new Date();
-    const promises = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const formattedDate = date.toISOString().split('T')[0];
-      promises.push(fetchDiaryEntry(formattedDate));
-    }
-    Promise.all(promises)
-      .then(results => setDiaryEntries(results))
-      .catch(error => console.error('Error fetching diary entries for last week:', error));
-  };
-
   useEffect(() => {
-    axiosInstance
-      .get('/with/mypage/')
+    axiosInstance.get('/with/mypage/')
       .then(response => {
         const data = response.data;
-        setScore(data.score || 0);
+        setScore(data.survey_score || 0);
         setDiaryEntries(data.diary_entries || []);
         setCounselEntries(data.counseling_requests || []);
         setGoals(data.goals || []);
-        setGoalAchievementRate(Math.floor(data.goal_achievement_rate || 0));
+        setGoalAchievementRate(data.goal_achievement_rate || 0);
       })
-      .catch(error => console.error('Error fetching mypage data:', error));
-
-    fetchDiaryEntriesForLastWeek();
-  }, []);
-
-  useEffect(() => {
-    axiosInstance
-      .get('/with/signup/survey/')
-      .then(response => {
-        const data = response.data;
-        setScore(prevScore => data.score || prevScore); // 기존 score 값을 유지하면서 업데이트
-      })
-      .catch(error => console.error('Error fetching survey data:', error));
+      .catch(error => {
+        if (error.response) {
+          console.error('API error:', error.response.data);
+          if (error.response.status === 401) {
+            console.error('Unauthorized access. Please log in.');
+          }
+        } else {
+          console.error('Network or unknown error:', error.message);
+        }
+      });
   }, []);
 
   const handleScroll = (ref, direction) => {
@@ -224,7 +196,7 @@ const Mypage = () => {
   };
 
   const handleRetest = () => {
-    navigate('/signtest');
+    navigate('/retrytest'); 
   };
 
   return (
@@ -247,7 +219,7 @@ const Mypage = () => {
               <ScrollButton src="/uparrow.png" onClick={() => handleScroll(diaryListRef, 'up')} />
               <InfoList height="6.5rem" maxHeight="6.5rem" ref={diaryListRef} center>
                 {diaryEntries.map((entry, index) => (
-                  <CheckContainer key={index}>{entry}</CheckContainer>
+                  <CheckContainer key={index}>{entry.title}</CheckContainer>
                 ))}
               </InfoList>
               <ScrollButton src="/underarrow.png" onClick={() => handleScroll(diaryListRef, 'down')} />
@@ -300,3 +272,8 @@ const Mypage = () => {
 };
 
 export default Mypage;
+
+
+
+
+
