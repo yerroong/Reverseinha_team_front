@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import axiosInstance from "../axiosInstance";
 
+// 스타일 컴포넌트
 const Container = styled.div`
   width: 100%;
   display: flex;
@@ -151,6 +152,21 @@ const ProfileLogoutButton = styled.button`
   }
 `;
 
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? '오후' : '오전';
+
+  // 12시간제 포맷으로 시간 변환
+  const formattedHours = hours % 12 || 12; // 0시를 12시로 표시
+
+  return `${year}.${month}.${day} ${period} ${formattedHours}시 ${minutes}분`;
+};
+
 const Mypage = () => {
   const [score, setScore] = useState(0);
   const [diaryEntries, setDiaryEntries] = useState([]);
@@ -261,7 +277,7 @@ const Mypage = () => {
               >
                 {counselEntries.map((entry, index) => (
                   <CheckContainer key={index}>
-                    {entry.available_time}
+                    {formatDate(entry.available_time)}
                   </CheckContainer>
                 ))}
               </InfoList>
