@@ -48,6 +48,7 @@ const ResultContent = styled.div`
 const ResultImage = styled.img`
   width: 6rem;
   height: 6rem;
+  border-radius: 50%;
   margin-right: 1rem;
 `;
 
@@ -160,7 +161,7 @@ const consultingData = [
   },
   {
     id: 'kimYoungMi',
-    imgSrc: '/consul2.png',
+    imgSrc: '/consul4.png',
     title: '김영미',
     type: '상담사',
     description:
@@ -173,8 +174,8 @@ const consultingData = [
   },
   {
     id: 'kimOkJa',
-    imgSrc: '/consul3.png',
-    title: '김옥자',
+    imgSrc: '/consul5.png',
+    title: '최윤정',
     type: '상담사',
     description:
       '#외로움 #고독 #정신상담 #심리상담 #비대면 인하대 정신센터 근무중입니다. 휴일제외 12~18시 상담 대기중',
