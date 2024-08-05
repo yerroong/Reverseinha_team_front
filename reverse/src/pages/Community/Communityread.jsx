@@ -153,10 +153,6 @@ const Communityread = () => {
 
         const userResponse = await axiosInstance.get('/with/user/nickname/');
         setCurrentUserNickname(userResponse.data.nickname);
-
-        console.log('currentUserNickname:', userResponse.data.nickname);
-        console.log('post.author_name:', postResponse.data.author_name);
-        console.log('post.image:', postResponse.data.image);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -214,8 +210,6 @@ const Communityread = () => {
     }
   };
 
-  const getImageUrl = (url) => `${url}?t=${new Date().getTime()}`;
-
   if (!post || currentUserNickname === null) {
     return <div>Loading...</div>;
   }
@@ -267,7 +261,7 @@ const Communityread = () => {
                 <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{stripHTMLTags(content)}</p>
                 {post.image && (
                   <img
-                    src={getImageUrl(post.image)}
+                    src={`${post.image}?t=${new Date().getTime()}`}
                     alt="첨부된 파일"
                     style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover' }}
                   />
@@ -290,7 +284,6 @@ const Communityread = () => {
 };
 
 export default Communityread;
-
 
 
 
