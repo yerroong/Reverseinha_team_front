@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
   baseURL: 'http://withinha.kro.kr', // API의 기본 URL
@@ -30,12 +31,23 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response.status === 401) {
-      console.error('Unauthorized: Token is invalid or expired');
-      // 여기서 추가적인 처리(예: 로그인 페이지로 리디렉션)를 할 수 있습니다.
+    if (error.response) {
+      if (error.response.status === 401) {
+        console.error('Unauthorized: Token is invalid or expired');
+        handleLogout();
+      }
+    } else if (error.code === 'ECONNABORTED') {
+      console.error('Timeout error: Server took too long to respond');
+      handleLogout();
     }
     return Promise.reject(error);
   }
 );
+
+// 로그아웃 처리 함수
+const handleLogout = () => {
+  localStorage.removeItem('access_token');
+  window.location.href = '/'; // 홈 페이지로 이동
+};
 
 export default axiosInstance;
