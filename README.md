@@ -130,15 +130,15 @@ src
 
 ## ✨ 기대효과
 
----
+
 
 ## 🪄 활용분야
 
----
+
 
 ## 🧑‍💻 Developer
 
----
+
 
 | Frontend | Frontend | Frontend | Backend | Backend |
 | --- | --- | --- | --- | --- |
