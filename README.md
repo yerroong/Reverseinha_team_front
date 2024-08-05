@@ -32,7 +32,7 @@ WITH는 **고립된 청년** 및 **자립준비 청년**을 위한 종합 건강
 - 배포 URL :
 - Test ID :
 - Test PW :
-- 
+  
 <br/><br/>
 ## **🎞 Demo**
 
@@ -135,12 +135,17 @@ src
 - **디자인 :**  [Figam](https://www.figma.com/design/2ZcHjlZu1K3I61SGM8mJVv/%EB%A9%8B%EC%82%AC-%EC%A4%91%EC%95%99%ED%95%B4%EC%BB%A4%ED%86%A4?node-id=1-570&t=r9vWFgr8SpenmhbW-1)
 
 <br/><br/>
-## ✨ 기대효과
+# 🪄 Code Convention
 
+- **변수 작성 방법**
+  - 컴포넌트 이름, 파일명: 파스칼 케이스 (ex. MyVariable)
+  - 함수 및 변수, 핸들러 이름: 카멜 케이스 (ex. getUserName)
 
+- **폰트 적용 방식**
+  - font-face
 
-<br/><br/>
-## 🪄 활용분야
+- **요소 크기 지정 방식**
+  - 단위 rem
 
 
 
@@ -152,12 +157,4 @@ src
 | Frontend | Frontend | Frontend | Backend | Backend |
 | --- | --- | --- | --- | --- |
 | [권소현](https://github.com/hyuke81) | [김예린](https://github.com/yerroong)  | [배새연](https://github.com/Qoopkite) | [염종섭](https://github.com/YeomJongSeop) | [최우진](https://github.com/wxxwls) |
-
-
-
-
-개발 규칙
-컴포넌트 이름, 파일명: 파스칼케이스(첫단어 시작 대문자)
-함수 및 변수, 핸들러 이름: 카멜케이스 (시작할때는 소문자, 이후 각단어의 첫 글자는 대문자)
-단위: rem
 
