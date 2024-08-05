@@ -3,10 +3,9 @@ import styled from "styled-components";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axiosInstance from "../axiosInstance";
-import Modal from "react-modal"; // Import Modal for the help dialog
-import HelpIcon from "../../img/help.png"; // Import Help Icon
+import Modal from "react-modal";
+import HelpIcon from "../../img/help.png";
 
-// 스타일 컴포넌트 정의
 const SidebarContainer = styled.div`
   width: 100%;
   max-width: 18.75rem;
@@ -115,10 +114,9 @@ const DeleteButton = styled.button`
 `;
 
 const GoalButton = styled.button`
-  width: 3.24rem;
   margin-top: 0.625rem;
   padding: 0.4rem 0.5rem;
-  background-color: #004EE5;
+  background-color: #004ee5;
   color: #fff;
   border: none;
   border-radius: 0.3125rem;
@@ -127,7 +125,6 @@ const GoalButton = styled.button`
   height: 1.8rem;
   width: 3rem;
   &:hover {
-    background-color: #2b6ae7;
     background-color: #2b6ae7;
   }
 `;
@@ -217,7 +214,6 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   const [customPlans, setCustomPlans] = useState([]);
   const [selectedDateGoals, setSelectedDateGoals] = useState([]);
   const [selectedDateDiary, setSelectedDateDiary] = useState("");
-  const [goalAchievementRate, setGoalAchievementRate] = useState(0); // 목표 달성률
   const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태
   const [score, setScore] = useState(0); // 설문 점수 상태 추가
   const [helpModalIsOpen, setHelpModalIsOpen] = useState(false); // 도움말 모달 상태 추가
