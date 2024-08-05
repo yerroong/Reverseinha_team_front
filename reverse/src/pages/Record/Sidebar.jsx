@@ -1,10 +1,10 @@
 // Sidebar.jsx
 
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Calendar from 'react-calendar';
-import axiosInstance from '../axiosInstance';
-import 'react-calendar/dist/Calendar.css';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import Calendar from "react-calendar";
+import axiosInstance from "../axiosInstance";
+import "react-calendar/dist/Calendar.css";
 
 // 스타일 컴포넌트 정의
 const SidebarContainer = styled.div`
@@ -26,23 +26,33 @@ const StyledCalendar = styled(Calendar)`
   border: none;
   border-radius: 0.625rem;
   box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+
   .react-calendar__tile {
     border-radius: 0.625rem;
   }
+
   .react-calendar__tile--now {
     background-color: #cccccc !important; /* 회색으로 선택된 날짜 표시 */
   }
+
+  .react-calendar__tile--active {
+    background-color: #ccffcc !important; /* 형광 연두색 */
+  }
+
   .react-calendar__tile--full-completion {
     background-color: #003366 !important; /* 가장 진한 파란색 */
     color: white !important;
   }
+
   .react-calendar__tile--high-completion {
     background-color: #336699 !important; /* 중간 정도의 파란색 */
     color: white !important;
   }
+
   .react-calendar__tile--medium-completion {
     background-color: #6699cc !important; /* 중간 정도의 파란색 */
   }
+
   .react-calendar__tile--low-completion {
     background-color: #99ccff !important; /* 가장 연한 파란색 */
   }
@@ -90,7 +100,7 @@ const GoalInput = styled.input`
   margin-right: 0.625rem;
 `;
 
-const Checkbox = styled.input.attrs({ type: 'checkbox' })`
+const Checkbox = styled.input.attrs({ type: "checkbox" })`
   margin-right: 0.625rem;
   accent-color: #007bff;
 `;
@@ -144,9 +154,9 @@ const RiskLabel = styled.span`
   font-size: 0.85rem;
   margin-left: 0.5rem;
   color: ${({ severity }) => {
-    if (severity === '심함') return 'red';
-    if (severity === '보통') return 'orange';
-    return 'green';
+    if (severity === "고위험") return "red";
+    if (severity === "중위험") return "orange";
+    return "green";
   }};
 `;
 
@@ -173,125 +183,129 @@ const DiaryPrompt = styled.p`
   margin-top: 1rem;
 `;
 
-const Sidebar = ({ onDateChange }) => {
-  const [date, setDate] = useState(new Date());
+const Sidebar = ({ onDateChange, diaryWritten }) => {
+  const [date, setDate] = useState(new Date()); // 오늘 날짜로 초기화
   const [goals, setGoals] = useState([]);
-  const [newGoal, setNewGoal] = useState('');
-  const [severity, setSeverity] = useState('낮음'); // 기본 심각도
+  const [newGoal, setNewGoal] = useState("");
+  const [severity, setSeverity] = useState("저위험"); // 기본 심각도
   const [customPlans, setCustomPlans] = useState([]);
   const [selectedDateGoals, setSelectedDateGoals] = useState([]);
-  const [selectedDateDiary, setSelectedDateDiary] = useState('');
+  const [selectedDateDiary, setSelectedDateDiary] = useState("");
   const [goalAchievementRate, setGoalAchievementRate] = useState(0); // 목표 달성률
-  const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태
+  const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태
+  const [score, setScore] = useState(0); // 설문 점수 상태 추가
 
   // Unique ID generator for local goals
   const generateUniqueId = () => {
     return `local-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  // API로부터 목표 달성률을 가져옴
+  // 설문 점수 가져오기
   useEffect(() => {
-    const fetchGoalAchievementRate = async () => {
-      try {
-        const response = await axiosInstance.get('/with/mypage/');
+    axiosInstance
+      .get("/with/mypage/")
+      .then((response) => {
         const data = response.data;
-        setGoalAchievementRate(data.goal_achievement_rate || 0);
-        setErrorMessage(''); // 오류가 없는 경우 오류 메시지를 지움
-      } catch (error) {
-        console.error('목표 달성률 가져오기 실패:', error);
-        setGoalAchievementRate(0); // 오류 발생 시 목표 달성률을 0으로 설정
-        setErrorMessage('목표 달성률을 가져오는 데 문제가 발생했습니다. 나중에 다시 시도해 주세요.');
-      }
-    };
+        const surveyScore = data.survey_score || 0;
+        setScore(surveyScore);
 
-    fetchGoalAchievementRate();
+        // 설문 점수에 따라 심각도 설정
+        if (surveyScore >= 0 && surveyScore <= 30) {
+          setSeverity("저위험"); // Low risk
+        } else if (surveyScore > 30 && surveyScore <= 60) {
+          setSeverity("중위험"); // Medium risk
+        } else if (surveyScore > 60 && surveyScore <= 100) {
+          setSeverity("고위험"); // High risk
+        }
+        setErrorMessage(""); // 오류 메시지 초기화
+        console.log(`Survey score fetched: ${surveyScore}`);
+      })
+      .catch((error) => {
+        console.error("설문 점수를 가져오는 데 실패했습니다:", error);
+        setErrorMessage(
+          "설문 점수를 가져오는 데 문제가 발생했습니다. 나중에 다시 시도해 주세요."
+        );
+        if (error.response) {
+          console.error("응답 데이터:", error.response.data);
+          console.error("응답 상태:", error.response.status);
+          console.error("응답 헤더:", error.response.headers);
+        }
+      });
   }, []);
 
-  // 목표 달성률에 따라 심각도 업데이트
-  useEffect(() => {
-    if (goalAchievementRate < 30) {
-      setSeverity('심함'); // 목표 달성률이 30 미만일 경우 심함
-    } else if (goalAchievementRate < 70) {
-      setSeverity('보통'); // 목표 달성률이 30 이상 70 미만일 경우 보통
-    } else {
-      setSeverity('낮음'); // 목표 달성률이 70 이상일 경우 낮음
-    }
-  }, [goalAchievementRate]);
+  // 컴포넌트가 처음 로드될 때 오늘 날짜의 목표와 일기 데이터를 가져옵니다.
+  const fetchGoalsAndDiary = async (selectedDate) => {
+    try {
+      console.log(
+        `Fetching goals and diary for date: ${
+          selectedDate.toISOString().split("T")[0]
+        }`
+      );
+      const response = await axiosInstance.get(
+        `/with/calendar/goal_diary/?date=${selectedDate
+          .toISOString()
+          .split("T")[0]}`
+      );
+      const { goals, diary_entries } = response.data;
 
-  // Fetch and set custom plans based on severity
-  useEffect(() => {
-    setCustomPlans(generateCustomPlans());
-  }, [severity]);
+      console.log("Received goals:", goals);
 
-  // 날짜 선택 시 목표 및 일기 불러오기
-  useEffect(() => {
-    const fetchGoalsAndDiary = async () => {
-      try {
-        console.log(`Fetching goals and diary for date: ${date.toISOString().split('T')[0]}`);
-        const response = await axiosInstance.get(`/with/calendar/goal_diary/?date=${date.toISOString().split('T')[0]}`);
-        const { goals, diary_entries } = response.data;
+      const goalsWithIds = goals
+        .map((goal) => ({
+          ...goal,
+          done: goal.is_completed,
+        }));
 
-        console.log('Received goals:', goals);
+      setSelectedDateGoals(goalsWithIds);
 
-        // 서버에서 제대로 된 ID를 제공하지 않을 경우 처리
-        const goalsWithIds = goals.map((goal) => {
-          if (!goal.id) {
-            console.warn('수신된 목표 데이터에 ID가 없습니다:', goal);
-            return null; // ID가 없는 목표를 null로 반환하여 필터링
-          }
-          return {
-            ...goal,
-            done: goal.is_completed,
-          };
-        }).filter(goal => goal !== null); // ID가 있는 목표만 필터링
-
-        setSelectedDateGoals(goalsWithIds);
-
-        if (diary_entries && diary_entries.length > 0) {
-          const diary = diary_entries[0];
-          setSelectedDateDiary(diary.content);
-        } else {
-          setSelectedDateDiary('');
-        }
-
-        console.log('Fetched data:', response.data);
-      } catch (error) {
-        console.error('데이터를 불러오는 데 실패했습니다:', error);
+      if (diary_entries && diary_entries.length > 0) {
+        const diary = diary_entries[0];
+        setSelectedDateDiary(diary.content);
+      } else {
+        setSelectedDateDiary("");
       }
-    };
 
-    fetchGoalsAndDiary();
+      console.log("Fetched data:", response.data);
+    } catch (error) {
+      console.error("데이터를 불러오는 데 실패했습니다:", error);
+    }
+  };
+
+  // 페이지가 처음 로드될 때 오늘 날짜 데이터를 가져옵니다.
+  useEffect(() => {
+    fetchGoalsAndDiary(date); // 초기 로드 시 오늘 날짜 데이터를 가져옴
   }, [date]);
 
   // 날짜 변경 핸들러
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
+    fetchGoalsAndDiary(selectedDate); // 날짜가 변경될 때마다 목표와 일기를 가져옵니다.
     if (onDateChange) onDateChange(selectedDate); // 전달받은 onDateChange 콜백 실행
   };
 
   // 목표 완료 상태 변경
   const handleGoalChange = async (id) => {
-    const goalToUpdate = selectedDateGoals.find(goal => goal.id === id);
+    const goalToUpdate = selectedDateGoals.find((goal) => goal.id === id);
 
-    // 임시 ID를 가진 목표는 서버에 업데이트하지 않음
     if (!goalToUpdate || !goalToUpdate.id) {
-      console.warn('임시 ID가 할당된 목표는 업데이트할 수 없습니다.');
       return;
     }
 
-    // 업데이트된 상태로 로컬 목표를 설정
     const updatedGoals = selectedDateGoals.map((goal) =>
       goal.id === id ? { ...goal, done: !goal.done } : goal
     );
     setSelectedDateGoals(updatedGoals);
 
     try {
-      await axiosInstance.patch(`/with/calendar/goal/${goalToUpdate.id}/completed/`, {
-        id: goalToUpdate.id,
-        is_completed: !goalToUpdate.done
-      });
+      await axiosInstance.patch(
+        `/with/calendar/goal/${goalToUpdate.id}/completed/`,
+        {
+          id: goalToUpdate.id,
+          is_completed: !goalToUpdate.done,
+        }
+      );
     } catch (error) {
-      console.error('목표 상태 업데이트에 실패했습니다:', error);
+      console.error("목표 상태 업데이트에 실패했습니다:", error);
     }
   };
 
@@ -304,118 +318,123 @@ const Sidebar = ({ onDateChange }) => {
   const handleAddGoal = async () => {
     if (newGoal.trim()) {
       const newGoalObj = {
-        id: generateUniqueId(), // Generate unique ID for local goal
+        id: generateUniqueId(),
         text: newGoal,
-        day: date.toISOString().split('T')[0],
+        day: date.toISOString().split("T")[0],
         is_completed: false,
       };
 
       try {
-        const response = await axiosInstance.post('/with/calendar/goal/create/', newGoalObj);
-        // Add new goal with the ID returned from the server
-        setSelectedDateGoals([...selectedDateGoals, { ...newGoalObj, id: response.data.id }]);
-        setNewGoal('');
+        const response = await axiosInstance.post(
+          "/with/calendar/goal/create/",
+          newGoalObj
+        );
+
+        setSelectedDateGoals([
+          ...selectedDateGoals,
+          { ...newGoalObj, id: response.data.id },
+        ]);
+        setNewGoal("");
       } catch (error) {
-        console.error('새 목표 추가에 실패했습니다:', error);
+        console.error("새 목표 추가에 실패했습니다:", error);
       }
     }
   };
 
   // 목표 삭제
   const handleDeleteGoal = async (id) => {
-    const goalToDelete = selectedDateGoals.find(goal => goal.id === id);
+    const goalToDelete = selectedDateGoals.find((goal) => goal.id === id);
 
-    // 임시 ID를 가진 목표는 삭제하지 않음
     if (!goalToDelete || !goalToDelete.id) {
-      console.warn('임시 ID가 할당된 목표는 삭제할 수 없습니다.');
       return;
     }
 
     try {
-      await axiosInstance.delete(`/with/calendar/goal/delete/${goalToDelete.id}/`);
+      await axiosInstance.delete(
+        `/with/calendar/goal/${goalToDelete.id}/delete/`
+      );
       const updatedGoals = selectedDateGoals.filter((goal) => goal.id !== id);
       setSelectedDateGoals(updatedGoals);
     } catch (error) {
-      console.error('목표 삭제에 실패했습니다:', error);
+      console.error("목표 삭제에 실패했습니다:", error);
     }
   };
 
   // 달력 타일의 클래스 결정
   const getTileClass = ({ date: tileDate, view }) => {
-    if (view === 'month') {
-      const dayGoals = goals.filter((goal) => goal.date === tileDate.toDateString());
-      const isSelectedDate = tileDate.toDateString() === date.toDateString();
+    if (view === "month") {
+      const dayGoals = selectedDateGoals.filter(
+        (goal) => goal.day === tileDate.toISOString().split("T")[0]
+      );
       const totalGoals = dayGoals.length;
       const completedGoals = dayGoals.filter((goal) => goal.done).length;
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
 
-      if (isSelectedDate) {
-        return 'react-calendar__tile--now';
+      if (tileDate.toDateString() === new Date().toDateString()) {
+        return "react-calendar__tile--now";
       }
 
       if (goalCompletion === 1) {
-        return 'react-calendar__tile--full-completion';
+        return "react-calendar__tile--full-completion";
       } else if (goalCompletion >= 0.75) {
-        return 'react-calendar__tile--high-completion';
+        return "react-calendar__tile--high-completion";
       } else if (goalCompletion >= 0.5) {
-        return 'react-calendar__tile--medium-completion';
+        return "react-calendar__tile--medium-completion";
       } else if (goalCompletion > 0) {
-        return 'react-calendar__tile--low-completion';
+        return "react-calendar__tile--low-completion";
       }
     }
-    return '';
+    return "";
   };
 
   const severePlans = [
-    '오전에 기상하기',
-    '하루 세끼 다 챙겨먹기',
-    '직접 점심 차려먹기',
-    '밥 먹고 바로 눕지 않기',
-    '방청소하기',
-    '명상하기',
-    '오늘의 칭찬할 점 쓰기',
-    '밝은노래듣기',
-    '스트레칭하기',
-    '씻기',
-    '열두시 전에 잠들기',
-    '집밖에 나가기',
-    '버킷리스트 쓰기',
-    '상담받기',
+    "오전에 기상하기",
+    "하루 세끼 다 챙겨먹기",
+    "직접 점심 차려먹기",
+    "밥 먹고 바로 눕지 않기",
+    "방청소하기",
+    "명상하기",
+    "오늘의 칭찬할 점 쓰기",
+    "밝은노래듣기",
+    "스트레칭하기",
+    "씻기",
+    "열두시 전에 잠들기",
+    "집밖에 나가기",
+    "버킷리스트 쓰기",
+    "상담받기",
   ];
 
   const moderatePlans = [
-    '가족과 친구와 소통하기',
-    '자기개발 하기',
-    '하루 세끼 다 챙겨먹기',
-    '직접 점심 차려먹기',
-    '방청소하기',
-    '조깅하기',
-    '명상하기',
-    '오늘의 칭찬할 점 쓰기',
-    '열두시 전에 잠들기',
-    '사람 만나기',
-    '45분 이상 일주일 3회 이상 꾸준한 유산소운동',
-    '1만보 이상 걷기',
+    "가족과 친구와 소통하기",
+    "자기개발 하기",
+    "하루 세끼 다 챙겨먹기",
+    "직접 점심 차려먹기",
+    "방청소하기",
+    "조깅하기",
+    "명상하기",
+    "오늘의 칭찬할 점 쓰기",
+    "열두시 전에 잠들기",
+    "사람 만나기",
+    "45분 이상 일주일 3회 이상 꾸준한 유산소운동",
+    "1만보 이상 걷기",
   ];
 
-  const lowPlans = [
-    '목표세우기',
-    '취미생활하기',
-  ];
+  const lowPlans = ["목표세우기", "취미생활하기"];
 
   const generateCustomPlans = () => {
     let plans = [];
-    if (severity === '심함') {
+    if (severity === "고위험") {
       plans = severePlans
-        .filter((plan) => plan !== '상담받기')
+        .filter((plan) => plan !== "상담받기")
         .sort(() => 0.5 - Math.random())
         .slice(0, 4);
-      plans.unshift('상담받기');
-    } else if (severity === '보통') {
+      plans.unshift("상담받기");
+    } else if (severity === "중위험") {
       plans = moderatePlans.sort(() => 0.5 - Math.random()).slice(0, 5);
-    } else if (severity === '낮음') {
+    } else if (severity === "저위험") {
       plans = lowPlans;
     }
+    console.log("Generated plans:", plans);
     return plans;
   };
 
@@ -440,7 +459,9 @@ const Sidebar = ({ onDateChange }) => {
                 onChange={() => handleGoalChange(goal.id)}
               />
               <GoalText>{goal.text}</GoalText>
-              <DeleteButton onClick={() => handleDeleteGoal(goal.id)}>×</DeleteButton>
+              <DeleteButton onClick={() => handleDeleteGoal(goal.id)}>
+                ×
+              </DeleteButton>
             </GoalItem>
           ))}
         </GoalList>
@@ -454,7 +475,7 @@ const Sidebar = ({ onDateChange }) => {
           <GoalButton onClick={handleAddGoal}>추가</GoalButton>
         </GoalItem>
         {/* 일기 작성 안내 메시지 */}
-        {selectedDateDiary === '' && (
+        {selectedDateDiary === "" && !diaryWritten && (
           <DiaryPrompt>오늘의 일기를 작성하세요!</DiaryPrompt>
         )}
       </GoalContainer>
@@ -462,18 +483,25 @@ const Sidebar = ({ onDateChange }) => {
         <CustomPlanHeader>
           맞춤 계획 추천
           <RiskLabel severity={severity}>
-            - {severity === '심함' ? '고위험' : severity === '보통' ? '중위험' : '저위험'}
+            - {severity === "고위험"
+              ? "고위험"
+              : severity === "중위험"
+              ? "중위험"
+              : "저위험"}
           </RiskLabel>
         </CustomPlanHeader>
         <CustomPlanDescription>
-          사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을 제공합니다. 마이페이지에서 재검사가 가능합니다.
+          사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을
+          제공합니다. 마이페이지에서 재검사가 가능합니다.
         </CustomPlanDescription>
         <CustomPlanList>
           {customPlans.map((plan, index) => (
             <CustomPlanItem key={index}>{plan}</CustomPlanItem>
           ))}
         </CustomPlanList>
-        {errorMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>}
+        {errorMessage && (
+          <p style={{ color: "red", fontWeight: "bold" }}>{errorMessage}</p>
+        )}
       </CustomPlanContainer>
     </SidebarContainer>
   );

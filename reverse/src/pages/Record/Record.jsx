@@ -362,7 +362,7 @@ const Record = () => {
         <SubContainer>
           <Sidebar 
             onDateChange={handleDateChange} 
-            diaryWritten={diaryWritten}  // Add this prop
+            diaryWritten={diaryWritten}  // Pass diaryWritten prop
           />
           <Content>
             <PostContainer>
@@ -461,7 +461,7 @@ const Record = () => {
           onRequestClose={() => setLoginPromptIsOpen(false)}
           style={customStyles}
           contentLabel="Login Prompt"
-          ariaHideApp={false}SS
+          ariaHideApp={false}
         >
           <h2>로그인 필요</h2>
           <Separator />
