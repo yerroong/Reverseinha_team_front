@@ -3,8 +3,9 @@ import styled from "styled-components";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axiosInstance from "../axiosInstance";
+import Modal from "react-modal";
+import HelpIcon from "../../img/help.png";
 
-// 스타일 컴포넌트 정의
 const SidebarContainer = styled.div`
   width: 100%;
   max-width: 18.75rem;
@@ -113,8 +114,9 @@ const DeleteButton = styled.button`
 `;
 
 const GoalButton = styled.button`
-  padding: 0.3125rem 0.625rem;
-  background-color: #004EE5;
+  margin-top: 0.625rem;
+  padding: 0.4rem 0.5rem;
+  background-color: #004ee5;
   color: #fff;
   border: none;
   border-radius: 0.3125rem;
@@ -122,7 +124,6 @@ const GoalButton = styled.button`
   font-size: 0.7rem;
   height: 1.8rem;
   width: 3rem;
-
   &:hover {
     background-color: #2b6ae7;
   }
@@ -183,6 +184,23 @@ const DiaryPrompt = styled.p`
   margin-top: 1rem;
 `;
 
+const HelpButton = styled.img`
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  margin-top: 1rem;
+  align-self: flex-start; // Align the icon to the left
+  margin-left: 1rem;
+  margin-top: 1rem;
+`;
+
+const Separator = styled.div`
+  border-bottom: 1px solid #567191;
+  width: 90%;
+  margin: 1rem 0;
+  align-self: center;
+`;
+
 const Sidebar = ({ onDateChange, diaryWritten }) => {
   // 한국 시간으로 오늘 날짜 가져오기
   const today = new Date(
@@ -196,9 +214,9 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   const [customPlans, setCustomPlans] = useState([]);
   const [selectedDateGoals, setSelectedDateGoals] = useState([]);
   const [selectedDateDiary, setSelectedDateDiary] = useState("");
-  const [goalAchievementRate, setGoalAchievementRate] = useState(0); // 목표 달성률
   const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태
   const [score, setScore] = useState(0); // 설문 점수 상태 추가
+  const [helpModalIsOpen, setHelpModalIsOpen] = useState(false); // 도움말 모달 상태 추가
 
   // Unique ID generator for local goals
   const generateUniqueId = () => {
@@ -243,19 +261,17 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
     setCustomPlans(generateCustomPlans());
   }, [severity]);
 
-  // 현재 월의 목표 데이터를 가져오기
+  // 모든 날짜의 목표 데이터를 한 번에 가져오기
   useEffect(() => {
-    const fetchGoalsForMonth = async () => {
+    const fetchAllGoals = async () => {
       try {
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1; // 0-indexed이므로 +1 필요
-        const response = await axiosInstance.get(`/with/calendar/goal/monthly/?year=${year}&month=${month}`);
-        const monthlyGoals = response.data;
+        const response = await axiosInstance.get("/with/calendar/goal/all/");
+        const allGoals = response.data;
 
-        console.log("Monthly goals fetched:", monthlyGoals);
+        console.log("All goals fetched:", allGoals);
 
         // 날짜별로 목표 데이터를 정리
-        const goalsByDateObj = monthlyGoals.reduce((acc, goal) => {
+        const goalsByDateObj = allGoals.reduce((acc, goal) => {
           const day = new Date(goal.day).toISOString().split("T")[0];
           if (!acc[day]) {
             acc[day] = [];
@@ -269,12 +285,12 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
 
         setGoalsByDate(goalsByDateObj);
       } catch (error) {
-        console.error("이번 달 목표를 가져오는 데 실패했습니다:", error);
+        console.error("모든 목표를 가져오는 데 실패했습니다:", error);
       }
     };
 
-    fetchGoalsForMonth(); // 현재 월의 목표 데이터를 가져옵니다.
-  }, [date]);
+    fetchAllGoals(); // 컴포넌트가 마운트될 때 모든 목표 데이터를 가져옵니다.
+  }, []);
 
   // 선택된 날짜에 따른 목표 및 일기 가져오기
   useEffect(() => {
@@ -509,6 +525,30 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
     return plans;
   };
 
+  // 도움말 모달 열기
+  const openHelpModal = () => {
+    setHelpModalIsOpen(true);
+  };
+
+  // 도움말 모달 닫기
+  const closeHelpModal = () => {
+    setHelpModalIsOpen(false);
+  };
+
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      width: "500px",
+      padding: "20px",
+      textAlign: "center",
+    },
+  };
+
   return (
     <SidebarContainer>
       <StyledCalendar
@@ -571,6 +611,26 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
           ))}
         </CustomPlanList>
       </CustomPlanContainer>
+
+      <HelpButton src={HelpIcon} alt="Help" onClick={openHelpModal} />
+
+      {helpModalIsOpen && (
+        <Modal
+          isOpen={helpModalIsOpen}
+          onRequestClose={closeHelpModal}
+          style={customStyles}
+          contentLabel="Help"
+          ariaHideApp={false}
+        >
+          <h2>일기 서비스 도움말</h2>
+          <Separator />
+          <p>날짜마다 매일 자신의 일기를 캘린더에 작성하고 오늘의 목표를 추가하세요!</p>
+          <p>목표를 완료할수록 달력이 파란색으로 물듭니다!</p>
+          <p>자신의 고립점수에 맞는 맞춤 계획 추천과</p>
+          <p>곧 업데이트될 맞춤 멘토링/상담 서비스 추천을 받아보세요!</p>
+          <GoalButton onClick={closeHelpModal}>확인</GoalButton>
+        </Modal>
+      )}
     </SidebarContainer>
   );
 };

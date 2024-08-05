@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axiosInstance from '../axiosInstance';
@@ -153,6 +153,15 @@ const Communitywrite = () => {
   const [file, setFile] = useState(null);
   const [isCommunityVisible, setIsCommunityVisible] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.isEdit) {
+      setTitle(location.state.title);
+      setContent(location.state.content);
+      setFile(location.state.imageUrl);
+    }
+  }, [location.state]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -161,7 +170,6 @@ const Communitywrite = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 필수 필드 검증
     if (!title.trim() || !content.trim()) {
       alert('제목과 내용을 모두 입력해 주세요.');
       return;
@@ -172,82 +180,98 @@ const Communitywrite = () => {
 
   const handleCommunityConfirm = async () => {
     setIsCommunityVisible(false);
-  
-    try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('content', content); // No need to strip HTML tags
+    
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
 
-      if (file) {
-        formData.append('image', file); // 'image' 키로 파일 추가
-        console.log('File added to FormData:', file.name);
-      }
-  
-      console.log('FormData entries:', Array.from(formData.entries())); // 디버깅용
-  
-      const response = await axiosInstance.post('with/community/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      console.log('Response:', response);
-      
-      if (response.status === 200 || response.status === 201) {
-        const postId = response.data.id; // 생성된 게시물 ID 가져오기
-        navigate(`/Community/${postId}`); // 생성된 게시물로 이동
+    if (file && typeof file === 'object') {
+      formData.append('image', file);
+    }
+
+    try {
+      if (location.state && location.state.isEdit) {
+        // 수정 모드인 경우 기존 게시물 업데이트
+        const response = await axiosInstance.put(`with/community/${location.state.postId}/update/`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200 || response.status === 201) {
+          navigate(`/community/${location.state.postId}`);
+        } else {
+          console.error('포스트 수정 실패:', response.data);
+        }
       } else {
-        console.error('포스트 등록 실패:', response.data);
+        // 새 게시물 생성
+        const response = await axiosInstance.post('with/community/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200 || response.status === 201) {
+          const postId = response.data.id;
+          navigate(`/community/${postId}`);
+        } else {
+          console.error('포스트 등록 실패:', response.data);
+        }
       }
     } catch (error) {
-      console.error('포스트 등록 에러:', error.response ? error.response.data : error);
+      console.error('포스트 등록/수정 에러:', error.response ? error.response.data : error);
     }
   };
 
   const handleCommunityCancel = () => {
     setIsCommunityVisible(false);
+    if (location.state && location.state.isEdit) {
+      navigate(`/community/${location.state.postId}`);
+    } else {
+      navigate('/community');
+    }
   };
 
   return (
     <>
       <GlobalStyle isDimmed={isCommunityVisible} />
       <Container>
-      <CommunityContainer>
-        <Content>
-          <PostContainer>
-            <Form onSubmit={handleSubmit}>
-              <Input
-                type="text"
-                id="title"
-                placeholder="제목을 입력해 주세요."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-              <QuillWrapper>
-                <ReactQuill
-                  value={content}
-                  onChange={setContent}
-                  modules={modules}
-                  formats={formats}
-                  placeholder="내용을 입력해 주세요."
+        <CommunityContainer>
+          <Content>
+            <PostContainer>
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  type="text"
+                  id="title"
+                  placeholder="제목을 입력해 주세요."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
                 />
-              </QuillWrapper>
-              <FileInput type="file" onChange={handleFileChange} />
-              <ButtonContainer>
-                <Button type="submit">등록</Button>
-              </ButtonContainer>
-            </Form>
-          </PostContainer>
-        </Content>
-      </CommunityContainer>
+                <QuillWrapper>
+                  <ReactQuill
+                    value={content}
+                    onChange={setContent}
+                    modules={modules}
+                    formats={formats}
+                    placeholder="내용을 입력해 주세요."
+                  />
+                </QuillWrapper>
+                <FileInput type="file" onChange={handleFileChange} />
+                <ButtonContainer>
+                  <Button type="submit">등록</Button>
+                </ButtonContainer>
+              </Form>
+            </PostContainer>
+          </Content>
+        </CommunityContainer>
       </Container>
 
       {isCommunityVisible && (
         <CommunityOverlay>
           <Community>
             <CommunityTitle>상세정보</CommunityTitle>
-            <p>글을 등록하시겠습니까?</p>
+            <p>글을 {location.state && location.state.isEdit ? '수정' : '등록'}하시겠습니까?</p>
             <CommunityButtonContainer>
               <CommunityButton onClick={handleCommunityConfirm}>확인</CommunityButton>
               <Button onClick={handleCommunityCancel}>취소</Button>
@@ -260,6 +284,7 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
+
 
 
 
