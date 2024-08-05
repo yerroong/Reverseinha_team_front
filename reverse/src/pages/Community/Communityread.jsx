@@ -15,11 +15,6 @@ const stripHTMLTags = (str) => {
   return str.replace(/<[^>]*>/g, '');
 };
 
-const getImageUrl = (path) => {
-  if (!path) return null;
-  return `http://your-backend-url${path}`;  // 이미지 URL을 절대 경로로 변환
-};
-
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -219,6 +214,8 @@ const Communityread = () => {
     }
   };
 
+  const getImageUrl = (url) => `${url}?t=${new Date().getTime()}`;
+
   if (!post || currentUserNickname === null) {
     return <div>Loading...</div>;
   }
@@ -270,7 +267,7 @@ const Communityread = () => {
                 <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{stripHTMLTags(content)}</p>
                 {post.image && (
                   <img
-                    src={post.image}
+                    src={getImageUrl(post.image)}
                     alt="첨부된 파일"
                     style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover' }}
                   />
@@ -293,6 +290,7 @@ const Communityread = () => {
 };
 
 export default Communityread;
+
 
 
 

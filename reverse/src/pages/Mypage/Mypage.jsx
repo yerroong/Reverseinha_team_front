@@ -155,12 +155,12 @@ const Mypage = () => {
   const [score, setScore] = useState(0);
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [counselEntries, setCounselEntries] = useState([]);
-  //const [goals, setGoals] = useState([]);
-  //const [goalAchievementRate, setGoalAchievementRate] = useState(0);
+  const [goals, setGoals] = useState([]);
+  const [goalAchievementRate, setGoalAchievementRate] = useState(0);
 
   const diaryListRef = useRef(null);
   const counselListRef = useRef(null);
-  //const goalListRef = useRef(null);
+  const goalListRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -170,8 +170,8 @@ const Mypage = () => {
         setScore(data.survey_score || 0);
         setDiaryEntries(data.diary_entries || []);
         setCounselEntries(data.counseling_requests || []);
-        //setGoals(data.goals || []);
-        //setGoalAchievementRate(data.goal_achievement_rate || 0);
+        setGoals(data.goals || []);
+        setGoalAchievementRate(data.goal_achievement_rate || 0);
       })
       .catch(error => {
         if (error.response) {
@@ -243,7 +243,28 @@ const Mypage = () => {
           </InfoBox>
         </InfoContainerRow>
         <InfoContainerRow>
-
+        <InfoBox width="17rem" center>
+          <InfoTitle>역대 목표 달성률</InfoTitle>
+          <Line src="/line.png" />
+          <InfoScore>{goalAchievementRate}%</InfoScore>
+          </InfoBox>
+          <InfoBox width="43.5rem" flexDirection="row" center={false}>
+          <Margin>
+            <ScrollButtonContainer>
+              <ScrollButton src="/uparrow.png" onClick={() => handleScroll(goalListRef, 'up')} />
+              <ListContainer>
+                <InfoList height="13rem" maxHeight="13rem" isGoal={true} ref={goalListRef}>
+                  {goals.map((goal, index) => (
+                    <CheckContainer key={index}>
+                      <Check /> {goal}
+                    </CheckContainer>
+                  ))}
+                </InfoList>
+              </ListContainer>
+              <ScrollButton src="/underarrow.png" onClick={() => handleScroll(goalListRef, 'down')} />
+            </ScrollButtonContainer>
+          </Margin>
+          </InfoBox>
         </InfoContainerRow>
       </InfoContainer>
     </Container>
@@ -256,25 +277,3 @@ export default Mypage;
 
 
 
-/*<InfoBox width="17rem" center>
-<InfoTitle>역대 목표 달성률</InfoTitle>
-<Line src="/line.png" />
-<InfoScore>{goalAchievementRate}%</InfoScore>
-</InfoBox>
-<InfoBox width="43.5rem" flexDirection="row" center={false}>
-<Margin>
-  <ScrollButtonContainer>
-    <ScrollButton src="/uparrow.png" onClick={() => handleScroll(goalListRef, 'up')} />
-    <ListContainer>
-      <InfoList height="13rem" maxHeight="13rem" isGoal={true} ref={goalListRef}>
-        {goals.map((goal, index) => (
-          <CheckContainer key={index}>
-            <Check /> {goal}
-          </CheckContainer>
-        ))}
-      </InfoList>
-    </ListContainer>
-    <ScrollButton src="/underarrow.png" onClick={() => handleScroll(goalListRef, 'down')} />
-  </ScrollButtonContainer>
-</Margin>
-</InfoBox>*/
