@@ -1,9 +1,9 @@
-!![logo](https://github.com/user-attachments/assets/a56605c9-5d08-4fdf-bb0e-a3150567f3c3)
+[logo](https://github.com/user-attachments/assets/a56605c9-5d08-4fdf-bb0e-a3150567f3c3)
 
 
 # 위드
 
----
+
 
 ### 고립을 벗어나 함께하는 순간
 
