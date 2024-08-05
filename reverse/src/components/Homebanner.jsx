@@ -88,7 +88,8 @@ export default class Homebanner extends Component {
                         font-size: 2.5rem;
                         font-style: bold;
                         font-family: inherit;
-                        font-weight: 500;
+                        font-weight: 700;
+                        margin-left: 0.5rem;
                     }
 
                     .overlay-text2 {
@@ -101,7 +102,7 @@ export default class Homebanner extends Component {
                         font-size: 1.5rem;
                         font-style: bold;
                         font-family: inherit;
-                        font-weight: 400;
+                        font-weight: 500;
                     }
                     .line {
                         position: absolute;
