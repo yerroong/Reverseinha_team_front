@@ -205,18 +205,22 @@ const Community = () => {
   const handleSort = (order) => {
     setSortOrder(order);
     setIsDropdownOpen(false);
-
+  
     if (order === '인기순') {
       axiosInstance
-        .get('/with/community/search/?sort=likes')
+        .get('/with/community/search/?sort=popular')
         .then((response) => {
-          setFilteredPosts(response.data);
+          // 검색어가 있을 경우 검색된 결과에서 인기순 정렬
+          const results = response.data.filter((post) =>
+            post.title.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setFilteredPosts(results);
         })
         .catch((error) => {
           console.error('Error fetching sorted posts:', error);
         });
     } else {
-      let sortedPosts = [...posts];
+      let sortedPosts = [...filteredPosts];
       if (order === '최신순') {
         sortedPosts.sort((a, b) => b.id - a.id);
       } else if (order === '오래된순') {
