@@ -77,12 +77,9 @@ src
  ┃ ┣ Pretendard-SemiBold.woff
  ┃ ┗ Pretendard-Regular.woff
  ┣ img
- ┃ ┣ googlelogo.png
  ┃ ┣ homeImg1.jpg
  ┃ ┣ homeImg2.jpg
- ┃ ┣ homeImg3.jpg
- ┃ ┣ kakaologo.png
- ┃ ┗ naverlogo.png
+ ┃ ┗ homeImg3.jpg
  ┣ pages
  ┃ ┣ Community
  ┃ ┃ ┣ Community.jsx
