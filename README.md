@@ -1,14 +1,13 @@
-<center>
- ![logo](https://github.com/user-attachments/assets/ce554290-355a-4814-afc7-f7e005f5c742)
-</center>
-<br/><br/><br/>
-<center>
- # 위드
-</center>
+<p align="center">
+  <img src="file:///mnt/data/image.png" alt="logo">
+</p>
 
-<center>
- ### 고립을 벗어나 함께하는 순간
-</center>
+<h1 align="center">위드</h1>
+
+<h3 align="center">
+  <strong>고립을 벗어나 함께하는 순간</strong>
+</h3>
+
 
 
 
@@ -130,9 +129,10 @@ src
 
 **Frontend(Web)**
 
-- **Language :** JavaScript, HTML, CSS
-- **Library & Framework :** React, Styled-Components, Axios,
+- **Language :** JavaScript
+- **Library & Framework :** React, Styled-Components, Axios, react-slick, slick-carousel, react-router-dom, react-modal, react-quill, react-calendar, web-vitals, jwt-decode
 
+**Team ReverseInha**
 - **버전 :** [Github](https://github.com/Reverseinha)
 - **협업 툴 :**  [Notion](https://www.notion.so/5cbe671b4dc648dc96e642ac4e8b6bbb?pvs=21)
 - **디자인 :**  [Figam](https://www.figma.com/design/2ZcHjlZu1K3I61SGM8mJVv/%EB%A9%8B%EC%82%AC-%EC%A4%91%EC%95%99%ED%95%B4%EC%BB%A4%ED%86%A4?node-id=1-570&t=r9vWFgr8SpenmhbW-1)
