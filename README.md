@@ -1,12 +1,10 @@
 <center>
- ![logo](https://github.com/user-attachments/assets/657aed55-3274-4162-8ba2-0eb4d5b8aa37)
+ ![logo](https://github.com/user-attachments/assets/ce554290-355a-4814-afc7-f7e005f5c742)
 </center>
-
+<br/><br/><br/>
 <center>
  # 위드
 </center>
-
-
 
 <center>
  ### 고립을 벗어나 함께하는 순간
