@@ -177,12 +177,27 @@ const consultingData = [
     availableForLocation: false,
   },
   {
-    id: 'kimOkJa',
+    id: 'ChoYeunjeong',
     imgSrc: '/consul5.png',
     title: '최윤정',
     type: '상담사',
     description:
       '#외로움 #고독 #정신상담 #심리상담 #비대면 인하대 정신센터 근무중입니다. 휴일제외 12~18시 상담 대기중',
+    prices: {
+      message: '30,000원',
+      call: '30,000원',
+      site: '문의하기',
+    },
+    availableForCall: true,
+    availableForLocation: false,
+  },
+  {
+    id: 'ParkHyunWoo',
+    imgSrc: '/consul6.png',
+    title: '박현우',
+    type: '상담사',
+    description:
+      '#자립정착 #보호종료 #심리상담 #정부지원상담 #비대면 자립을 준비하는 청년들을 지원합니다. 평일 9~12시 상담 대기중',
     prices: {
       message: '30,000원',
       call: '30,000원',
