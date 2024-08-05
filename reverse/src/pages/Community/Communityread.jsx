@@ -15,6 +15,10 @@ const stripHTMLTags = (str) => {
   return str.replace(/<[^>]*>/g, '');
 };
 
+const getImageUrl = (path) => {
+  return path ? `${process.env.REACT_APP_BACKEND_URL}${path}?t=${new Date().getTime()}` : null;
+};
+
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -37,18 +41,15 @@ const ContentContainer = styled.div`
   height: 32rem;
   max-height: 32rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start; /* 수정: 왼쪽 정렬 */
+  align-items: flex-start; /* 수정: 상단 정렬 */
+  overflow: auto;
 `;
 
 const Content = styled.div`
-  width: 60rem;
-  height: 30rem;
+  width: 100%;
+  height: auto;
   max-height: 30rem;
-  overflow-y: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 1rem;
   box-sizing: border-box;
 `;
@@ -258,12 +259,12 @@ const Communityread = () => {
               />
             ) : (
               <>
-                <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{stripHTMLTags(content)}</p>
+                <p style={{ width: '100%', textAlign: 'left' }}>{stripHTMLTags(content)}</p>
                 {post.image && (
                   <img
-                    src={`${post.image}?t=${new Date().getTime()}`}
+                    src={getImageUrl(post.image)}
                     alt="첨부된 파일"
-                    style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover' }}
+                    style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover', textAlign: 'left' }}
                   />
                 )}
               </>
@@ -284,7 +285,6 @@ const Communityread = () => {
 };
 
 export default Communityread;
-
 
 
 

@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://withinha.kro.kr', // API의 기본 URL
+  baseURL: process.env.REACT_APP_BACKEND_URL, // 환경 변수를 사용하여 기본 URL 설정
   headers: {
     'Content-Type': 'application/json',
   },
@@ -14,9 +13,6 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('access_token'); // 저장된 토큰 가져오기
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // 요청 헤더에 토큰 추가
-      console.log('Token added to request:', token); // 콘솔에 토큰 출력
-    } else {
-      console.warn('No token found in localStorage');
     }
     return config;
   },
@@ -27,17 +23,9 @@ axiosInstance.interceptors.request.use(
 
 // 응답 인터셉터 설정
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response) {
-      if (error.response.status === 401) {
-        console.error('Unauthorized: Token is invalid or expired');
-        handleLogout();
-      }
-    } else if (error.code === 'ECONNABORTED') {
-      console.error('Timeout error: Server took too long to respond');
+    if (error.response && error.response.status === 401) {
       handleLogout();
     }
     return Promise.reject(error);
