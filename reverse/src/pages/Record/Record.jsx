@@ -250,6 +250,7 @@ const Record = () => {
         setDiaryExists(true); // 일기 존재 여부 업데이트
         setIsEditing(false); // 수정 상태 초기화
         setDiaryWritten(true); // 일기 작성 완료
+        fetchDiary(currentDate); // Immediately update the diary status
       } else {
         setIsSuccess(false);
         console.error("일기 제출 실패");
@@ -301,6 +302,7 @@ const Record = () => {
         setIsSuccess(true);
         console.log("일기 수정 성공:", response.data);
         setDiaryWritten(true); // 일기 수정 완료
+        fetchDiary(currentDate); // Immediately update the diary status
       } else {
         setIsSuccess(false);
         console.error("일기 수정 실패");
@@ -339,6 +341,7 @@ const Record = () => {
         setDiaryExists(false); // 일기 삭제 표시
         setDiaryWritten(false); // 일기 미작성
         setIsDialogVisible(false); // 팝업창 닫기
+        fetchDiary(currentDate); // Immediately update the diary status
       } else {
         setIsSuccess(false);
         console.error("일기 삭제 실패");
@@ -349,11 +352,48 @@ const Record = () => {
     }
   };
 
+  const handleGoalDelete = async (goalId) => {
+    // Handle goal deletion
+    try {
+      const response = await axiosInstance.delete(`/with/calendar/goal/${goalId}/delete/`);
+
+      if (response.status === 204) {
+        console.log("Goal deleted successfully");
+        // Update UI or state as needed after goal deletion
+      } else {
+        console.error("Goal deletion failed");
+      }
+    } catch (error) {
+      console.error("Goal deletion error:", error.response?.data || error.message);
+    }
+  };
+
+  const fetchSurveyScore = async () => {
+    // Fetch survey score
+    try {
+      const response = await axiosInstance.get("/with/score/");
+
+      if (response.status === 200) {
+        const { survey_score } = response.data;
+        console.log("Survey score fetched successfully:", survey_score);
+        // Update UI or state with the survey score as needed
+      } else {
+        console.error("Failed to fetch survey score");
+      }
+    } catch (error) {
+      console.error("Survey score fetch error:", error.response?.data || error.message);
+    }
+  };
+
   const handleLoginConfirm = () => {
     // 로그인 프롬프트 확인 핸들러
     setLoginPromptIsOpen(false);
     window.location.href = "/login"; // 로그인 페이지로 이동
   };
+
+  useEffect(() => {
+    fetchSurveyScore(); // Fetch survey score when component mounts
+  }, []);
 
   return (
     <>
@@ -362,7 +402,7 @@ const Record = () => {
         <SubContainer>
           <Sidebar 
             onDateChange={handleDateChange} 
-            diaryWritten={diaryWritten}  // Pass diaryWritten prop
+            diaryWritten={diaryWritten}  // Add this prop
           />
           <Content>
             <PostContainer>

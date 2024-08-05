@@ -158,6 +158,8 @@ const consultingData = [
       call: '무료',
       site: '사이트',
     },
+    availableForCall: true,
+    availableForLocation: true,
   },
   {
     id: 'kimYoungMi',
@@ -171,6 +173,8 @@ const consultingData = [
       call: '30,000원',
       site: '문의하기',
     },
+    availableForCall: true,
+    availableForLocation: false,
   },
   {
     id: 'kimOkJa',
@@ -184,6 +188,8 @@ const consultingData = [
       call: '30,000원',
       site: '문의하기',
     },
+    availableForCall: true,
+    availableForLocation: false,
   },
 ];
 
@@ -193,6 +199,8 @@ const Consulting = () => {
     free: false,
     premium: false,
     searchTerm: '',
+    phoneConsultation: false,
+    inPersonConsultation: false,
   });
 
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -215,13 +223,32 @@ const Consulting = () => {
   };
 
   const filteredData = consultingData.filter((consultant) => {
-    const matchesFree = filters.free ? consultant.prices.message === '무료' : true;
-    const matchesPremium = filters.premium ? consultant.prices.message !== '무료' : true;
+    // Match phone consultation filter
+    const matchesPhoneConsultation = filters.phoneConsultation ? consultant.availableForCall : true;
+
+    // Match in-person consultation filter
+    const matchesInPersonConsultation = filters.inPersonConsultation
+      ? consultant.id === 'supportCenter' // Only support center provides in-person consultation
+      : true;
+
+    // Match both "무료" and "프리미엄" filters
+    const matchesFreeAndPremium =
+      (filters.free && filters.premium) || // If both free and premium are selected
+      (!filters.free && !filters.premium) || // If neither is selected
+      (filters.free && consultant.prices.message === '무료') || // If free is selected and consultant is free
+      (filters.premium && consultant.prices.message !== '무료'); // If premium is selected and consultant is premium
+
+    // Match search term
     const matchesSearchTerm =
       consultant.title.includes(filters.searchTerm) ||
       consultant.description.includes(filters.searchTerm);
 
-    return matchesFree && matchesPremium && matchesSearchTerm;
+    return (
+      matchesPhoneConsultation &&
+      matchesInPersonConsultation &&
+      matchesFreeAndPremium &&
+      matchesSearchTerm
+    );
   });
 
   return (
@@ -254,12 +281,14 @@ const Consulting = () => {
                   </CallIconWrapper>
                   <PriceText>전화상담: {consultant.prices.call}</PriceText>
                 </Price>
-                <Price onClick={handlePriceClick}>
-                  <LocationIconWrapper>
-                    <PriceIcon src="/location.png" alt="Location" />
-                  </LocationIconWrapper>
-                  <PriceText>현장상담: {consultant.prices.site}</PriceText>
-                </Price>
+                {consultant.availableForLocation && (
+                  <Price onClick={handlePriceClick}>
+                    <LocationIconWrapper>
+                      <PriceIcon src="/location.png" alt="Location" />
+                    </LocationIconWrapper>
+                    <PriceText>현장: {consultant.prices.site}</PriceText>
+                  </Price>
+                )}
               </Prices>
             </ResultItem>
           ))}

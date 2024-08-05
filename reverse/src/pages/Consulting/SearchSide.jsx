@@ -114,6 +114,8 @@ const SearchSide = ({ onFilterChange }) => {
     free: false,
     premium: false,
     searchTerm: '',
+    phoneConsultation: false,
+    inPersonConsultation: false,
   });
 
   const handleFilterChange = (filterType, value) => {
@@ -140,19 +142,23 @@ const SearchSide = ({ onFilterChange }) => {
         <FilterSection>
           <FilterTitle>찾는 유형</FilterTitle>
           <FilterLabel>
-            <FilterCheckbox type="checkbox" />
-            비대면 프로그램
-          </FilterLabel>
-          <FilterLabel>
-            <FilterCheckbox type="checkbox" />
-            대면프로그램
-          </FilterLabel>
-          <FilterLabel>
-            <FilterCheckbox type="checkbox" />
+            <FilterCheckbox
+              type="checkbox"
+              checked={filters.phoneConsultation}
+              onChange={() =>
+                handleFilterChange('phoneConsultation', !filters.phoneConsultation)
+              }
+            />
             전화상담
           </FilterLabel>
           <FilterLabel>
-            <FilterCheckbox type="checkbox" />
+            <FilterCheckbox
+              type="checkbox"
+              checked={filters.inPersonConsultation}
+              onChange={() =>
+                handleFilterChange('inPersonConsultation', !filters.inPersonConsultation)
+              }
+            />
             대면상담
           </FilterLabel>
         </FilterSection>
