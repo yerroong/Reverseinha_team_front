@@ -1,3 +1,5 @@
+// Sidebar.jsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Calendar from 'react-calendar';
@@ -28,20 +30,21 @@ const StyledCalendar = styled(Calendar)`
     border-radius: 0.625rem;
   }
   .react-calendar__tile--now {
-    background-color: #FFFACD !important;
-  }
-  .react-calendar__tile--active {
-    background-color: #ff7070 !important;
-  }
-  .react-calendar__tile--some-completion {
-    background-color: #BBDEFB !important;
-  }
-  .react-calendar__tile--half-completion {
-    background-color: #8c95f7 !important;
+    background-color: #cccccc !important; /* 회색으로 선택된 날짜 표시 */
   }
   .react-calendar__tile--full-completion {
-    background-color: #007BFF !important;
+    background-color: #003366 !important; /* 가장 진한 파란색 */
     color: white !important;
+  }
+  .react-calendar__tile--high-completion {
+    background-color: #336699 !important; /* 중간 정도의 파란색 */
+    color: white !important;
+  }
+  .react-calendar__tile--medium-completion {
+    background-color: #6699cc !important; /* 중간 정도의 파란색 */
+  }
+  .react-calendar__tile--low-completion {
+    background-color: #99ccff !important; /* 가장 연한 파란색 */
   }
 `;
 
@@ -89,7 +92,7 @@ const GoalInput = styled.input`
 
 const Checkbox = styled.input.attrs({ type: 'checkbox' })`
   margin-right: 0.625rem;
-  accent-color: #007BFF;
+  accent-color: #007bff;
 `;
 
 const DeleteButton = styled.button`
@@ -104,7 +107,7 @@ const DeleteButton = styled.button`
 const GoalButton = styled.button`
   margin-top: 0.625rem;
   padding: 0.3125rem 0.625rem;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 0.3125rem;
@@ -181,6 +184,11 @@ const Sidebar = ({ onDateChange }) => {
   const [goalAchievementRate, setGoalAchievementRate] = useState(0); // 목표 달성률
   const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태
 
+  // Unique ID generator for local goals
+  const generateUniqueId = () => {
+    return `local-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   // API로부터 목표 달성률을 가져옴
   useEffect(() => {
     const fetchGoalAchievementRate = async () => {
@@ -226,7 +234,7 @@ const Sidebar = ({ onDateChange }) => {
         console.log('Received goals:', goals);
 
         // 서버에서 제대로 된 ID를 제공하지 않을 경우 처리
-        const goalsWithIds = goals.map((goal, index) => {
+        const goalsWithIds = goals.map((goal) => {
           if (!goal.id) {
             console.warn('수신된 목표 데이터에 ID가 없습니다:', goal);
             return null; // ID가 없는 목표를 null로 반환하여 필터링
@@ -279,6 +287,7 @@ const Sidebar = ({ onDateChange }) => {
 
     try {
       await axiosInstance.patch(`/with/calendar/goal/${goalToUpdate.id}/completed/`, {
+        id: goalToUpdate.id,
         is_completed: !goalToUpdate.done
       });
     } catch (error) {
@@ -295,6 +304,7 @@ const Sidebar = ({ onDateChange }) => {
   const handleAddGoal = async () => {
     if (newGoal.trim()) {
       const newGoalObj = {
+        id: generateUniqueId(), // Generate unique ID for local goal
         text: newGoal,
         day: date.toISOString().split('T')[0],
         is_completed: false,
@@ -334,16 +344,23 @@ const Sidebar = ({ onDateChange }) => {
   const getTileClass = ({ date: tileDate, view }) => {
     if (view === 'month') {
       const dayGoals = goals.filter((goal) => goal.date === tileDate.toDateString());
-      const isToday = tileDate.toDateString() === new Date().toDateString();
-      const totalGoals = dayGoals.length + (isToday ? 1 : 0); // 오늘 날짜에만 기본 목표 포함
+      const isSelectedDate = tileDate.toDateString() === date.toDateString();
+      const totalGoals = dayGoals.length;
       const completedGoals = dayGoals.filter((goal) => goal.done).length;
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
+
+      if (isSelectedDate) {
+        return 'react-calendar__tile--now';
+      }
+
       if (goalCompletion === 1) {
         return 'react-calendar__tile--full-completion';
+      } else if (goalCompletion >= 0.75) {
+        return 'react-calendar__tile--high-completion';
       } else if (goalCompletion >= 0.5) {
-        return 'react-calendar__tile--half-completion';
+        return 'react-calendar__tile--medium-completion';
       } else if (goalCompletion > 0) {
-        return 'react-calendar__tile--some-completion';
+        return 'react-calendar__tile--low-completion';
       }
     }
     return '';
