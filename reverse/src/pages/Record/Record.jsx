@@ -6,9 +6,8 @@ import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../axiosInstance";
 import Modal from "react-modal";
 import "react-calendar/dist/Calendar.css";
-import Sidebar from "./Sidebar"; // Sidebar 컴포넌트 임포트
+import Sidebar from "./Sidebar"; 
 
-// 글로벌 스타일 설정
 const GlobalStyle = createGlobalStyle`
   body {
     overflow: ${({ isDimmed }) => (isDimmed ? "hidden" : "auto")};
@@ -67,47 +66,53 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1.25rem;
+  gap: 0.625rem;
 `;
 
 const Button = styled.button`
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #004ee5;
   color: #fff;
   padding: 0.75rem 1.5rem;
   margin-top: 0.75rem;
   border: 1px solid #b0b0b0;
   border-radius: 12px;
   &:hover {
-    background-color: #0056b3;
+    background-color: #1f66b3;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: #a2a2a2;
+  &:hover {
+    background-color: #e2e2e2;
   }
 `;
 
 const SubmitButton = styled(Button)`
-  background-color: #007bff;
-  color: #fff;
-
+  background-color: #004ee5;
   &:hover {
-    background-color: #0056b3;
+    background-color: #2165ae;
   }
 `;
 
 const EditButton = styled(Button)`
   background-color: ${({ isEditing }) =>
-    isEditing ? "#28a745" : "#007bff"}; // 초록색 for Complete, 파란색 for Edit
+    isEditing ? "#28a745" : "#004ee5"};
   margin-left: 0.5rem;
 
   &:hover {
     background-color: ${({ isEditing }) =>
-      isEditing ? "#218838" : "#0056b3"}; // 초록색 Hover for Complete, 파란색 Hover for Edit
+      isEditing ? "#218838" : "#1f66b3"};
   }
 `;
 
 const DeleteButton = styled(Button)`
-  background-color: #ff0000; // 빨간색 for Delete
+  background-color: #a2a2a2;
   margin-left: 0.5rem;
 
   &:hover {
-    background-color: #cc0000;
+    background-color: #e2e2e2;
   }
 `;
 
@@ -131,6 +136,7 @@ const Separator = styled.div`
   margin: 1rem 0;
   align-self: center;
 `;
+
 
 const modules = {
   toolbar: [
@@ -171,21 +177,19 @@ const Record = () => {
   const [diaryExists, setDiaryExists] = useState(false); // 일기 존재 여부
   const [dialogType, setDialogType] = useState(null); // 다이얼로그 타입
   const [diaryWritten, setDiaryWritten] = useState(false); // 일기 작성 여부 추적
-  const [goalCompletion, setGoalCompletion] = useState([]); // 목표 완료 상태
-  const [selectedDateGoals, setSelectedDateGoals] = useState([]); // 선택한 날짜의 목표 상태
+  const [helpModalIsOpen, setHelpModalIsOpen] = useState(false); // 도움말 모달 상태
   const quillRef = useRef(null); // Quill 에디터 참조
-  const navigate = useNavigate(); // 내비게이트 훅
 
-  // 로그인 여부 확인
   useEffect(() => {
+    // 로그인 여부 확인
     const token = localStorage.getItem("access_token");
     if (!token) {
       setLoginPromptIsOpen(true);
     }
   }, []);
 
-  // 일기 데이터를 가져오기 위한 함수
   const fetchDiary = async (date) => {
+    // 날짜에 해당하는 일기를 불러오는 함수
     try {
       const formattedDate = date.toISOString().split("T")[0];
       const response = await axiosInstance.get(
@@ -197,57 +201,31 @@ const Record = () => {
         const diary = diary_entries[0];
         setTitle(diary.title);
         setContent(diary.content);
-        setDiaryExists(true);
-        setDiaryWritten(true);
+        setDiaryExists(true); // 일기 존재 표시
+        setDiaryWritten(true); // 일기 작성 여부
       } else {
         setTitle("");
         setContent("");
-        setDiaryExists(false);
-        setDiaryWritten(false);
+        setDiaryExists(false); // 일기 미존재 표시
+        setDiaryWritten(false); // 일기 작성 안 됨
       }
     } catch (error) {
       console.error("Failed to fetch diary:", error);
     }
   };
 
-  // 목표 데이터를 가져오기 위한 함수
-  const fetchGoals = async (date) => {
-    try {
-      const formattedDate = date.toISOString().split("T")[0];
-      const response = await axiosInstance.get(
-        `/with/calendar/goal_diary/?date=${formattedDate}` // 목표 데이터를 올바른 엔드포인트에서 가져옵니다.
-      );
-
-      const { goals } = response.data;
-      if (goals && goals.length > 0) {
-        // 선택한 날짜의 목표를 업데이트
-        setSelectedDateGoals(
-          goals.map((goal) => ({
-            ...goal,
-            done: goal.is_completed,
-          }))
-        );
-      }
-    } catch (error) {
-      console.error("목표 데이터 가져오기 오류:", error.response?.data || error.message);
-    }
-  };
-
-  // 현재 날짜의 일기 및 목표 데이터를 불러오기
   useEffect(() => {
-    const today = new Date(new Date().setHours(0, 0, 0, 0)); // 오늘 날짜를 설정
-    setCurrentDate(today);
-    fetchDiary(today); // 오늘 날짜의 일기 불러오기
-    fetchGoals(today); // 오늘 날짜의 목표 불러오기
-  }, []);
+    fetchDiary(currentDate); // 현재 날짜로 일기 불러오기
+  }, [currentDate]);
 
   const handleDateChange = (date) => {
+    // 날짜 변경 시 일기 불러오기
     setCurrentDate(date);
     fetchDiary(date);
-    fetchGoals(date); // 날짜 변경 시 해당 날짜의 목표 불러오기
   };
 
   const handleSubmit = (e) => {
+    // 제출 핸들러
     e.preventDefault();
     setDialogType("submit");
     setIsDialogVisible(true);
@@ -260,23 +238,26 @@ const Record = () => {
       return;
     }
 
-    const formattedDate = currentDate.toISOString().split("T")[0];
-    console.log(`Submitting diary entry: ${formattedDate}, ${title}, ${content}`);
+    const formattedDate = currentDate.toISOString().split("T")[0]; // 날짜 포맷팅
+    console.log(`Submitting diary entry: ${formattedDate}, ${title}, ${content}`); // 디버깅용 로그
 
     try {
-      const response = await axiosInstance.post("/with/calendar/diary/create/", {
-        day: formattedDate,
-        title: title,
-        content: content,
-      });
+      const response = await axiosInstance.post(
+        "/with/calendar/diary/create/",
+        {
+          day: formattedDate,
+          title: title,
+          content: content,
+        }
+      );
 
       if (response.status === 201) {
         setIsSuccess(true);
         console.log("일기 등록 성공:", response.data);
-        setIsDialogVisible(false);
-        setDiaryExists(true);
-        setIsEditing(false);
-        setDiaryWritten(true);
+        setIsDialogVisible(false); // 팝업창 닫기
+        setDiaryExists(true); // 일기 존재 여부 업데이트
+        setIsEditing(false); // 수정 상태 초기화
+        setDiaryWritten(true); // 일기 작성 완료
         fetchDiary(currentDate); // Immediately update the diary status
       } else {
         setIsSuccess(false);
@@ -289,6 +270,7 @@ const Record = () => {
   };
 
   const handleDialogCancel = () => {
+    // 다이얼로그 취소 핸들러
     setDialogType(null);
     setIsDialogVisible(false);
   };
@@ -299,6 +281,7 @@ const Record = () => {
   };
 
   const handleEdit = () => {
+    // 수정 상태로 변경
     setIsEditing(true);
   };
 
@@ -311,12 +294,12 @@ const Record = () => {
       return;
     }
 
-    const formattedDate = currentDate.toISOString().split("T")[0];
-    console.log(`Updating diary entry: ${formattedDate}, ${title}, ${content}`);
+    const formattedDate = currentDate.toISOString().split("T")[0]; // 날짜 포맷팅
+    console.log(`Updating diary entry: ${formattedDate}, ${title}, ${content}`); // 디버깅용 로그
 
     try {
       const response = await axiosInstance.post("/with/calendar/diary/update/", {
-        day: formattedDate,
+        day: formattedDate, // 날짜를 사용하여 업데이트
         title: title,
         content: content,
       });
@@ -324,8 +307,8 @@ const Record = () => {
       if (response.status === 200) {
         setIsSuccess(true);
         console.log("일기 수정 성공:", response.data);
-        setDiaryWritten(true);
-        fetchDiary(currentDate); // Immediately update the diary status
+        setDiaryWritten(true); // 일기 수정 완료
+        fetchDiary(currentDate);
       } else {
         setIsSuccess(false);
         console.error("일기 수정 실패");
@@ -337,30 +320,34 @@ const Record = () => {
   };
 
   const handleDelete = () => {
+    // 삭제 상태로 변경
     setDialogType("delete");
     setIsDialogVisible(true);
   };
 
   const handleDeleteConfirm = async () => {
-    const formattedDate = currentDate.toISOString().split("T")[0];
-    console.log(`Deleting diary entry: ${formattedDate}`);
+    const formattedDate = currentDate.toISOString().split("T")[0]; // 날짜 포맷팅
+    console.log(`Deleting diary entry: ${formattedDate}`); // 디버깅용 로그
 
     try {
-      const response = await axiosInstance.delete("/with/calendar/diary/delete/", {
-        data: {
-          day: formattedDate,
-        },
-      });
+      const response = await axiosInstance.delete(
+        "/with/calendar/diary/delete/",
+        {
+          data: {
+            day: formattedDate, // 날짜로 삭제
+          },
+        }
+      );
 
       if (response.status === 204) {
         setIsSuccess(true);
         console.log("일기 삭제 성공");
         setTitle("");
         setContent("");
-        setDiaryExists(false);
-        setDiaryWritten(false);
-        setIsDialogVisible(false);
-        fetchDiary(currentDate); // Immediately update the diary status
+        setDiaryExists(false); // 일기 삭제 표시
+        setDiaryWritten(false); // 일기 미작성
+        setIsDialogVisible(false); // 팝업창 닫기
+        fetchDiary(currentDate);
       } else {
         setIsSuccess(false);
         console.error("일기 삭제 실패");
@@ -371,53 +358,41 @@ const Record = () => {
     }
   };
 
-  const handleGoalDelete = async (goalId) => {
+  const fetchSurveyScore = async () => {
+    // Fetch survey score
     try {
-      const response = await axiosInstance.delete(
-        `/with/calendar/goal/${goalId}/delete/`
-      );
+      const response = await axiosInstance.get("/with/score/");
 
-      if (response.status === 204) {
-        console.log("Goal deleted successfully");
-        fetchGoals(currentDate); // 목표 삭제 후 즉시 목표 상태 업데이트
+      if (response.status === 200) {
+        const { survey_score } = response.data;
+        console.log("Survey score fetched successfully:", survey_score);
+        // Update UI or state with the survey score as needed
       } else {
-        console.error("Goal deletion failed");
+        console.error("Failed to fetch survey score");
       }
     } catch (error) {
-      console.error("Goal deletion error:", error.response?.data || error.message);
-    }
-  };
-
-  const handleGoalChange = async (id) => {
-    const goalToUpdate = selectedDateGoals.find((goal) => goal.id === id);
-
-    const updatedGoals = selectedDateGoals.map((goal) =>
-      goal.id === id ? { ...goal, done: !goal.done } : goal
-    );
-    setSelectedDateGoals(updatedGoals);
-
-    try {
-      await axiosInstance.patch(`/with/calendar/goal/${goalToUpdate.id}/completed/`, {
-        id: goalToUpdate.id,
-        is_completed: !goalToUpdate.done,
-      });
-      fetchGoals(currentDate);
-    } catch (error) {
-      console.error("목표 상태 업데이트에 실패했습니다:", error);
+      console.error("Survey score fetch error:", error.response?.data || error.message);
     }
   };
 
   const handleLoginConfirm = () => {
     setLoginPromptIsOpen(false);
-    window.location.href = "/login"; // 로그인 페이지로 이동
+    window.location.href = "/login";
   };
+
+  useEffect(() => {
+    fetchSurveyScore();
+  }, []);
 
   return (
     <>
-      <GlobalStyle isDimmed={isDialogVisible || loginPromptIsOpen} />
+      <GlobalStyle isDimmed={isDialogVisible || loginPromptIsOpen || helpModalIsOpen} />
       <Container>
         <SubContainer>
-          <Sidebar onDateChange={handleDateChange} diaryWritten={diaryWritten} />
+          <Sidebar 
+            onDateChange={handleDateChange} 
+            diaryWritten={diaryWritten}
+          />
           <Content>
             <PostContainer>
               <div
@@ -467,9 +442,9 @@ const Record = () => {
                 </QuillWrapper>
                 {!diaryExists && (
                   <ButtonContainer>
-                    <Button type="button" onClick={handleReset}>
+                    <CancelButton type="button" onClick={handleReset}>
                       취소
-                    </Button>
+                    </CancelButton>
                     <SubmitButton type="submit">등록</SubmitButton>
                   </ButtonContainer>
                 )}
