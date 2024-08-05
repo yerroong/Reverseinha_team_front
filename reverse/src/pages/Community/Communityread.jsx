@@ -4,10 +4,17 @@ import styled from 'styled-components';
 import axiosInstance from '../axiosInstance';
 import Communitycomment from './Communitycomment';
 
+// 날짜 형식 지정
 const formatDate = (isoString) => {
   const date = new Date(isoString);
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
-  return new Intl.DateTimeFormat('ko-KR', options).format(date);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? '오후' : '오전';
+  const formattedHours = hours % 12 || 12;
+  return `${year}.${month}.${day} ${period} ${formattedHours}시 ${minutes}분`;
 };
 
 const stripHTMLTags = (str) => {
@@ -39,10 +46,11 @@ const CommunityContainer = styled.div`
 
 const ContentContainer = styled.div`
   height: 32rem;
+  margin-left: 1.5rem;
   max-height: 32rem;
   display: flex;
-  justify-content: flex-start; /* 수정: 왼쪽 정렬 */
-  align-items: flex-start; /* 수정: 상단 정렬 */
+  justify-content: flex-start;
+  align-items: flex-start;
   overflow: auto;
 `;
 
@@ -130,15 +138,23 @@ const InfoName = styled.div`
 
 const InfoDate = styled.div``;
 
+const StyledImage = styled.img`
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+  text-align: left;
+`;
+
 const Communityread = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [comments, setComments] = useState([]);
   const [content, setContent] = useState('');
-  const [isEditingPost, setIsEditingPost] = useState(false);
   const [title, setTitle] = useState('');
   const [currentUserNickname, setCurrentUserNickname] = useState(null);
 
@@ -174,28 +190,16 @@ const Communityread = () => {
       });
   };
 
-  const handleEditTitle = () => {
-    setIsEditingPost(true);
-  };
-
-  const handleSaveTitle = () => {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-
-    axiosInstance
-      .put(`/with/community/${id}/update/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then((response) => {
-        setPost(response.data);
-        setIsEditingPost(false);
-      })
-      .catch((error) => {
-        console.error('Error updating post:', error);
-      });
+  const handleEditRedirect = () => {
+    navigate('/community/write', {
+      state: {
+        isEdit: true,
+        postId: id,
+        title: title,
+        content: content,
+        imageUrl: post.image
+      }
+    });
   };
 
   const handleDeletePost = () => {
@@ -222,16 +226,7 @@ const Communityread = () => {
           <ProfileContainer>
             <ProfileImg src='/profile.png' />
             <ProfileInfoContainer>
-              {isEditingPost ? (
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  onBlur={handleSaveTitle}
-                />
-              ) : (
-                <ProfileTitle>{title}</ProfileTitle>
-              )}
+              <ProfileTitle>{title}</ProfileTitle>
               <ProfileInfo>
                 <InfoName>{post.author_name}</InfoName>
                 <InfoDate>{formatDate(post.created_at)}</InfoDate>
@@ -240,34 +235,19 @@ const Communityread = () => {
           </ProfileContainer>
           {post.author_name === currentUserNickname && (
             <EditContainer>
-              {isEditingPost ? (
-                <div onClick={handleSaveTitle}>저장</div>
-              ) : (
-                <div onClick={handleEditTitle}>수정</div>
-              )}
+              <div onClick={handleEditRedirect}>수정</div>
               <div onClick={handleDeletePost}>삭제</div>
             </EditContainer>
           )}
         </HeadContainer>
         <ContentContainer>
           <Content>
-            {isEditingPost ? (
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                style={{ width: '100%', height: '80%', resize: 'none' }}
+            <p style={{ width: '100%', textAlign: 'left' }}>{stripHTMLTags(content)}</p>
+            {post.image && (
+              <StyledImage
+                src={getImageUrl(post.image)}
+                alt="첨부된 파일"
               />
-            ) : (
-              <>
-                <p style={{ width: '100%', textAlign: 'left' }}>{stripHTMLTags(content)}</p>
-                {post.image && (
-                  <img
-                    src={getImageUrl(post.image)}
-                    alt="첨부된 파일"
-                    style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover', textAlign: 'left' }}
-                  />
-                )}
-              </>
             )}
           </Content>
         </ContentContainer>
@@ -279,12 +259,13 @@ const Communityread = () => {
           <Responsenum>{likesCount}</Responsenum>
         </ResponseContainer>
       </CommunityContainer>
-      <Communitycomment comments={comments} />
+      <Communitycomment comments={post.comments} />
     </Container>
   );
 };
 
 export default Communityread;
+
 
 
 
