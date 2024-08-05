@@ -24,7 +24,7 @@ const Search = styled.input`
   width: 27rem;
   height: 3.5rem;
   background-color: #F5F7FF;
-  box-shadow: inset 0 0.188rem 1rem rgba(0, 0, 0, 0.197), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0.1rem 1rem rgba(0, 0, 0, 0.103), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
   border: none;
   border-radius: 0.25rem;
   padding: 0 0.5rem;
@@ -38,6 +38,7 @@ const Search = styled.input`
 const SearchIcon = styled.img`
   width: 2rem;
   margin-top: 0.3rem;
+  margin-right: 0.3rem;
   position: absolute;
   right: 0.5rem;
   top: 50%;
@@ -55,7 +56,7 @@ const Write = styled.button`
   color: white;
   border: none;
   border-radius: 1.875rem;
-  background-color: #8DBAFD;
+  background-color: #004EE5;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.2);
   cursor: pointer;
 
@@ -97,7 +98,7 @@ const CommunitySearch = ({ onSearch }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <SearchIcon src="/search2.png" onClick={handleSearch} />
+        <SearchIcon src="/search3.png" onClick={handleSearch} />
       </SearchWrapper>
       <Write onClick={handleWriteClick}>글쓰기</Write>
     </SearchContainer>

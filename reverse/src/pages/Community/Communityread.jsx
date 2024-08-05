@@ -25,7 +25,7 @@ const CommunityContainer = styled.div`
   margin-top: 5rem;
   max-height: 42rem;
   border-radius: 1.5rem;
-  box-shadow: 0rem 0.75rem 0.75rem rgba(0, 0, 0, 0.3);
+  box-shadow: 0rem 0rem 0.75rem rgba(0, 0, 0, 0.3);
 `;
 
 const ContentContainer = styled.div`

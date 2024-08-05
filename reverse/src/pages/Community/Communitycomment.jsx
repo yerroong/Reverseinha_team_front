@@ -17,6 +17,7 @@ const CommentHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 2rem;
 `;
 
 const Back = styled.img`
@@ -61,7 +62,7 @@ const Commentwrite = styled.input`
   color: #C6C6C6;
   border: none;
   outline: none;
-  box-shadow: inset 0 0.25rem 0.25rem rgba(0, 0, 0, 0.35), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0.1rem 0.25rem rgba(0, 0, 0, 0.35), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
   ::placeholder {
     color: #C6C6C6;
   }
@@ -82,10 +83,11 @@ const CommentProfileContainer = styled.div`
 `;
 
 const Profileimg = styled.img`
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 `;
 
 const Profilename = styled.div`
@@ -249,7 +251,7 @@ const Communitycomment = () => {
         <CommentHeader>
           <Back src='/back.png' onClick={() => navigate(-1)} />
           <CommentTitleContainer>
-            <CommentTitle color='#6691FF'>댓글</CommentTitle>
+            <CommentTitle color='#004EE5'>댓글</CommentTitle>
             <CommentTitle>{comments.length}</CommentTitle>
           </CommentTitleContainer>
         </CommentHeader>

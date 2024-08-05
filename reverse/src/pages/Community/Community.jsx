@@ -20,7 +20,7 @@ const CommunityContainer = styled.div`
   max-height: 42rem;
   margin: 5rem;
   border-radius: 1.5rem;
-  box-shadow: 0rem 0.75rem 0.75rem rgba(0, 0, 0, 0.3);
+  box-shadow: 0rem 0rem 0.75rem rgba(0, 0, 0, 0.3);
 `;
 
 const SortContainer = styled.div`
@@ -33,14 +33,15 @@ const SortContainer = styled.div`
 `;
 
 const SortButton = styled.button`
-  width: 7.5rem;
-  height: 1.813rem;
+  width: 6rem;
+  height: 1.82rem;
   margin: 1.8rem;
+  margin-right: 2.5rem;
   font-size: 0.875rem;
   color: white;
   border: none;
   border-radius: 1.875rem;
-  background-color: #b8c5d4;
+  background-color: #a5bbd4;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.2);
   cursor: pointer;
   display: flex;
@@ -62,7 +63,7 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 4rem;
   right: 2rem;
-  width: 7.5rem;
+  width: 6.9rem;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2);
@@ -104,7 +105,7 @@ const ContentContainer = styled(Link)`
 `;
 
 const ContentIcon = styled.img`
-  height: 1.5rem;
+  height: 1.3rem;
   margin-right: 1.8rem;
   display: flex;
 `;
@@ -113,7 +114,7 @@ const ContentTitle = styled.div`
   height: 3rem;
   width: 20rem;
   max-width: 20rem;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
 `;

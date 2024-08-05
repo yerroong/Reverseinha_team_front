@@ -11,10 +11,23 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+
 const Container = styled.div`
-  max-width: 75rem;
-  margin: auto;
-  margin-top: 2.5rem;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CommunityContainer = styled.div`
+  width: 68rem;
+  height: 42rem;
+  margin-top: 5rem;
+  max-height: 42rem;
+  border-radius: 1.5rem;
+  box-shadow: 0rem 0rem 0.75rem rgba(0, 0, 0, 0.3);
 `;
 
 const Content = styled.div`
@@ -194,6 +207,7 @@ const Communitywrite = () => {
     <>
       <GlobalStyle isDimmed={isCommunityVisible} />
       <Container>
+      <CommunityContainer>
         <Content>
           <PostContainer>
             <Form onSubmit={handleSubmit}>
@@ -221,6 +235,7 @@ const Communitywrite = () => {
             </Form>
           </PostContainer>
         </Content>
+      </CommunityContainer>
       </Container>
 
       {isCommunityVisible && (
