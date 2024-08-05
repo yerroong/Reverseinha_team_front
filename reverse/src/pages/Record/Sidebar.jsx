@@ -1,3 +1,5 @@
+// Sidebar.jsx
+
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Calendar from "react-calendar";
@@ -24,27 +26,33 @@ const StyledCalendar = styled(Calendar)`
   border: none;
   border-radius: 0.625rem;
   box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+
   .react-calendar__tile {
     border-radius: 0.625rem;
   }
+
   .react-calendar__tile--now {
-    background-color: #cccccc !important; /* 회색으로 오늘 날짜 표시 */
+    background-color: #cccccc !important; /* 회색으로 선택된 날짜 표시 */
   }
+
   .react-calendar__tile--active {
-    background-color: #adf5a2 !important; /* 형광 연두색으로 선택된 날짜 표시 */
-    color: white !important;
+    background-color: #ccffcc !important; /* 형광 연두색 */
   }
+
   .react-calendar__tile--full-completion {
     background-color: #003366 !important; /* 가장 진한 파란색 */
     color: white !important;
   }
+
   .react-calendar__tile--high-completion {
     background-color: #336699 !important; /* 중간 정도의 파란색 */
     color: white !important;
   }
+
   .react-calendar__tile--medium-completion {
     background-color: #6699cc !important; /* 중간 정도의 파란색 */
   }
+
   .react-calendar__tile--low-completion {
     background-color: #99ccff !important; /* 가장 연한 파란색 */
   }
@@ -176,7 +184,7 @@ const DiaryPrompt = styled.p`
 `;
 
 const Sidebar = ({ onDateChange, diaryWritten }) => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date()); // 오늘 날짜로 초기화
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState("");
   const [severity, setSeverity] = useState("저위험"); // 기본 심각도
@@ -192,7 +200,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
     return `local-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  // 마이페이지와 동일하게 설문 점수를 가져옵니다.
+  // 설문 점수 가져오기
   useEffect(() => {
     axiosInstance
       .get("/with/mypage/")
@@ -225,78 +233,64 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
       });
   }, []);
 
-  // Fetch and set custom plans based on severity
-  useEffect(() => {
-    setCustomPlans(generateCustomPlans());
-  }, [severity]);
+  // 컴포넌트가 처음 로드될 때 오늘 날짜의 목표와 일기 데이터를 가져옵니다.
+  const fetchGoalsAndDiary = async (selectedDate) => {
+    try {
+      console.log(
+        `Fetching goals and diary for date: ${
+          selectedDate.toISOString().split("T")[0]
+        }`
+      );
+      const response = await axiosInstance.get(
+        `/with/calendar/goal_diary/?date=${selectedDate
+          .toISOString()
+          .split("T")[0]}`
+      );
+      const { goals, diary_entries } = response.data;
 
-  // 날짜 선택 시 목표 및 일기 불러오기
-  useEffect(() => {
-    const fetchGoalsAndDiary = async (date) => {
-      try {
-        console.log(
-          `Fetching goals and diary for date: ${
-            date.toISOString().split("T")[0]
-          }`
-        );
-        const response = await axiosInstance.get(
-          `/with/calendar/goal_diary/?date=${date.toISOString().split("T")[0]}`
-        );
-        const { goals, diary_entries } = response.data;
+      console.log("Received goals:", goals);
 
-        console.log("Received goals:", goals);
+      const goalsWithIds = goals
+        .map((goal) => ({
+          ...goal,
+          done: goal.is_completed,
+        }));
 
-        // 서버에서 제대로 된 ID를 제공하지 않을 경우 처리
-        const goalsWithIds = goals
-          .map((goal) => {
-            if (!goal.id) {
-              console.warn("수신된 목표 데이터에 ID가 없습니다:", goal);
-              return null; // ID가 없는 목표를 null로 반환하여 필터링
-            }
-            return {
-              ...goal,
-              done: goal.is_completed,
-            };
-          })
-          .filter((goal) => goal !== null); // ID가 있는 목표만 필터링
+      setSelectedDateGoals(goalsWithIds);
 
-        setSelectedDateGoals(goalsWithIds);
-
-        if (diary_entries && diary_entries.length > 0) {
-          const diary = diary_entries[0];
-          setSelectedDateDiary(diary.content);
-        } else {
-          setSelectedDateDiary("");
-        }
-
-        console.log("Fetched data:", response.data);
-      } catch (error) {
-        console.error("데이터를 불러오는 데 실패했습니다:", error);
+      if (diary_entries && diary_entries.length > 0) {
+        const diary = diary_entries[0];
+        setSelectedDateDiary(diary.content);
+      } else {
+        setSelectedDateDiary("");
       }
-    };
 
-    // 컴포넌트가 처음 로드될 때 오늘 날짜의 목표와 일기 데이터를 가져옵니다.
-    fetchGoalsAndDiary(new Date());
-  }, []);
+      console.log("Fetched data:", response.data);
+    } catch (error) {
+      console.error("데이터를 불러오는 데 실패했습니다:", error);
+    }
+  };
+
+  // 페이지가 처음 로드될 때 오늘 날짜 데이터를 가져옵니다.
+  useEffect(() => {
+    fetchGoalsAndDiary(date); // 초기 로드 시 오늘 날짜 데이터를 가져옴
+  }, [date]);
 
   // 날짜 변경 핸들러
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
-    if (onDateChange) onDateChange(selectedDate); // 전달받은 onDateChange 콜백 실행
     fetchGoalsAndDiary(selectedDate); // 날짜가 변경될 때마다 목표와 일기를 가져옵니다.
+    if (onDateChange) onDateChange(selectedDate); // 전달받은 onDateChange 콜백 실행
   };
 
   // 목표 완료 상태 변경
   const handleGoalChange = async (id) => {
     const goalToUpdate = selectedDateGoals.find((goal) => goal.id === id);
 
-    // 임시 ID를 가진 목표는 서버에 업데이트하지 않음
     if (!goalToUpdate || !goalToUpdate.id) {
-      console.warn("임시 ID가 할당된 목표는 업데이트할 수 없습니다.");
       return;
     }
 
-    // 업데이트된 상태로 로컬 목표를 설정
     const updatedGoals = selectedDateGoals.map((goal) =>
       goal.id === id ? { ...goal, done: !goal.done } : goal
     );
@@ -324,7 +318,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   const handleAddGoal = async () => {
     if (newGoal.trim()) {
       const newGoalObj = {
-        id: generateUniqueId(), // Generate unique ID for local goal
+        id: generateUniqueId(),
         text: newGoal,
         day: date.toISOString().split("T")[0],
         is_completed: false,
@@ -335,7 +329,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
           "/with/calendar/goal/create/",
           newGoalObj
         );
-        // Add new goal with the ID returned from the server
+
         setSelectedDateGoals([
           ...selectedDateGoals,
           { ...newGoalObj, id: response.data.id },
@@ -351,9 +345,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   const handleDeleteGoal = async (id) => {
     const goalToDelete = selectedDateGoals.find((goal) => goal.id === id);
 
-    // 임시 ID를 가진 목표는 삭제하지 않음
     if (!goalToDelete || !goalToDelete.id) {
-      console.warn("임시 ID가 할당된 목표는 삭제할 수 없습니다.");
       return;
     }
 
@@ -371,17 +363,15 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   // 달력 타일의 클래스 결정
   const getTileClass = ({ date: tileDate, view }) => {
     if (view === "month") {
-      const dayGoals = goals.filter(
+      const dayGoals = selectedDateGoals.filter(
         (goal) => goal.day === tileDate.toISOString().split("T")[0]
       );
-      const isSelectedDate =
-        tileDate.toISOString().split("T")[0] === date.toISOString().split("T")[0];
       const totalGoals = dayGoals.length;
       const completedGoals = dayGoals.filter((goal) => goal.done).length;
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
 
-      if (isSelectedDate) {
-        return "react-calendar__tile--active";
+      if (tileDate.toDateString() === new Date().toDateString()) {
+        return "react-calendar__tile--now";
       }
 
       if (goalCompletion === 1) {
@@ -434,17 +424,14 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   const generateCustomPlans = () => {
     let plans = [];
     if (severity === "고위험") {
-      // Use the severe plans for high risk
       plans = severePlans
         .filter((plan) => plan !== "상담받기")
         .sort(() => 0.5 - Math.random())
         .slice(0, 4);
       plans.unshift("상담받기");
     } else if (severity === "중위험") {
-      // Use the moderate plans for medium risk
       plans = moderatePlans.sort(() => 0.5 - Math.random()).slice(0, 5);
     } else if (severity === "저위험") {
-      // Use the low plans for low risk
       plans = lowPlans;
     }
     console.log("Generated plans:", plans);
