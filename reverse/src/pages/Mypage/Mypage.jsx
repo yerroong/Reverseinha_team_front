@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import Profile from './Profile';
-import axiosInstance from '../axiosInstance';
+import React, { useEffect, useState, useRef } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import Profile from "./Profile";
+import axiosInstance from "../axiosInstance";
 
 const Container = styled.div`
   width: 100%;
@@ -28,15 +28,15 @@ const InfoContainerRow = styled.div`
 `;
 
 const InfoBox = styled.div`
-  border: 0.063rem solid #BABABA;
-  width: ${({ width }) => width || '20rem'};
+  border: 0.063rem solid #bababa;
+  width: ${({ width }) => width || "20rem"};
   height: 18.5rem;
   margin: 1.688rem;
   border-radius: 1.875rem;
   display: flex;
-  flex-direction: ${({ flexDirection }) => flexDirection || 'column'};
-  align-items: ${({ center }) => (center ? 'center' : 'flex-start')};
-  justify-content: ${({ center }) => (center ? 'center' : 'flex-start')};
+  flex-direction: ${({ flexDirection }) => flexDirection || "column"};
+  align-items: ${({ center }) => (center ? "center" : "flex-start")};
+  justify-content: ${({ center }) => (center ? "center" : "flex-start")};
   position: relative;
 `;
 
@@ -64,9 +64,9 @@ const InfoScoreColored = styled.div`
   font-size: 5.625rem;
   font-weight: 500;
   color: ${({ score }) => {
-    if (score <= 30) return 'green';
-    if (score <= 70) return 'orange';
-    return 'red';
+    if (score <= 30) return "green";
+    if (score <= 70) return "orange";
+    return "red";
   }};
 `;
 
@@ -80,10 +80,10 @@ const InfoList = styled.div`
   padding-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: ${({ center }) => (center ? 'center' : 'flex-start')};
-  width: ${({ isGoal }) => (isGoal ? '40rem' : '22.563rem')};
-  height: ${({ height }) => height || '10rem'};
-  max-height: ${({ maxHeight }) => maxHeight || '10rem'};
+  align-items: ${({ center }) => (center ? "center" : "flex-start")};
+  width: ${({ isGoal }) => (isGoal ? "40rem" : "22.563rem")};
+  height: ${({ height }) => height || "10rem"};
+  max-height: ${({ maxHeight }) => maxHeight || "10rem"};
   overflow: hidden;
   position: relative;
 `;
@@ -99,7 +99,7 @@ const Check = styled.div`
   border-radius: 0.625rem;
   width: 2.188rem;
   height: 2.188rem;
-  background-color: #D4E3FF;
+  background-color: #d4e3ff;
   margin-right: 1rem;
   margin-left: 2rem;
 `;
@@ -134,7 +134,7 @@ const ProfileLogoutButton = styled.button`
   color: white;
   border: none;
   border-radius: 1.875rem;
-  background-color: #B8C5D4;
+  background-color: #b8c5d4;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.2);
   cursor: pointer;
   position: absolute;
@@ -142,7 +142,7 @@ const ProfileLogoutButton = styled.button`
   bottom: 1rem;
 
   &:hover {
-    background-color: #A1B0C0;
+    background-color: #a1b0c0;
     box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.3);
   }
 
@@ -164,8 +164,9 @@ const Mypage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axiosInstance.get('/with/mypage/')
-      .then(response => {
+    axiosInstance
+      .get("/with/mypage/")
+      .then((response) => {
         const data = response.data;
         setScore(data.survey_score || 0);
         setDiaryEntries(data.diary_entries || []);
@@ -173,30 +174,31 @@ const Mypage = () => {
         setGoals(data.goals || []);
         setGoalAchievementRate(data.goal_achievement_rate || 0);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
-          console.error('API error:', error.response.data);
+          console.error("API error:", error.response.data);
           if (error.response.status === 401) {
-            console.error('Unauthorized access. Please log in.');
+            console.error("Unauthorized access. Please log in.");
           }
         } else {
-          console.error('Network or unknown error:', error.message);
+          console.error("Network or unknown error:", error.message);
         }
       });
   }, []);
 
   const handleScroll = (ref, direction) => {
     if (ref.current) {
-      const scrollAmount = direction === 'up' ? -ref.current.clientHeight : ref.current.clientHeight;
+      const scrollAmount =
+        direction === "up" ? -ref.current.clientHeight : ref.current.clientHeight;
       ref.current.scrollBy({
         top: scrollAmount,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
 
   const handleRetest = () => {
-    navigate('/retrytest'); 
+    navigate("/retrytest");
   };
 
   return (
@@ -216,15 +218,31 @@ const Mypage = () => {
               <Line src="/line.png" />
             </LineContainer>
             <ScrollButtonContainer>
-              <ScrollButton src="/uparrow.png" onClick={() => handleScroll(diaryListRef, 'up')} />
-              <InfoList height="6.5rem" maxHeight="6.5rem" ref={diaryListRef} center>
+              <ScrollButton
+                src="/uparrow.png"
+                onClick={() => handleScroll(diaryListRef, "up")}
+              />
+              <InfoList
+                height="6.5rem"
+                maxHeight="6.5rem"
+                ref={diaryListRef}
+                center
+              >
                 {diaryEntries.map((entry, index) => (
-                  <CheckContainer key={index}>{entry.title}</CheckContainer>
+                  <CheckContainer key={index}>
+                    {/* Ensure you're accessing a valid string property */}
+                    {entry.title} 
+                  </CheckContainer>
                 ))}
               </InfoList>
-              <ScrollButton src="/underarrow.png" onClick={() => handleScroll(diaryListRef, 'down')} />
+              <ScrollButton
+                src="/underarrow.png"
+                onClick={() => handleScroll(diaryListRef, "down")}
+              />
             </ScrollButtonContainer>
-            <ProfileLogoutButton onClick={() => navigate('/record')}>더보기</ProfileLogoutButton>
+            <ProfileLogoutButton onClick={() => navigate("/record")}>
+              더보기
+            </ProfileLogoutButton>
           </InfoBox>
           <InfoBox width="20rem" center>
             <LineContainer>
@@ -232,38 +250,65 @@ const Mypage = () => {
               <Line src="/line.png" />
             </LineContainer>
             <ScrollButtonContainer>
-              <ScrollButton src="/uparrow.png" onClick={() => handleScroll(counselListRef, 'up')} />
-              <InfoList height="6.5rem" maxHeight="6.5rem" ref={counselListRef} center>
+              <ScrollButton
+                src="/uparrow.png"
+                onClick={() => handleScroll(counselListRef, "up")}
+              />
+              <InfoList
+                height="6.5rem"
+                maxHeight="6.5rem"
+                ref={counselListRef}
+                center
+              >
                 {counselEntries.map((entry, index) => (
-                  <CheckContainer key={index}>{entry.available_time}</CheckContainer>
+                  <CheckContainer key={index}>
+                    {/* Render a valid string, e.g., time slot */}
+                    {entry.available_time} 
+                  </CheckContainer>
                 ))}
               </InfoList>
-              <ScrollButton src="/underarrow.png" onClick={() => handleScroll(counselListRef, 'down')} />
+              <ScrollButton
+                src="/underarrow.png"
+                onClick={() => handleScroll(counselListRef, "down")}
+              />
             </ScrollButtonContainer>
           </InfoBox>
         </InfoContainerRow>
         <InfoContainerRow>
-        <InfoBox width="17rem" center>
-          <InfoTitle>역대 목표 달성률</InfoTitle>
-          <Line src="/line.png" />
-          <InfoScore>{goalAchievementRate}%</InfoScore>
+          <InfoBox width="17rem" center>
+            <InfoTitle>역대 목표 달성률</InfoTitle>
+            <Line src="/line.png" />
+            <InfoScore>{goalAchievementRate}%</InfoScore>
           </InfoBox>
           <InfoBox width="43.5rem" flexDirection="row" center={false}>
-          <Margin>
-            <ScrollButtonContainer>
-              <ScrollButton src="/uparrow.png" onClick={() => handleScroll(goalListRef, 'up')} />
-              <ListContainer>
-                <InfoList height="13rem" maxHeight="13rem" isGoal={true} ref={goalListRef}>
-                  {goals.map((goal, index) => (
-                    <CheckContainer key={index}>
-                      <Check /> {goal}
-                    </CheckContainer>
-                  ))}
-                </InfoList>
-              </ListContainer>
-              <ScrollButton src="/underarrow.png" onClick={() => handleScroll(goalListRef, 'down')} />
-            </ScrollButtonContainer>
-          </Margin>
+            <Margin>
+              <ScrollButtonContainer>
+                <ScrollButton
+                  src="/uparrow.png"
+                  onClick={() => handleScroll(goalListRef, "up")}
+                />
+                <ListContainer>
+                  <InfoList
+                    height="13rem"
+                    maxHeight="13rem"
+                    isGoal={true}
+                    ref={goalListRef}
+                  >
+                    {goals.map((goal, index) => (
+                      <CheckContainer key={index}>
+                        <Check />
+                        {/* Access properties if `goal` is an object */}
+                        {goal.text} 
+                      </CheckContainer>
+                    ))}
+                  </InfoList>
+                </ListContainer>
+                <ScrollButton
+                  src="/underarrow.png"
+                  onClick={() => handleScroll(goalListRef, "down")}
+                />
+              </ScrollButtonContainer>
+            </Margin>
           </InfoBox>
         </InfoContainerRow>
       </InfoContainer>
