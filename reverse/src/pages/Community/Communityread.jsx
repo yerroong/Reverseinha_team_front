@@ -10,6 +10,16 @@ const formatDate = (isoString) => {
   return new Intl.DateTimeFormat('ko-KR', options).format(date);
 };
 
+const stripHTMLTags = (str) => {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '');
+};
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  return `http://your-backend-url${path}`;  // 이미지 URL을 절대 경로로 변환
+};
+
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -139,21 +149,19 @@ const Communityread = () => {
   useEffect(() => {
     const fetchPostAndUser = async () => {
       try {
-        // 상세 게시물 조회
         const postResponse = await axiosInstance.get(`/with/community/${id}/`);
         setPost(postResponse.data);
         setLikesCount(postResponse.data.total_likes);
         setLiked(postResponse.data.is_liked);
         setContent(postResponse.data.content);
         setTitle(postResponse.data.title);
-        
-        // 사용자 닉네임 가져오기
+
         const userResponse = await axiosInstance.get('/with/user/nickname/');
         setCurrentUserNickname(userResponse.data.nickname);
 
-        // 디버깅 로그 추가
         console.log('currentUserNickname:', userResponse.data.nickname);
         console.log('post.author_name:', postResponse.data.author_name);
+        console.log('post.image:', postResponse.data.image);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -258,7 +266,16 @@ const Communityread = () => {
                 style={{ width: '100%', height: '80%', resize: 'none' }}
               />
             ) : (
-              <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{content}</p>
+              <>
+                <p style={{ width: '100%', height: '80%', overflow: 'auto' }}>{stripHTMLTags(content)}</p>
+                {post.image && (
+                  <img
+                    src={post.image}
+                    alt="첨부된 파일"
+                    style={{ width: '100%', maxHeight: '20rem', objectFit: 'cover' }}
+                  />
+                )}
+              </>
             )}
           </Content>
         </ContentContainer>
@@ -276,6 +293,7 @@ const Communityread = () => {
 };
 
 export default Communityread;
+
 
 
 
