@@ -156,7 +156,6 @@ const Communitywrite = () => {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    console.log('Selected file:', e.target.files[0]); // 콘솔에 파일 정보 출력
   };
 
   const handleSubmit = (e) => {
@@ -177,22 +176,20 @@ const Communitywrite = () => {
     try {
       const formData = new FormData();
       formData.append('title', title);
-  
-      // HTML 태그 제거 후 content 추가
-      const plainContent = content.replace(/(<([^>]+)>)/gi, '');
-      formData.append('content', plainContent);
-  
+      formData.append('content', content); // No need to strip HTML tags
+
       if (file) {
         formData.append('image', file); // 'image' 키로 파일 추가
         console.log('File added to FormData:', file.name);
       }
   
-      // FormData entries 확인
-      for (const pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
+      console.log('FormData entries:', Array.from(formData.entries())); // 디버깅용
   
-      const response = await axiosInstance.post('with/community/', formData);
+      const response = await axiosInstance.post('with/community/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
   
       console.log('Response:', response);
       
@@ -263,6 +260,7 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
+
 
 
 //제목 테두리삭제

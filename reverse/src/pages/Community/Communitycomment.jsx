@@ -40,13 +40,20 @@ const CommentTitle = styled.div`
 const ContentButton = styled.div`
   cursor: pointer;
   position: fixed;
-  right: 10rem;
+  right: 6rem;
   bottom: 3rem;
-  background-color: #f3f3f3;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  border: 0.08rem solid black;
-`;
+  width: 1.7rem;
+  height: 1.7rem;
+  background-color: #004EE5;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`; 
+
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -296,7 +303,7 @@ const Communitycomment = () => {
           ))}
         </AllComment>
       </CommentContainer>
-      <ContentButton onClick={scrollToTop}>본문 가기</ContentButton>
+      <ContentButton onClick={scrollToTop}>↑</ContentButton>
     </>
   );
 };
