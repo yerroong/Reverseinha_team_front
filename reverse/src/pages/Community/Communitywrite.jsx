@@ -75,7 +75,7 @@ const Button = styled.button`
   }
 `;
 
-const DialogOverlay = styled.div`
+const CommunityOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -87,24 +87,24 @@ const DialogOverlay = styled.div`
   justify-content: center;
 `;
 
-const Dialog = styled.div`
+const Community = styled.div`
   background-color: #fff;
   padding: 1.25rem;
   border-radius: 0.3125rem;
   box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
 `;
 
-const DialogTitle = styled.h2`
+const CommunityTitle = styled.h2`
   margin-top: 0;
 `;
 
-const DialogButtonContainer = styled.div`
+const CommunityButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 1.25rem;
 `;
 
-const DialogButton = styled(Button)`
+const CommunityButton = styled(Button)`
   background-color: #007BFF;
   color: #fff;
 
@@ -135,7 +135,7 @@ const Communitywrite = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
-  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [isCommunityVisible, setIsCommunityVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
@@ -151,12 +151,11 @@ const Communitywrite = () => {
       return;
     }
 
-    setIsDialogVisible(true);
+    setIsCommunityVisible(true);
   };
 
-  const handleDialogConfirm = async () => {
-    setIsDialogVisible(false);
-    navigate(-1); //시간나면 posting으로 이동하게
+  const handleCommunityConfirm = async () => {
+    setIsCommunityVisible(false);
 
     try {
       const formData = new FormData();
@@ -167,18 +166,18 @@ const Communitywrite = () => {
       formData.append('content', plainContent);
 
       if (file) {
-        formData.append('file', file);
+        formData.append('image', file); // 'image' 키로 파일 추가
       }
 
-      console.log('Access Token:', localStorage.getItem('access_token'));
       console.log('FormData:', Array.from(formData.entries())); // 디버깅용: 전송되는 FormData 확인
 
       const response = await axiosInstance.post('with/community/', formData);
 
       console.log('Response:', response);
       
-      if (response.status === 200) {
-        navigate('/Posting');
+      if (response.status === 200 || response.status === 201) {
+        const postId = response.data.id; // 생성된 게시물 ID 가져오기
+        navigate(`/Community/${postId}`); // 생성된 게시물로 이동
       } else {
         console.error('포스트 등록 실패:', response.data);
       }
@@ -187,13 +186,13 @@ const Communitywrite = () => {
     }
   };
 
-  const handleDialogCancel = () => {
-    setIsDialogVisible(false);
+  const handleCommunityCancel = () => {
+    setIsCommunityVisible(false);
   };
 
   return (
     <>
-      <GlobalStyle isDimmed={isDialogVisible} />
+      <GlobalStyle isDimmed={isCommunityVisible} />
       <Container>
         <Content>
           <PostContainer>
@@ -224,23 +223,25 @@ const Communitywrite = () => {
         </Content>
       </Container>
 
-      {isDialogVisible && (
-        <DialogOverlay>
-          <Dialog>
-            <DialogTitle>상세정보</DialogTitle>
+      {isCommunityVisible && (
+        <CommunityOverlay>
+          <Community>
+            <CommunityTitle>상세정보</CommunityTitle>
             <p>글을 등록하시겠습니까?</p>
-            <DialogButtonContainer>
-              <DialogButton onClick={handleDialogConfirm}>확인</DialogButton>
-              <Button onClick={handleDialogCancel}>취소</Button>
-            </DialogButtonContainer>
-          </Dialog>
-        </DialogOverlay>
+            <CommunityButtonContainer>
+              <CommunityButton onClick={handleCommunityConfirm}>확인</CommunityButton>
+              <Button onClick={handleCommunityCancel}>취소</Button>
+            </CommunityButtonContainer>
+          </Community>
+        </CommunityOverlay>
       )}
     </>
   );
 };
 
 export default Communitywrite;
+
+
 
 
 //제목 테두리삭제
