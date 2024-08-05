@@ -1,10 +1,8 @@
-// Sidebar.jsx
-
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Calendar from "react-calendar";
-import axiosInstance from "../axiosInstance";
 import "react-calendar/dist/Calendar.css";
+import axiosInstance from "../axiosInstance";
 
 // 스타일 컴포넌트 정의
 const SidebarContainer = styled.div`
@@ -33,7 +31,7 @@ const StyledCalendar = styled(Calendar)`
     background-color: #cccccc !important; /* 회색으로 선택된 날짜 표시 */
   }
   .react-calendar__tile--selected {
-    background-color: #ccff99 !important; /* 연노랑색으로 선택된 날짜 표시 */
+    background-color: #ccff99 !important;
   }
   .react-calendar__tile--full-completion {
     background-color: #003366 !important; /* 가장 진한 파란색 */
@@ -72,6 +70,13 @@ const GoalHeader = styled.h3`
 
 const GoalList = styled.div`
   width: 100%;
+  text-align: left; /* 목표는 왼쪽 정렬 */
+`;
+
+const NoGoalsText = styled.div`
+  text-align: center; /* '작성된 목표가 없습니다'는 가운데 정렬 */
+  font-size: 1rem;
+  color: #888;
 `;
 
 const GoalItem = styled.div`
@@ -185,7 +190,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   );
 
   const [date, setDate] = useState(today);
-  const [goals, setGoals] = useState([]);
+  const [goalsByDate, setGoalsByDate] = useState({}); // 날짜별 목표 데이터를 저장할 객체
   const [newGoal, setNewGoal] = useState("");
   const [severity, setSeverity] = useState("저위험"); // 기본 심각도
   const [customPlans, setCustomPlans] = useState([]);
@@ -238,7 +243,40 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
     setCustomPlans(generateCustomPlans());
   }, [severity]);
 
-  // 날짜 선택 시 목표 및 일기 불러오기
+  // 현재 월의 목표 데이터를 가져오기
+  useEffect(() => {
+    const fetchGoalsForMonth = async () => {
+      try {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // 0-indexed이므로 +1 필요
+        const response = await axiosInstance.get(`/with/calendar/goal/monthly/?year=${year}&month=${month}`);
+        const monthlyGoals = response.data;
+
+        console.log("Monthly goals fetched:", monthlyGoals);
+
+        // 날짜별로 목표 데이터를 정리
+        const goalsByDateObj = monthlyGoals.reduce((acc, goal) => {
+          const day = new Date(goal.day).toISOString().split("T")[0];
+          if (!acc[day]) {
+            acc[day] = [];
+          }
+          acc[day].push({
+            ...goal,
+            done: goal.is_completed, // 완료 상태 저장
+          });
+          return acc;
+        }, {});
+
+        setGoalsByDate(goalsByDateObj);
+      } catch (error) {
+        console.error("이번 달 목표를 가져오는 데 실패했습니다:", error);
+      }
+    };
+
+    fetchGoalsForMonth(); // 현재 월의 목표 데이터를 가져옵니다.
+  }, [date]);
+
+  // 선택된 날짜에 따른 목표 및 일기 가져오기
   useEffect(() => {
     const fetchGoalsAndDiary = async (selectedDate) => {
       try {
@@ -254,14 +292,21 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
         );
         const { goals, diary_entries } = response.data;
 
-        console.log("Received goals:", goals);
+        console.log("Received goals for selected date:", goals);
 
         const goalsWithIds = goals.map((goal) => ({
           ...goal,
-          done: goal.is_completed,
+          done: goal.is_completed, // is_completed를 사용하여 완료 상태 저장
         }));
 
+        // 선택된 날짜의 목표를 상태에 저장
         setSelectedDateGoals(goalsWithIds);
+
+        // 날짜별 목표 데이터 저장 (다시 불러온 날짜별 목표 포함)
+        setGoalsByDate((prevGoalsByDate) => ({
+          ...prevGoalsByDate,
+          [selectedDate.toISOString().split("T")[0]]: goalsWithIds,
+        }));
 
         if (diary_entries && diary_entries.length > 0) {
           const diary = diary_entries[0];
@@ -269,8 +314,6 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
         } else {
           setSelectedDateDiary("");
         }
-
-        console.log("Fetched data:", response.data);
       } catch (error) {
         console.error("데이터를 불러오는 데 실패했습니다:", error);
       }
@@ -294,6 +337,14 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
       goal.id === id ? { ...goal, done: !goal.done } : goal
     );
     setSelectedDateGoals(updatedGoals);
+
+    // 목표 체크 변경 시 날짜별 목표 데이터 상태 업데이트
+    setGoalsByDate((prevGoalsByDate) => ({
+      ...prevGoalsByDate,
+      [date.toISOString().split("T")[0]]: updatedGoals,
+    }));
+
+    console.log("Goal Completion Updated: ", !goalToUpdate.done);
 
     try {
       await axiosInstance.patch(
@@ -333,6 +384,16 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
           ...selectedDateGoals,
           { ...newGoalObj, id: response.data.id },
         ]);
+
+        // 새로운 목표가 추가된 후 날짜별 목표 데이터 업데이트
+        setGoalsByDate((prevGoalsByDate) => ({
+          ...prevGoalsByDate,
+          [date.toISOString().split("T")[0]]: [
+            ...prevGoalsByDate[date.toISOString().split("T")[0]],
+            { ...newGoalObj, id: response.data.id },
+          ],
+        }));
+
         setNewGoal("");
       } catch (error) {
         console.error("새 목표 추가에 실패했습니다:", error);
@@ -343,44 +404,52 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
   // 목표 삭제
   const handleDeleteGoal = async (id) => {
     try {
-      await axiosInstance.delete(
-        `/with/calendar/goal/${id}/delete/`
-      );
+      await axiosInstance.delete(`/with/calendar/goal/${id}/delete/`);
       const updatedGoals = selectedDateGoals.filter((goal) => goal.id !== id);
       setSelectedDateGoals(updatedGoals);
+
+      // 삭제된 목표가 반영된 날짜별 목표 데이터 업데이트
+      setGoalsByDate((prevGoalsByDate) => ({
+        ...prevGoalsByDate,
+        [date.toISOString().split("T")[0]]: updatedGoals,
+      }));
     } catch (error) {
       console.error("목표 삭제에 실패했습니다:", error);
     }
   };
 
-  // 달력 타일의 클래스 결정
   const getTileClass = ({ date: tileDate, view }) => {
     if (view === "month") {
-      const dayGoals = goals.filter(
-        (goal) => goal.day === tileDate.toISOString().split("T")[0]
-      );
-      const isSelectedDate = tileDate.toDateString() === date.toDateString();
+      const dayString = tileDate.toISOString().split("T")[0];
+      const dayGoals = goalsByDate[dayString] || [];
       const totalGoals = dayGoals.length;
-      const completedGoals = dayGoals.filter((goal) => goal.is_completed)
-        .length;
+      const completedGoals = dayGoals.filter((goal) => goal.done).length; // done 필드 사용
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
 
+      console.log(`Date: ${dayString}`);
+      console.log(`Total Goals: ${totalGoals}`);
+      console.log(`Completed Goals: ${completedGoals}`);
+      console.log(`Completion Ratio: ${goalCompletion}`);
+
+      if (goalCompletion === 1) {
+        console.log("Returning full-completion class");
+        return "react-calendar__tile--full-completion";
+      } else if (goalCompletion >= 0.34) {
+        console.log("Returning high-completion class");
+        return "react-calendar__tile--high-completion";
+      } else if (goalCompletion > 0) {
+        console.log("Returning medium-completion class");
+        return "react-calendar__tile--medium-completion";
+      }
+
       if (tileDate.toDateString() === today.toDateString()) {
+        console.log("Returning now class");
         return "react-calendar__tile--now";
       }
 
-      if (isSelectedDate) {
+      if (tileDate.toDateString() === date.toDateString()) {
+        console.log("Returning selected class");
         return "react-calendar__tile--selected";
-      }
-
-      if (goalCompletion === 1) {
-        return "react-calendar__tile--full-completion";
-      } else if (goalCompletion >= 0.75) {
-        return "react-calendar__tile--high-completion";
-      } else if (goalCompletion >= 0.5) {
-        return "react-calendar__tile--medium-completion";
-      } else if (goalCompletion > 0) {
-        return "react-calendar__tile--low-completion";
       }
     }
     return "";
@@ -452,7 +521,7 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
         <GoalHeader>오늘의 목표</GoalHeader>
         <GoalList>
           {selectedDateGoals.length === 0 && (
-            <GoalText>작성된 목표가 없습니다</GoalText>
+            <NoGoalsText>작성된 목표가 없습니다</NoGoalsText>
           )}
           {selectedDateGoals.map((goal) => (
             <GoalItem key={goal.id}>
@@ -494,16 +563,13 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
         </CustomPlanHeader>
         <CustomPlanDescription>
           사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을
-          제공합니다. 마이페이지에서 재검사가 가능합니다.
+          추천합니다.
         </CustomPlanDescription>
         <CustomPlanList>
           {customPlans.map((plan, index) => (
             <CustomPlanItem key={index}>{plan}</CustomPlanItem>
           ))}
         </CustomPlanList>
-        {errorMessage && (
-          <p style={{ color: "red", fontWeight: "bold" }}>{errorMessage}</p>
-        )}
       </CustomPlanContainer>
     </SidebarContainer>
   );

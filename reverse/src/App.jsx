@@ -18,7 +18,7 @@ import ConsultationApplication from './pages/Consulting/ConsultationApplication'
 const App = () => {
   return (
     <Router>
-      <Header></Header>
+      <Header />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -26,7 +26,7 @@ const App = () => {
           <Route path="/record" element={<Record />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/write" element={<Communitywrite />} />
-          <Route path="/Community/:id" element={<Communityread />} />
+          <Route path="/community/:id" element={<Communityread />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

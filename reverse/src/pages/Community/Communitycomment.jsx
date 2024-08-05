@@ -200,7 +200,7 @@ const Communitycomment = () => {
         author: userId // 사용자 id
       };
 
-      //새 댓글 추가
+      // 새 댓글 추가
       axiosInstance
         .post(`/with/community/${id}/comment/`, newComment)
         .then((response) => {
@@ -212,8 +212,8 @@ const Communitycomment = () => {
         });
     }
   };
- 
-  //댓글 수정
+
+  // 댓글 수정
   const handleEditComment = (commentId, content) => {
     setIsEditing(true);
     setEditCommentId(commentId);
@@ -242,7 +242,7 @@ const Communitycomment = () => {
       });
   };
 
-  //댓글 삭제
+  // 댓글 삭제
   const handleDeleteComment = (commentId) => {
     if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
       axiosInstance
@@ -277,7 +277,7 @@ const Communitycomment = () => {
             <Comment key={comment.id}>
               <CommentProfileContainer>
                 <Profileimg src='/profile.png' />
-                <Profilename>{comment.nickname || userNickname}</Profilename>
+                <Profilename>{comment.author}</Profilename>
               </CommentProfileContainer>
               {isEditing && editCommentId === comment.id ? (
                 <EditInput
@@ -293,7 +293,7 @@ const Communitycomment = () => {
               <CommentInfo>
                 <CommentDate>{formatDate(comment.created_at)}</CommentDate>
                 {/* 본인이 작성한 댓글일 때만 수정 및 삭제 버튼 표시 */}
-                {comment.author === userId && (
+                {comment.author.id === userId && (
                   <CommentEdit>
                     <div onClick={() => isEditing ? handleSaveEditComment(comment.id) : handleEditComment(comment.id, comment.content)}>
                       {isEditing && editCommentId === comment.id ? "저장" : "수정"}
