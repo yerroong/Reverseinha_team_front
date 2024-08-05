@@ -5,10 +5,10 @@ import axiosInstance from '../axiosInstance';
 
 const CommentContainer = styled.div`
   width: 68rem;
-  height: 42rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 5rem; /* 페이지 하단 여백 추가 */
 `;
 
 const CommentHeader = styled.div`
@@ -52,16 +52,15 @@ const ContentButton = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-`; 
-
+`;
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-const Commentwrite = styled.input`
+const Commentwrite = styled.textarea`
   width: 60rem;
-  height: 5rem;
+  height: 2rem; /* 고정된 높이 */
   margin: 1.5rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -70,6 +69,8 @@ const Commentwrite = styled.input`
   border: none;
   outline: none;
   box-shadow: inset 0 0.1rem 0.25rem rgba(0, 0, 0, 0.35), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
+  resize: none; /* 사용자가 높이를 조절하지 못하도록 함 */
+  overflow: hidden; /* 스크롤바를 숨김 */
   ::placeholder {
     color: #C6C6C6;
   }
@@ -77,11 +78,14 @@ const Commentwrite = styled.input`
 
 const AllComment = styled.div`
   width: 60rem;
+  margin-bottom: 1rem; /* 댓글 간 간격 추가 */
 `;
 
 const Comment = styled.div`
-  width: 60rem;
+  width: 100%;
   margin-bottom: 1rem;
+  padding-bottom: 1rem; /* 하단 여백 추가 */
+  border-bottom: 1px solid #e0e0e0; /* 구분선 색상 및 두께 */
 `;
 
 const CommentProfileContainer = styled.div`
@@ -263,7 +267,6 @@ const Communitycomment = () => {
           </CommentTitleContainer>
         </CommentHeader>
         <Commentwrite
-          type='text'
           placeholder='댓글을 작성하세요.'
           value={comment}
           onChange={handleCommentChange}
