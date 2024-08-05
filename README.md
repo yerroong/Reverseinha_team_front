@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="file:///mnt/data/image.png" alt="logo">
+  <img src="https://github.com/user-attachments/assets/5a222cd2-341f-438f-8ed1-c59ee616280a" alt="logo">
 </p>
 
 <h1 align="center">위드</h1>
