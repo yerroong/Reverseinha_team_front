@@ -13,7 +13,7 @@ import Signup from './pages/Signup';
 import Signtest from './pages/Selftest/Signtest';
 import Retest from './pages/Extratest/Retest';
 import Retrytest from './pages/Selftest/Retrytest';
-
+import ConsultationApplication from './pages/Consulting/ConsultationApplication';
 
 const App = () => {
   return (
@@ -33,6 +33,7 @@ const App = () => {
           <Route path="/signtest" element={<Signtest />} />
           <Route path="/retest" element={<Retest />} />
           <Route path="/retrytest" element={<Retrytest />} />
+          <Route path="/consulting/application" element={<ConsultationApplication />} />
         </Routes>
       </main>
     </Router>

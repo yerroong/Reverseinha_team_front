@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import SearchSide from './SearchSide';
+import { useNavigate } from 'react-router-dom';
+import SearchSide from './SearchSide'; // Make sure this component exists
 import Modal from 'react-modal';
-import axiosInstance from '../axiosInstance';
 import '../../components/Fonts.css';
 
 // Styled components
@@ -114,7 +114,7 @@ const PriceText = styled.span`
   font-size: 1.2rem;
 `;
 
-// Modal Styles
+// Define Modal Styles
 const customStyles = {
   content: {
     top: '50%',
@@ -129,55 +129,18 @@ const customStyles = {
   },
 };
 
-const ModalForm = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  width: 80%;
-  border: 1px solid #c6c6c6;
-  box-sizing: border-box;
-  font-family: inherit;
-`;
-
-const TextArea = styled.textarea`
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  width: 80%;
-  height: 100px;
-  border: 1px solid #c6c6c6;
-  box-sizing: border-box;
-  font-family: inherit;
-`;
-
+// Define Button Component
 const Button = styled.button`
   cursor: pointer;
   background-color: #007bff;
   color: #fff;
   padding: 0.75rem 1.5rem;
   margin-top: 0.75rem;
-  border: 1px solid #b0b0b0;
+  border: none;
   border-radius: 12px;
   &:hover {
     background-color: #0056b3;
   }
-`;
-
-const WarningText = styled.p`
-  color: #888888;
-  font-size: 0.8rem;
-  font-family: inherit;
-`;
-
-const Separator = styled.div`
-  border-bottom: 1px solid #567191;
-  width: 90%;
-  margin: 1rem 0;
-  align-self: center;
 `;
 
 // Sample data for consulting services
@@ -224,29 +187,14 @@ const consultingData = [
 ];
 
 const Consulting = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [loginPromptIsOpen, setLoginPromptIsOpen] = useState(false);
   const [filters, setFilters] = useState({
     free: false,
     premium: false,
     searchTerm: '',
   });
-  const [form, setForm] = useState({
-    available_time: '',
-    reason: '',
-    phone_number: '',
-  });
 
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setSuccessMessage('');
-  };
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const handleLoginConfirm = () => {
     setLoginPromptIsOpen(false);
@@ -261,57 +209,7 @@ const Consulting = () => {
     if (!localStorage.getItem('access_token')) {
       setLoginPromptIsOpen(true);
     } else {
-      openModal();
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async () => {
-    const { available_time, reason, phone_number } = form;
-
-    // 데이터 확인
-    console.log('데이터 전송 중:', { available_time, reason, phone_number });
-
-    // 필드 유효성 검사
-    if (!available_time || !reason || !phone_number) {
-      setSuccessMessage('모든 필드를 입력해주세요.');
-      return;
-    }
-
-    const dataToSend = { available_time, reason, phone_number };
-
-    try {
-      // 로딩 상태 시작
-      setSuccessMessage('신청을 처리 중입니다...');
-
-      const response = await axiosInstance.post('/with/consulting/', dataToSend);
-      console.log('Form submitted successfully:', response.data);
-
-      setSuccessMessage('신청이 완료되었습니다. 마이페이지에서 신청기록을 확인할 수 있습니다.');
-      setForm({
-        available_time: '',
-        reason: '',
-        phone_number: '',
-      });
-      // 요청 성공 시 모달 닫기
-      closeModal();
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('인증 오류: 로그인 후 다시 시도해주세요.');
-        setSuccessMessage('인증이 필요합니다. 로그인 후 다시 시도해주세요.');
-      } else {
-        console.error('신청 중 오류가 발생했습니다:', error);
-        setSuccessMessage('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
-      }
-    } finally {
-      // 로딩 상태 종료
+      navigate('/consulting/application'); // Navigate to the new consultation application page
     }
   };
 
@@ -367,59 +265,19 @@ const Consulting = () => {
         </Result>
       </ResultSide>
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="상담 신청"
-        ariaHideApp={false}
-        style={customStyles}
-      >
-        <ModalForm>
-          <h2>상담 신청</h2>
-          <Input
-            type="tel"
-            name="phone_number"
-            placeholder="전화번호"
-            value={form.phone_number}
-            onChange={handleInputChange}
-          />
-          <Input
-            type="datetime-local"  // 캘린더 선택 기능을 사용
-            name="available_time"
-            placeholder="가능한 시간"
-            value={form.available_time}
-            onChange={handleInputChange}
-          />
-          <TextArea
-            name="reason"
-            placeholder="상담 이유"
-            value={form.reason}
-            onChange={handleInputChange}
-          />
-          <WarningText>
-            무료/유료 서비스에 대한 상담 예약을 위해 위 정보를 정확히 기입해주세요.
-          </WarningText>
-          <Button onClick={handleSubmit}>신청</Button>
-          {successMessage && (
-            <>
-              <Separator />
-              <p>{successMessage}</p>
-            </>
-          )}
-        </ModalForm>
-      </Modal>
-
-      <Modal
-        isOpen={loginPromptIsOpen}
-        onRequestClose={() => setLoginPromptIsOpen(false)}
-        contentLabel="로그인 필요"
-        ariaHideApp={false}
-        style={customStyles}
-      >
-        <h2>로그인이 필요합니다</h2>
-        <p>상담 신청을 위해 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?</p>
-        <Button onClick={handleLoginConfirm}>로그인 하러가기</Button>
-      </Modal>
+      {loginPromptIsOpen && (
+        <Modal
+          isOpen={loginPromptIsOpen}
+          onRequestClose={() => setLoginPromptIsOpen(false)}
+          contentLabel="로그인 필요"
+          ariaHideApp={false}
+          style={customStyles}
+        >
+          <h2>로그인이 필요합니다</h2>
+          <p>상담 신청을 위해 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?</p>
+          <Button onClick={handleLoginConfirm}>로그인 하러가기</Button>
+        </Modal>
+      )}
     </ConsultingContainer>
   );
 };
