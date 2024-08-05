@@ -18,7 +18,7 @@ const LoginText = () => {
   return (
     <TextWrapper>
       <Title>로그인하기</Title>
-      <Subtitle>소셜 아이디 및 이메일로 로그인할 수 있어요.</Subtitle>
+      <Subtitle>이메일로 로그인할 수 있어요.</Subtitle>
     </TextWrapper>
   );
 };
