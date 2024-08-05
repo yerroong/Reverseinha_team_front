@@ -384,7 +384,7 @@ const Communityread = () => {
       axiosInstance
         .delete(`/with/community/${id}/delete/`)
         .then(() => {
-          navigate('/with/community');
+          navigate('/community');
         })
         .catch((error) => {
           console.error('Error deleting post:', error);
