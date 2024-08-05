@@ -23,9 +23,10 @@ const Container = styled.div`
 
 const CommunityContainer = styled.div`
   width: 68rem;
-  height: 42rem;
-  margin-top: 5rem;
-  max-height: 42rem;
+  height: 53rem;
+  margin-top: 3rem;
+  margin-bottom: 5rem;
+  max-height: 45rem;
   border-radius: 1.5rem;
   box-shadow: 0rem 0rem 0.75rem rgba(0, 0, 0, 0.3);
 `;
@@ -35,6 +36,8 @@ const Content = styled.div`
   padding: 0 0 0 1.25rem;
   display: flex;
   flex-direction: column;
+  margin-right: 2.7rem;
+  margin-top: 1.25rem;
 `;
 
 const PostContainer = styled.div`
@@ -66,7 +69,8 @@ const QuillWrapper = styled.div`
 `;
 
 const FileInput = styled.input`
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  margin-top: 1.25rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -76,15 +80,15 @@ const ButtonContainer = styled.div`
 
 const Button = styled.button`
   padding: 0.625rem 1.25rem;
-  background-color: #ccc;
-  color: #000;
+  background-color: #004EE5;
+  color: white;
   border: none;
   border-radius: 0.3125rem;
   cursor: pointer;
   margin-left: 0.625rem;
 
   &:hover {
-    background-color: #bbb;
+    background-color: #316be0;
   }
 `;
 
