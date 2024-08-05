@@ -21,7 +21,7 @@ const JoinText = () => {
 
   return (
     <TextWrapper>
-      계정이 없으신가요? <Link onClick={handleJoinClick}>회원가입</Link>
+      계정이 없으세요? <Link onClick={handleJoinClick}>회원가입하기</Link>
     </TextWrapper>
   );
 };

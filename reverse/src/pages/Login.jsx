@@ -4,7 +4,6 @@ import Jointext from '../components/Login/Jointext';
 import Loginbutton from '../components/Login/Loginbutton';
 import Logintext from '../components/Login/LoginText';
 import Logininput from '../components/Login/Logininput';
-import Loginsocial from '../components/Login/Loginsocial';
 import axiosInstance from './axiosInstance';
 
 const Wrapper = styled.div`
@@ -55,7 +54,6 @@ const Login = () => {
     return (
         <Wrapper>
             <Logintext />
-            <Loginsocial />
             {error && <Errormessage>{error}</Errormessage>}
             <form onSubmit={handleLogin}>
                 <Logininput
