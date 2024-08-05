@@ -277,7 +277,7 @@ const Communitycomment = () => {
             <Comment key={comment.id}>
               <CommentProfileContainer>
                 <Profileimg src='/profile.png' />
-                <Profilename>{comment.author}</Profilename>
+                <Profilename>{comment.author}</Profilename> {/* 수정된 부분 */}
               </CommentProfileContainer>
               {isEditing && editCommentId === comment.id ? (
                 <EditInput
@@ -293,7 +293,7 @@ const Communitycomment = () => {
               <CommentInfo>
                 <CommentDate>{formatDate(comment.created_at)}</CommentDate>
                 {/* 본인이 작성한 댓글일 때만 수정 및 삭제 버튼 표시 */}
-                {comment.author.id === userId && (
+                {comment.author === userNickname && (
                   <CommentEdit>
                     <div onClick={() => isEditing ? handleSaveEditComment(comment.id) : handleEditComment(comment.id, comment.content)}>
                       {isEditing && editCommentId === comment.id ? "저장" : "수정"}

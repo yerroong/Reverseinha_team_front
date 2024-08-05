@@ -93,6 +93,7 @@ const SubmitButton = styled(Button)`
   background-color: #004ee5;
   &:hover {
     background-color: #2165ae;
+    background-color: #2165ae;
   }
 `;
 

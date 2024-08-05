@@ -128,6 +128,7 @@ const GoalButton = styled.button`
   width: 3rem;
   &:hover {
     background-color: #2b6ae7;
+    background-color: #2b6ae7;
   }
 `;
 
