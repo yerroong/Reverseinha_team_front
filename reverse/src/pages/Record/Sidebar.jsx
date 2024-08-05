@@ -108,16 +108,18 @@ const DeleteButton = styled.button`
 `;
 
 const GoalButton = styled.button`
-  margin-top: 0.625rem;
   padding: 0.3125rem 0.625rem;
-  background-color: #007bff;
+  background-color: #004EE5;
   color: #fff;
   border: none;
   border-radius: 0.3125rem;
   cursor: pointer;
+  font-size: 0.7rem;
+  height: 1.8rem;
+  width: 3rem;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #2b6ae7;
   }
 `;
 

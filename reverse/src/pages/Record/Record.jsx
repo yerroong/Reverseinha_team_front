@@ -67,27 +67,41 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1.25rem;
+  gap: 0.625rem;
 `;
 
 const Button = styled.button`
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #004EE5;
   color: #fff;
   padding: 0.75rem 1.5rem;
   margin-top: 0.75rem;
   border: 1px solid #b0b0b0;
   border-radius: 12px;
   &:hover {
-    background-color: #0056b3;
+    background-color: #1f66b3;
+  }
+`;
+
+const CancleButton = styled.button`
+  cursor: pointer;
+  background-color: #A2A2A2;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  margin-top: 0.75rem;
+  border: 1px solid #b0b0b0;
+  border-radius: 12px;
+  &:hover {
+    background-color: #E2E2E2;
   }
 `;
 
 const SubmitButton = styled(Button)`
-  background-color: #007bff;
+  background-color: #004EE5;
   color: #fff;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #2165ae;
   }
 `;
 
@@ -101,11 +115,11 @@ const EditButton = styled(Button)`
 `;
 
 const DeleteButton = styled(Button)`
-  background-color: #ff0000; // 빨간색 for Delete
+  background-color: #A2A2A2; 
   margin-left: 0.5rem;
 
   &:hover {
-    background-color: #cc0000;
+    background-color: #E2E2E2;
   }
 `;
 
@@ -453,9 +467,9 @@ const Record = () => {
                 </QuillWrapper>
                 {!diaryExists && (
                   <ButtonContainer>
-                    <Button type="button" onClick={handleReset}>
+                    <CancleButton type="button" onClick={handleReset}>
                       취소
-                    </Button>
+                    </CancleButton>
                     <SubmitButton type="submit">등록</SubmitButton>
                   </ButtonContainer>
                 )}
