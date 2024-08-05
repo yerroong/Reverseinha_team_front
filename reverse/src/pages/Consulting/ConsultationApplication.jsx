@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅을 가져옵니다
 import axiosInstance from '../axiosInstance'; // axiosInstance는 올바른 베이스 URL을 포함해야 함
 
 // 스타일 컴포넌트 설정
@@ -42,16 +43,34 @@ const TextArea = styled.textarea`
   box-sizing: border-box;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  margin-top: 1rem;
+`;
+
 const Button = styled.button`
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #004EE5;
   color: #fff;
   padding: 0.75rem 1.5rem;
-  margin-top: 1rem;
   border: none;
   border-radius: 12px;
   &:hover {
-    background-color: #0056b3;
+    background-color: #0040c1;
+  }
+`;
+
+const CancelButton = styled.button`
+  cursor: pointer;
+  background-color: #004EE5;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  &:hover {
+    background-color: #0040c1;
   }
 `;
 
@@ -83,6 +102,9 @@ const ConsultationApplication = () => {
 
   const [successMessage, setSuccessMessage] = useState('');
   const [isError, setIsError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const navigate = useNavigate(); // useNavigate 훅을 사용합니다
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -129,6 +151,7 @@ const ConsultationApplication = () => {
         reason: '',
         phone_number: '',
       });
+      setIsSubmitted(true);
     } catch (error) {
       console.error('신청 중 오류가 발생했습니다:', error);
       
@@ -145,39 +168,63 @@ const ConsultationApplication = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate(-1); // 이전 페이지로 이동합니다
+  };
+
+  const handleNewConsultation = () => {
+    setIsSubmitted(false);
+    setSuccessMessage('');
+    navigate('/consulting');
+  };
+
+  const handleGoToMypage = () => {
+    navigate('/mypage');
+  };
+
   return (
     <Container>
       <Title>상담 신청</Title>
       <Form>
-        <Input
-          type="tel"
-          name="phone_number"
-          placeholder="전화번호"
-          value={form.phone_number}
-          onChange={handleInputChange}
-        />
-        <Input
-          type="datetime-local"
-          name="available_time"
-          placeholder="가능한 시간"
-          value={form.available_time}
-          onChange={handleInputChange}
-        />
-        <TextArea
-          name="reason"
-          placeholder="상담 이유"
-          value={form.reason}
-          onChange={handleInputChange}
-        />
-        <WarningText>
-          무료/유료 서비스에 대한 상담 예약을 위해 위 정보를 정확히 기입해주세요. <br />
-          상담사가 확인 후 상담 조율에 대해 개별 연락 드립니다.
-        </WarningText>
-        <Button onClick={handleSubmit}>신청</Button>
-        {successMessage && (
+        {!isSubmitted ? (
+          <>
+            <Input
+              type="tel"
+              name="phone_number"
+              placeholder="전화번호"
+              value={form.phone_number}
+              onChange={handleInputChange}
+            />
+            <Input
+              type="datetime-local"
+              name="available_time"
+              placeholder="가능한 시간"
+              value={form.available_time}
+              onChange={handleInputChange}
+            />
+            <TextArea
+              name="reason"
+              placeholder="상담 이유"
+              value={form.reason}
+              onChange={handleInputChange}
+            />
+            <WarningText>
+              무료/유료 서비스에 대한 상담 예약을 위해 위 정보를 정확히 기입해주세요. <br />
+              상담사가 확인 후 상담 조율에 대해 개별 연락 드립니다.
+            </WarningText>
+            <ButtonContainer>
+              <Button onClick={handleSubmit}>신청</Button>
+              <CancelButton onClick={handleCancel}>취소</CancelButton>
+            </ButtonContainer>
+          </>
+        ) : (
           <>
             <Separator />
             <Message isError={isError}>{successMessage}</Message>
+            <ButtonContainer>
+              <Button onClick={handleNewConsultation}>다른 상담 예약하러 가기</Button>
+              <Button onClick={handleGoToMypage}>마이페이지에서 확인하기</Button>
+            </ButtonContainer>
           </>
         )}
       </Form>
