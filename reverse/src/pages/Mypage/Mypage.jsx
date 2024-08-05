@@ -230,8 +230,7 @@ const Mypage = () => {
               >
                 {diaryEntries.map((entry, index) => (
                   <CheckContainer key={index}>
-                    {/* Ensure you're accessing a valid string property */}
-                    {entry.title} 
+                    {entry.title}
                   </CheckContainer>
                 ))}
               </InfoList>
@@ -262,8 +261,7 @@ const Mypage = () => {
               >
                 {counselEntries.map((entry, index) => (
                   <CheckContainer key={index}>
-                    {/* Render a valid string, e.g., time slot */}
-                    {entry.available_time} 
+                    {entry.available_time}
                   </CheckContainer>
                 ))}
               </InfoList>
@@ -278,7 +276,7 @@ const Mypage = () => {
           <InfoBox width="17rem" center>
             <InfoTitle>역대 목표 달성률</InfoTitle>
             <Line src="/line.png" />
-            <InfoScore>{goalAchievementRate}%</InfoScore>
+            <InfoScore>{goalAchievementRate.toFixed(1)}%</InfoScore>
           </InfoBox>
           <InfoBox width="43.5rem" flexDirection="row" center={false}>
             <Margin>
@@ -297,8 +295,7 @@ const Mypage = () => {
                     {goals.map((goal, index) => (
                       <CheckContainer key={index}>
                         <Check />
-                        {/* Access properties if `goal` is an object */}
-                        {goal.text} 
+                        {goal.text}
                       </CheckContainer>
                     ))}
                   </InfoList>
@@ -317,8 +314,3 @@ const Mypage = () => {
 };
 
 export default Mypage;
-
-
-
-
-
