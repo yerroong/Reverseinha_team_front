@@ -1,3 +1,5 @@
+// Sidebar.jsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Calendar from 'react-calendar';
@@ -28,20 +30,21 @@ const StyledCalendar = styled(Calendar)`
     border-radius: 0.625rem;
   }
   .react-calendar__tile--now {
-    background-color: #FFFACD !important;
-  }
-  .react-calendar__tile--active {
-    background-color: #ff7070 !important;
-  }
-  .react-calendar__tile--some-completion {
-    background-color: #BBDEFB !important;
-  }
-  .react-calendar__tile--half-completion {
-    background-color: #8c95f7 !important;
+    background-color: #cccccc !important; /* 회색으로 선택된 날짜 표시 */
   }
   .react-calendar__tile--full-completion {
-    background-color: #007BFF !important;
+    background-color: #003366 !important; /* 가장 진한 파란색 */
     color: white !important;
+  }
+  .react-calendar__tile--high-completion {
+    background-color: #336699 !important; /* 중간 정도의 파란색 */
+    color: white !important;
+  }
+  .react-calendar__tile--medium-completion {
+    background-color: #6699cc !important; /* 중간 정도의 파란색 */
+  }
+  .react-calendar__tile--low-completion {
+    background-color: #99ccff !important; /* 가장 연한 파란색 */
   }
 `;
 
@@ -89,7 +92,7 @@ const GoalInput = styled.input`
 
 const Checkbox = styled.input.attrs({ type: 'checkbox' })`
   margin-right: 0.625rem;
-  accent-color: #007BFF;
+  accent-color: #007bff;
 `;
 
 const DeleteButton = styled.button`
@@ -104,7 +107,7 @@ const DeleteButton = styled.button`
 const GoalButton = styled.button`
   margin-top: 0.625rem;
   padding: 0.3125rem 0.625rem;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 0.3125rem;
@@ -174,37 +177,46 @@ const Sidebar = ({ onDateChange }) => {
   const [date, setDate] = useState(new Date());
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState('');
-  const [severity, setSeverity] = useState('낮음'); // Default severity
+  const [severity, setSeverity] = useState('낮음'); // 기본 심각도
   const [customPlans, setCustomPlans] = useState([]);
   const [selectedDateGoals, setSelectedDateGoals] = useState([]);
   const [selectedDateDiary, setSelectedDateDiary] = useState('');
-  const [score, setScore] = useState(0); // User score
+  const [goalAchievementRate, setGoalAchievementRate] = useState(0); // 목표 달성률
+  const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태
 
-  // Fetch user score from the API
+  // Unique ID generator for local goals
+  const generateUniqueId = () => {
+    return `local-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // API로부터 목표 달성률을 가져옴
   useEffect(() => {
-    const fetchScore = async () => {
+    const fetchGoalAchievementRate = async () => {
       try {
         const response = await axiosInstance.get('/with/mypage/');
         const data = response.data;
-        setScore(data.survey_score || 0);
+        setGoalAchievementRate(data.goal_achievement_rate || 0);
+        setErrorMessage(''); // 오류가 없는 경우 오류 메시지를 지움
       } catch (error) {
-        console.error('Failed to fetch user score:', error);
+        console.error('목표 달성률 가져오기 실패:', error);
+        setGoalAchievementRate(0); // 오류 발생 시 목표 달성률을 0으로 설정
+        setErrorMessage('목표 달성률을 가져오는 데 문제가 발생했습니다. 나중에 다시 시도해 주세요.');
       }
     };
 
-    fetchScore();
+    fetchGoalAchievementRate();
   }, []);
 
-  // Update severity based on score
+  // 목표 달성률에 따라 심각도 업데이트
   useEffect(() => {
-    if (score >= 70) {
-      setSeverity('심함');
-    } else if (score >= 40) {
-      setSeverity('보통');
+    if (goalAchievementRate < 30) {
+      setSeverity('심함'); // 목표 달성률이 30 미만일 경우 심함
+    } else if (goalAchievementRate < 70) {
+      setSeverity('보통'); // 목표 달성률이 30 이상 70 미만일 경우 보통
     } else {
-      setSeverity('낮음');
+      setSeverity('낮음'); // 목표 달성률이 70 이상일 경우 낮음
     }
-  }, [score]);
+  }, [goalAchievementRate]);
 
   // Fetch and set custom plans based on severity
   useEffect(() => {
@@ -222,7 +234,7 @@ const Sidebar = ({ onDateChange }) => {
         console.log('Received goals:', goals);
 
         // 서버에서 제대로 된 ID를 제공하지 않을 경우 처리
-        const goalsWithIds = goals.map((goal, index) => {
+        const goalsWithIds = goals.map((goal) => {
           if (!goal.id) {
             console.warn('수신된 목표 데이터에 ID가 없습니다:', goal);
             return null; // ID가 없는 목표를 null로 반환하여 필터링
@@ -275,6 +287,7 @@ const Sidebar = ({ onDateChange }) => {
 
     try {
       await axiosInstance.patch(`/with/calendar/goal/${goalToUpdate.id}/completed/`, {
+        id: goalToUpdate.id,
         is_completed: !goalToUpdate.done
       });
     } catch (error) {
@@ -291,6 +304,7 @@ const Sidebar = ({ onDateChange }) => {
   const handleAddGoal = async () => {
     if (newGoal.trim()) {
       const newGoalObj = {
+        id: generateUniqueId(), // Generate unique ID for local goal
         text: newGoal,
         day: date.toISOString().split('T')[0],
         is_completed: false,
@@ -330,16 +344,23 @@ const Sidebar = ({ onDateChange }) => {
   const getTileClass = ({ date: tileDate, view }) => {
     if (view === 'month') {
       const dayGoals = goals.filter((goal) => goal.date === tileDate.toDateString());
-      const isToday = tileDate.toDateString() === new Date().toDateString();
-      const totalGoals = dayGoals.length + (isToday ? 1 : 0); // 오늘 날짜에만 기본 목표 포함
+      const isSelectedDate = tileDate.toDateString() === date.toDateString();
+      const totalGoals = dayGoals.length;
       const completedGoals = dayGoals.filter((goal) => goal.done).length;
       const goalCompletion = totalGoals > 0 ? completedGoals / totalGoals : 0;
+
+      if (isSelectedDate) {
+        return 'react-calendar__tile--now';
+      }
+
       if (goalCompletion === 1) {
         return 'react-calendar__tile--full-completion';
+      } else if (goalCompletion >= 0.75) {
+        return 'react-calendar__tile--high-completion';
       } else if (goalCompletion >= 0.5) {
-        return 'react-calendar__tile--half-completion';
+        return 'react-calendar__tile--medium-completion';
       } else if (goalCompletion > 0) {
-        return 'react-calendar__tile--some-completion';
+        return 'react-calendar__tile--low-completion';
       }
     }
     return '';
@@ -360,11 +381,9 @@ const Sidebar = ({ onDateChange }) => {
     '집밖에 나가기',
     '버킷리스트 쓰기',
     '상담받기',
-    '나의 장점 생각하기',
   ];
 
   const moderatePlans = [
-    '긍정적인 사고하기',
     '가족과 친구와 소통하기',
     '자기개발 하기',
     '하루 세끼 다 챙겨먹기',
@@ -380,10 +399,8 @@ const Sidebar = ({ onDateChange }) => {
   ];
 
   const lowPlans = [
-    '목표 세우기',
+    '목표세우기',
     '취미생활하기',
-    '버킷리스트 만들기',
-    '아침 일찍 일어나기',
   ];
 
   const generateCustomPlans = () => {
@@ -449,13 +466,14 @@ const Sidebar = ({ onDateChange }) => {
           </RiskLabel>
         </CustomPlanHeader>
         <CustomPlanDescription>
-          사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을 제공합니다. 마이페이지에서 재검사가 가능합니다
+          사회적 고립 자가진단 테스트에서 나온 심각도에 따라 맞춤 계획을 제공합니다. 마이페이지에서 재검사가 가능합니다.
         </CustomPlanDescription>
         <CustomPlanList>
           {customPlans.map((plan, index) => (
             <CustomPlanItem key={index}>{plan}</CustomPlanItem>
           ))}
         </CustomPlanList>
+        {errorMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>}
       </CustomPlanContainer>
     </SidebarContainer>
   );

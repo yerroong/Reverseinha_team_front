@@ -11,7 +11,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -157,6 +156,7 @@ const Communitywrite = () => {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+    console.log('Selected file:', e.target.files[0]); // 콘솔에 파일 정보 출력
   };
 
   const handleSubmit = (e) => {
@@ -173,23 +173,27 @@ const Communitywrite = () => {
 
   const handleCommunityConfirm = async () => {
     setIsCommunityVisible(false);
-
+  
     try {
       const formData = new FormData();
       formData.append('title', title);
-
+  
       // HTML 태그 제거 후 content 추가
       const plainContent = content.replace(/(<([^>]+)>)/gi, '');
       formData.append('content', plainContent);
-
+  
       if (file) {
         formData.append('image', file); // 'image' 키로 파일 추가
+        console.log('File added to FormData:', file.name);
       }
-
-      console.log('FormData:', Array.from(formData.entries())); // 디버깅용: 전송되는 FormData 확인
-
+  
+      // FormData entries 확인
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+  
       const response = await axiosInstance.post('with/community/', formData);
-
+  
       console.log('Response:', response);
       
       if (response.status === 200 || response.status === 201) {
@@ -259,8 +263,6 @@ const Communitywrite = () => {
 };
 
 export default Communitywrite;
-
-
 
 
 //제목 테두리삭제
