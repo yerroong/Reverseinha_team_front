@@ -5,6 +5,7 @@ import axiosInstance from '../axiosInstance';
 import CommunitySearch from './CommunitySearch';
 import Modal from 'react-modal';
 import "../../components/Fonts.css";
+import communityIcon from '../../img/community.png'; // Importing the image
 
 const Container = styled.div`
   height: 100%;
@@ -257,7 +258,7 @@ const Community = () => {
           <AllContentContainer>
             {filteredPosts.map((post) => (
               <ContentContainer key={post.id} to={`/Community/${post.id}`}>
-                <ContentIcon src="/community.png" />
+                <ContentIcon src={communityIcon} /> {/* Using the imported image */}
                 <ContentTitle>{post.title}</ContentTitle>
                 <ContentWriter>{post.nickname}</ContentWriter>
               </ContentContainer>
@@ -284,6 +285,7 @@ const Community = () => {
 };
 
 export default Community;
+
 
 
 
