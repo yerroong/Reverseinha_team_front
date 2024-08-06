@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom'; // useNavigate를 import 합니다.
+import search3 from '../../img/search3.png';
 
 const SearchContainer = styled.div`
   border-bottom: 0.063rem solid #BBBBBB;
@@ -98,7 +99,7 @@ const CommunitySearch = ({ onSearch }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <SearchIcon src="/search3.png" onClick={handleSearch} />
+        <SearchIcon src = {search3} onClick={handleSearch} />
       </SearchWrapper>
       <Write onClick={handleWriteClick}>글쓰기</Write>
     </SearchContainer>

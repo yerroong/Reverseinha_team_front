@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../axiosInstance';
+import backicon from '../../img/back.png';
+import profileicon from '../../img/profile.png';
 
 const CommentContainer = styled.div`
   width: 68rem;
@@ -272,7 +274,7 @@ const Communitycomment = () => {
     <>
       <CommentContainer>
         <CommentHeader>
-          <Back src='/back.png' onClick={() => navigate(-1)} />
+          <Back src={backicon} onClick={() => navigate(-1)} />
           <CommentTitleContainer>
             <CommentTitle color='#004EE5'>댓글</CommentTitle>
             <CommentTitle>{comments.length}</CommentTitle>
@@ -288,7 +290,7 @@ const Communitycomment = () => {
           {comments.map((comment) => (
             <Comment key={comment.id}>
               <CommentProfileContainer>
-                <Profileimg src='/profile.png' />
+                <Profileimg src={profileicon} />
                 <Profilename>{comment.author}</Profilename>
               </CommentProfileContainer>
               {isEditing && editCommentId === comment.id ? (

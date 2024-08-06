@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../axiosInstance';
 import Communitycomment from './Communitycomment';
+import profileicon from '../../img/profile.png';
+import like from '../../img/like.png';
+import like_emthy from '../../img/like-empty.png';
 
 // 날짜 형식 지정
 const formatDate = (isoString) => {
@@ -233,7 +236,7 @@ const Communityread = () => {
       <CommunityContainer>
         <HeadContainer>
           <ProfileContainer>
-            <ProfileImg src="/profile.png" />
+            <ProfileImg src={profileicon} />
             <ProfileInfoContainer>
               <ProfileTitle>{title}</ProfileTitle>
               <ProfileInfo>
@@ -261,7 +264,7 @@ const Communityread = () => {
         </ContentContainer>
         <ResponseContainer>
           <ResponseIcon
-            src={liked ? '/like.png' : '/like-empty.png'} // liked 상태에 따라 아이콘 설정
+            src={liked ? {like} : {like_emthy}} // liked 상태에 따라 아이콘 설정
             onClick={handleLikeToggle}
             alt={liked ? '좋아요 취소' : '좋아요'}
           />
