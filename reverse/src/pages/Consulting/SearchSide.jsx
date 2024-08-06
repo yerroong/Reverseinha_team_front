@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import SearchIconImage from '../../img/search.png';
 
 const MainContainer = styled.div`
   padding-top: 1rem;
@@ -32,7 +33,7 @@ const SearchIcon = styled.div`
   height: 1.8rem;
   margin-left: 0.3rem;
   margin-right: 0.5rem;
-  background-image: url('/search.png');
+  background-image: url(${SearchIconImage});
   background-size: cover;
   background-position: center;
 `;
