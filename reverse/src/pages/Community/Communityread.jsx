@@ -106,7 +106,7 @@ const EditContainer = styled.div`
   align-items: flex-end;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #BBBBBB;
+  color: #bbbbbb;
   cursor: pointer;
 `;
 
@@ -162,9 +162,12 @@ const Communityread = () => {
     const fetchPostAndUser = async () => {
       try {
         const postResponse = await axiosInstance.get(`/with/community/${id}/`);
+
+        // 서버로부터 받은 liked_by_user 값을 liked 상태로 설정
         setPost(postResponse.data);
         setLikesCount(postResponse.data.total_likes);
-        setLiked(postResponse.data.is_liked);
+        setLiked(postResponse.data.liked_by_user);
+        //console.log(postResponse.data.liked_by_user); // liked_by_user 값을 통해 liked 상태를 설정
         setContent(postResponse.data.content);
         setTitle(postResponse.data.title);
 
@@ -182,8 +185,14 @@ const Communityread = () => {
     axiosInstance
       .post(`/with/community/${id}/toggle_like/`)
       .then((response) => {
-        setLiked(response.data.message === 'Liked.');
-        setLikesCount(response.data.total_likes);
+        // 서버에서 받은 좋아요 상태에 따라 업데이트
+        if (response.data.message === 'Liked.') {
+          setLiked(true);
+          setLikesCount(likesCount + 1);
+        } else {
+          setLiked(false);
+          setLikesCount(likesCount - 1);
+        }
       })
       .catch((error) => {
         console.error('Error toggling like:', error);
@@ -197,8 +206,8 @@ const Communityread = () => {
         postId: id,
         title: title,
         content: content,
-        imageUrl: post.image
-      }
+        imageUrl: post.image,
+      },
     });
   };
 
@@ -224,7 +233,7 @@ const Communityread = () => {
       <CommunityContainer>
         <HeadContainer>
           <ProfileContainer>
-            <ProfileImg src='/profile.png' />
+            <ProfileImg src="/profile.png" />
             <ProfileInfoContainer>
               <ProfileTitle>{title}</ProfileTitle>
               <ProfileInfo>
@@ -242,19 +251,19 @@ const Communityread = () => {
         </HeadContainer>
         <ContentContainer>
           <Content>
-            <p style={{ width: '100%', textAlign: 'left' }}>{stripHTMLTags(content)}</p>
+            <p style={{ width: '100%', textAlign: 'left' }}>
+              {stripHTMLTags(content)}
+            </p>
             {post.image && (
-              <StyledImage
-                src={getImageUrl(post.image)}
-                alt="첨부된 파일"
-              />
+              <StyledImage src={getImageUrl(post.image)} alt="첨부된 파일" />
             )}
           </Content>
         </ContentContainer>
         <ResponseContainer>
           <ResponseIcon
-            src={liked ? '/like.png' : '/like-empty.png'}
+            src={liked ? '/like.png' : '/like-empty.png'} // liked 상태에 따라 아이콘 설정
             onClick={handleLikeToggle}
+            alt={liked ? '좋아요 취소' : '좋아요'}
           />
           <Responsenum>{likesCount}</Responsenum>
         </ResponseContainer>
@@ -265,6 +274,9 @@ const Communityread = () => {
 };
 
 export default Communityread;
+
+
+
 
 
 

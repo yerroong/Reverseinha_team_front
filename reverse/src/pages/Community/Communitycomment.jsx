@@ -106,7 +106,9 @@ const Profilename = styled.div`
 `;
 
 const CommentContent = styled.div`
+  margin-top:0.2rem;
   margin-left: 0.5rem;
+  margin-bottom: 0.2rem;
   font-size: 1rem;
   color: #333;
 `;
@@ -133,7 +135,17 @@ const EditInput = styled.input`
   padding: 0.5rem;
   font-size: 1rem;
   margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  color: #333; // 수정 내용의 글자 색상
+  border: none;
+  outline: none;
+  box-shadow: inset 0 0.1rem 0.25rem rgba(0, 0, 0, 0.35), inset 0 -0.75rem 1rem rgba(255, 255, 255, 0.5);
+  background-color: #fff; // 배경 색상
+  ::placeholder {
+    color: #c6c6c6;
+  }
 `;
+
 
 const formatDate = (isoString) => {
   const date = new Date(isoString);
@@ -277,7 +289,7 @@ const Communitycomment = () => {
             <Comment key={comment.id}>
               <CommentProfileContainer>
                 <Profileimg src='/profile.png' />
-                <Profilename>{comment.author}</Profilename> {/* 수정된 부분 */}
+                <Profilename>{comment.author}</Profilename>
               </CommentProfileContainer>
               {isEditing && editCommentId === comment.id ? (
                 <EditInput
