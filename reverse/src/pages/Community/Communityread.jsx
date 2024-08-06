@@ -264,7 +264,7 @@ const Communityread = () => {
         </ContentContainer>
         <ResponseContainer>
           <ResponseIcon
-            src={liked ? {like} : {like_emthy}} // liked 상태에 따라 아이콘 설정
+            src={liked ? like : like_emthy} // Corrected line
             onClick={handleLikeToggle}
             alt={liked ? '좋아요 취소' : '좋아요'}
           />
