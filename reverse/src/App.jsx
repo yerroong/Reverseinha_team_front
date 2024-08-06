@@ -17,7 +17,7 @@ import ConsultationApplication from './pages/Consulting/ConsultationApplication'
 
 const App = () => {
   return (
-    <Router basename={process.env.PUBLIC_URL}> {/* 환경 변수 사용 */}
+    <Router> {/* 환경 변수 사용 */}
       <Header />
       <main>
         <Routes>
