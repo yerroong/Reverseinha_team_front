@@ -40,7 +40,7 @@ const Login = () => {
             const { access_token } = response.data;
             localStorage.setItem('access_token', access_token);
             setError('');
-            window.location.href = '/';
+            window.location.href = '/Reverseinha_team_front';
         } catch (error) {
             let errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
             if (error.response && error.response.data) {
