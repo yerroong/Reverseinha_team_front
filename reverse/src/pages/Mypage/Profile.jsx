@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
+import profileImage from '../../img/profile.png'; // 이미지 경로를 실제 경로로 바꾸세요
 
 const ProfileContainer2 = styled.div`
   border-bottom: 0.063rem solid #BBBBBB;
@@ -79,7 +80,7 @@ const Profile = () => {
 
   return (
     <ProfileContainer2>
-      <ProfileIcon src="/profile.png" />
+      <ProfileIcon src={profileImage} alt="Profile Icon" />
       <ProfileTextContainer>
         <ProfileId>{nickname || '불러오는 중...'}</ProfileId>
         <ProfileLogout onClick={handleLogout}>로그아웃</ProfileLogout>
