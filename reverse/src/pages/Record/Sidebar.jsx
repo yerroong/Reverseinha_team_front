@@ -261,37 +261,6 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
     setCustomPlans(generateCustomPlans());
   }, [severity]);
 
-  // 모든 날짜의 목표 데이터를 한 번에 가져오기
-  useEffect(() => {
-    const fetchAllGoals = async () => {
-      try {
-        const response = await axiosInstance.get("/with/calendar/goal/all/");
-        const allGoals = response.data;
-
-        console.log("All goals fetched:", allGoals);
-
-        // 날짜별로 목표 데이터를 정리
-        const goalsByDateObj = allGoals.reduce((acc, goal) => {
-          const day = new Date(goal.day).toISOString().split("T")[0];
-          if (!acc[day]) {
-            acc[day] = [];
-          }
-          acc[day].push({
-            ...goal,
-            done: goal.is_completed, // 완료 상태 저장
-          });
-          return acc;
-        }, {});
-
-        setGoalsByDate(goalsByDateObj);
-      } catch (error) {
-        console.error("모든 목표를 가져오는 데 실패했습니다:", error);
-      }
-    };
-
-    fetchAllGoals(); // 컴포넌트가 마운트될 때 모든 목표 데이터를 가져옵니다.
-  }, []);
-
   // 현재 보이는 월의 목표 데이터를 불러오기 위한 함수
   const fetchGoalsForMonth = async (activeStartDate) => {
     try {
@@ -325,6 +294,16 @@ const Sidebar = ({ onDateChange, diaryWritten }) => {
       console.error("Failed to fetch monthly goals:", error);
     }
   };
+
+  // 컴포넌트가 마운트될 때 현재 보이는 월의 목표 데이터를 가져옴
+  useEffect(() => {
+    const currentMonthStartDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      1
+    );
+    fetchGoalsForMonth(currentMonthStartDate);
+  }, [date]);
 
   // 선택된 날짜에 따른 목표 및 일기 가져오기
   useEffect(() => {
