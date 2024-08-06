@@ -16,7 +16,7 @@
 
 
 
-WITH는 **고립된 청년** 및 **자립준비 청년**을 위한 종합 건강 지원 플랫폼 서비스로, 청년들이 직면한 정신적, 신체적 건강 문제 및 청년들의 맞춤형 건강 지원을 제공할 수 있게 도와주는 서비스입니다.
+**WITH**는 **고립된 청년** 및 **자립준비 청년**을 위한 종합 건강 지원 플랫폼 서비스로, 청년들이 직면한 정신적, 신체적 건강 문제 및 청년들의 맞춤형 건강 지원을 제공할 수 있게 도와주는 서비스입니다.
 
 <br/><br/>
 ## **🌁 프로젝트 배경**
@@ -74,12 +74,35 @@ src
  ┃ ┣ Homebanner.jsx
  ┃ ┗ Homemain.jsx
  ┣ fonts
- ┃ ┣ Pretendard-SemiBold.woff
  ┃ ┗ Pretendard-Regular.woff
  ┣ img
+ ┃ ┣ back.png
+ ┃ ┣ call.png
+ ┃ ┣ comment.png
+ ┃ ┣ community.png
+ ┃ ┣ consul1.png
+ ┃ ┣ consul2.png
+ ┃ ┣ consul3.png
+ ┃ ┣ consul4.png
+ ┃ ┣ consul5.png
+ ┃ ┣ consul6.png
+ ┃ ┣ email.png
+ ┃ ┣ help.png
  ┃ ┣ homeImg1.jpg
  ┃ ┣ homeImg2.jpg
- ┃ ┗ homeImg3.jpg
+ ┃ ┣ homeImg3.jpg
+ ┃ ┣ like-empty.png
+ ┃ ┣ like.png
+ ┃ ┣ line.png
+ ┃ ┣ location.png
+ ┃ ┣ logo.png
+ ┃ ┣ message.png
+ ┃ ┣ profile.png
+ ┃ ┣ search.png
+ ┃ ┣ search2.png
+ ┃ ┣ search3.png
+ ┃ ┣ underarrow.png
+ ┃ ┗ uparrow.png
  ┣ pages
  ┃ ┣ Community
  ┃ ┃ ┣ Community.jsx
@@ -118,6 +141,7 @@ src
  ┣ robots.txt
  ┣ setupTests.js
  ┗ style.css
+
 ```
 <br/><br/>
 ## 🔧 개발 환경
@@ -143,10 +167,14 @@ src
 
 - **폰트 적용 방식**
   - font-face
+    - Pretendard-Regular
 
 - **요소 크기 지정 방식**
   - 단위 rem
-
+ 
+- **컬러 팔레트**
+  - #004EE5
+  - #A2A2A2
 
 
 <br/><br/>
