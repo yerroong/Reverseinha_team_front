@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import axiosInstance from "../axiosInstance";
 
+// 이미지 import
+import profileImage from "../../img/profile.png";
+import lineImage from "../../img/line.png";
+import upArrowImage from "../../img/uparrow.png";
+import downArrowImage from "../../img/underarrow.png";
+
 // 스타일 컴포넌트
 const Container = styled.div`
   width: 100%;
@@ -224,18 +230,18 @@ const Mypage = () => {
         <InfoContainerRow>
           <InfoBox width="17rem" center>
             <InfoTitle>나의 고립점수는?</InfoTitle>
-            <Line src="/line.png" />
+            <Line src={lineImage} />
             <InfoScoreColored score={score}>{score}점</InfoScoreColored>
             <ProfileLogoutButton onClick={handleRetest}>재검사</ProfileLogoutButton>
           </InfoBox>
           <InfoBox width="20rem" center>
             <LineContainer>
               <InfoTitle>일기목록</InfoTitle>
-              <Line src="/line.png" />
+              <Line src={lineImage} />
             </LineContainer>
             <ScrollButtonContainer>
               <ScrollButton
-                src="/uparrow.png"
+                src={upArrowImage}
                 onClick={() => handleScroll(diaryListRef, "up")}
               />
               <InfoList
@@ -251,7 +257,7 @@ const Mypage = () => {
                 ))}
               </InfoList>
               <ScrollButton
-                src="/underarrow.png"
+                src={downArrowImage}
                 onClick={() => handleScroll(diaryListRef, "down")}
               />
             </ScrollButtonContainer>
@@ -262,11 +268,11 @@ const Mypage = () => {
           <InfoBox width="20rem" center>
             <LineContainer>
               <InfoTitle>상담목록</InfoTitle>
-              <Line src="/line.png" />
+              <Line src={lineImage} />
             </LineContainer>
             <ScrollButtonContainer>
               <ScrollButton
-                src="/uparrow.png"
+                src={upArrowImage}
                 onClick={() => handleScroll(counselListRef, "up")}
               />
               <InfoList
@@ -282,7 +288,7 @@ const Mypage = () => {
                 ))}
               </InfoList>
               <ScrollButton
-                src="/underarrow.png"
+                src={downArrowImage}
                 onClick={() => handleScroll(counselListRef, "down")}
               />
             </ScrollButtonContainer>
@@ -291,14 +297,14 @@ const Mypage = () => {
         <InfoContainerRow>
           <InfoBox width="17rem" center>
             <InfoTitle>역대 목표 달성률</InfoTitle>
-            <Line src="/line.png" />
+            <Line src={lineImage} />
             <InfoScore>{goalAchievementRate.toFixed(1)}%</InfoScore>
           </InfoBox>
           <InfoBox width="43.5rem" flexDirection="row" center={false}>
             <Margin>
               <ScrollButtonContainer>
                 <ScrollButton
-                  src="/uparrow.png"
+                  src={upArrowImage}
                   onClick={() => handleScroll(goalListRef, "up")}
                 />
                 <ListContainer>
@@ -317,7 +323,7 @@ const Mypage = () => {
                   </InfoList>
                 </ListContainer>
                 <ScrollButton
-                  src="/underarrow.png"
+                  src={downArrowImage}
                   onClick={() => handleScroll(goalListRef, "down")}
                 />
               </ScrollButtonContainer>
