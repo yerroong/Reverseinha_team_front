@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_URL, // 환경 변수를 사용하여 기본 URL 설정
+  baseURL: 'http://withinha.kro.kr/', // 환경 변수를 사용하여 기본 URL 설정
   headers: {
     'Content-Type': 'application/json',
   },
