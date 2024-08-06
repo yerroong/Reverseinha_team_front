@@ -1,9 +1,0 @@
-@font-face {
-  font-family: 'Pretendard';
-  src: url('../fonts/Pretendard-Regular.woff') format('truetype');
-  font-weight: 500;
-}
-
-* {
-  font-family: 'Pretendard';
-}
