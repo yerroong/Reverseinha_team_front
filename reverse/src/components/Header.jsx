@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useLocation, Link } from 'react-router-dom';
 import '../style.css';
 import './Fonts.css';
+import LogoImage from "../img/logo.png";
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -80,7 +81,6 @@ const Header = () => {
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Clean up event listener on component unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -95,7 +95,7 @@ const Header = () => {
     <HeaderContainer className={path || "main"}>
       <Logo>
         <Link to="/">
-          <img src="/logo.png" alt="Logo" />
+          <img src={LogoImage} alt="Logo" />
         </Link>
       </Logo>
       <Navigation>

@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import SearchSide from './SearchSide'; // Make sure this component exists
+import SearchSide from './SearchSide';
 import Modal from 'react-modal';
 import '../../components/Fonts.css';
+import Consul1Image from '../../img/consul1.png';
+import Consul4Image from '../../img/consul4.png';
+import Consul5Image from '../../img/consul5.png';
+import Consul6Image from '../../img/consul6.png';
+import MessageIconImage from '../../img/message.png';
+import CallIconImage from '../../img/call.png';
+import LocationIconImage from '../../img/location.png';
 
-// Styled components
 const ConsultingContainer = styled.div`
   display: flex;
   background-color: #fff;
@@ -115,7 +121,6 @@ const PriceText = styled.span`
   font-size: 1.2rem;
 `;
 
-// Define Modal Styles
 const customStyles = {
   content: {
     top: '50%',
@@ -130,7 +135,6 @@ const customStyles = {
   },
 };
 
-// Define Button Component
 const Button = styled.button`
   cursor: pointer;
   background-color: #007bff;
@@ -144,11 +148,10 @@ const Button = styled.button`
   }
 `;
 
-// Sample data for consulting services
 const consultingData = [
   {
     id: 'supportCenter',
-    imgSrc: '/consul1.png',
+    imgSrc: Consul1Image,
     title: '사회적고립기구',
     type: '지원센터',
     description:
@@ -163,7 +166,7 @@ const consultingData = [
   },
   {
     id: 'kimYoungMi',
-    imgSrc: '/consul4.png',
+    imgSrc: Consul4Image,
     title: '김영미',
     type: '상담사',
     description:
@@ -178,7 +181,7 @@ const consultingData = [
   },
   {
     id: 'ChoYeunjeong',
-    imgSrc: '/consul5.png',
+    imgSrc: Consul5Image,
     title: '최윤정',
     type: '상담사',
     description:
@@ -193,7 +196,7 @@ const consultingData = [
   },
   {
     id: 'ParkHyunWoo',
-    imgSrc: '/consul6.png',
+    imgSrc: Consul6Image,
     title: '박현우',
     type: '상담사',
     description:
@@ -218,7 +221,7 @@ const Consulting = () => {
     inPersonConsultation: false,
   });
 
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
   const handleLoginConfirm = () => {
     setLoginPromptIsOpen(false);
@@ -233,27 +236,23 @@ const Consulting = () => {
     if (!localStorage.getItem('access_token')) {
       setLoginPromptIsOpen(true);
     } else {
-      navigate('/consulting/application'); // Navigate to the new consultation application page
+      navigate('/consulting/application');
     }
   };
 
   const filteredData = consultingData.filter((consultant) => {
-    // Match phone consultation filter
     const matchesPhoneConsultation = filters.phoneConsultation ? consultant.availableForCall : true;
 
-    // Match in-person consultation filter
     const matchesInPersonConsultation = filters.inPersonConsultation
-      ? consultant.id === 'supportCenter' // Only support center provides in-person consultation
+      ? consultant.id === 'supportCenter'
       : true;
 
-    // Match both "무료" and "프리미엄" filters
     const matchesFreeAndPremium =
-      (filters.free && filters.premium) || // If both free and premium are selected
-      (!filters.free && !filters.premium) || // If neither is selected
-      (filters.free && consultant.prices.message === '무료') || // If free is selected and consultant is free
-      (filters.premium && consultant.prices.message !== '무료'); // If premium is selected and consultant is premium
+      (filters.free && filters.premium) || 
+      (!filters.free && !filters.premium) ||
+      (filters.free && consultant.prices.message === '무료') || 
+      (filters.premium && consultant.prices.message !== '무료'); 
 
-    // Match search term
     const matchesSearchTerm =
       consultant.title.includes(filters.searchTerm) ||
       consultant.description.includes(filters.searchTerm);
@@ -266,65 +265,65 @@ const Consulting = () => {
     );
   });
 
-  return (
-    <ConsultingContainer>
-      <SearchSide onFilterChange={handleFilterChange} />
-      <ResultSide>
-        <ResultHeader>상담 서비스 / 청년 멘토링 찾기</ResultHeader>
-        <ResultBorder />
-        <Result>
-          {filteredData.map((consultant) => (
-            <ResultItem key={consultant.id}>
-              <ResultContent>
-                <ResultImage src={consultant.imgSrc} alt={consultant.title} />
-                <ResultDetails>
-                  <ResultTitle>{consultant.title}</ResultTitle>
-                  <Highlight>{consultant.type}</Highlight>
-                  <ResultDescription>{consultant.description}</ResultDescription>
-                </ResultDetails>
-              </ResultContent>
-              <Prices>
+return (
+  <ConsultingContainer>
+    <SearchSide onFilterChange={handleFilterChange} />
+    <ResultSide>
+      <ResultHeader>상담 서비스 / 청년 멘토링 찾기</ResultHeader>
+      <ResultBorder />
+      <Result>
+        {filteredData.map((consultant) => (
+          <ResultItem key={consultant.id}>
+            <ResultContent>
+              <ResultImage src={consultant.imgSrc} alt={consultant.title} />
+              <ResultDetails>
+                <ResultTitle>{consultant.title}</ResultTitle>
+                <Highlight>{consultant.type}</Highlight>
+                <ResultDescription>{consultant.description}</ResultDescription>
+              </ResultDetails>
+            </ResultContent>
+            <Prices>
+              <Price onClick={handlePriceClick}>
+                <MessageIconWrapper>
+                  <PriceIcon src={MessageIconImage} alt="Message" /> {/* 수정된 부분 */}
+                </MessageIconWrapper>
+                <PriceText>문자상담: {consultant.prices.message}</PriceText>
+              </Price>
+              <Price onClick={handlePriceClick}>
+                <CallIconWrapper>
+                  <PriceIcon src={CallIconImage} alt="Call" /> {/* 수정된 부분 */}
+                </CallIconWrapper>
+                <PriceText>전화상담: {consultant.prices.call}</PriceText>
+              </Price>
+              {consultant.availableForLocation && (
                 <Price onClick={handlePriceClick}>
-                  <MessageIconWrapper>
-                    <PriceIcon src="/message.png" alt="Message" />
-                  </MessageIconWrapper>
-                  <PriceText>문자상담: {consultant.prices.message}</PriceText>
+                  <LocationIconWrapper>
+                    <PriceIcon src={LocationIconImage} alt="Location" /> {/* 수정된 부분 */}
+                  </LocationIconWrapper>
+                  <PriceText>현장: {consultant.prices.site}</PriceText>
                 </Price>
-                <Price onClick={handlePriceClick}>
-                  <CallIconWrapper>
-                    <PriceIcon src="/call.png" alt="Call" />
-                  </CallIconWrapper>
-                  <PriceText>전화상담: {consultant.prices.call}</PriceText>
-                </Price>
-                {consultant.availableForLocation && (
-                  <Price onClick={handlePriceClick}>
-                    <LocationIconWrapper>
-                      <PriceIcon src="/location.png" alt="Location" />
-                    </LocationIconWrapper>
-                    <PriceText>현장: {consultant.prices.site}</PriceText>
-                  </Price>
-                )}
-              </Prices>
-            </ResultItem>
-          ))}
-        </Result>
-      </ResultSide>
+              )}
+            </Prices>
+          </ResultItem>
+        ))}
+      </Result>
+    </ResultSide>
 
-      {loginPromptIsOpen && (
-        <Modal
-          isOpen={loginPromptIsOpen}
-          onRequestClose={() => setLoginPromptIsOpen(false)}
-          contentLabel="로그인 필요"
-          ariaHideApp={false}
-          style={customStyles}
-        >
-          <h2>로그인이 필요합니다</h2>
-          <p>상담 신청을 위해 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?</p>
-          <Button onClick={handleLoginConfirm}>로그인 하러가기</Button>
-        </Modal>
-      )}
-    </ConsultingContainer>
-  );
+    {loginPromptIsOpen && (
+      <Modal
+        isOpen={loginPromptIsOpen}
+        onRequestClose={() => setLoginPromptIsOpen(false)}
+        contentLabel="로그인 필요"
+        ariaHideApp={false}
+        style={customStyles}
+      >
+        <h2>로그인이 필요합니다</h2>
+        <p>상담 신청을 위해 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?</p>
+        <Button onClick={handleLoginConfirm}>로그인 하러가기</Button>
+      </Modal>
+    )}
+  </ConsultingContainer>
+);
 };
 
 export default Consulting;
